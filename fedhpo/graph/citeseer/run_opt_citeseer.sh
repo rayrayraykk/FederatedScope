@@ -3,7 +3,7 @@ set -e
 cudaid=$1
 sample_num=$2
 
-cd ../..
+cd ../../..
 
 dataset=citeseer
 

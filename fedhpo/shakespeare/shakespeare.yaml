@@ -1,0 +1,38 @@
+use_gpu: True
+device: 0
+early_stop:
+  patience: 100
+seed: 12345
+federate:
+  mode: standalone
+  local_update_steps: 1
+  batch_or_epoch: epoch
+  total_round_num: 500
+  sample_client_rate: 0.2
+  share_local_model: True
+  online_aggr: True
+data:
+  root: data/
+  type: shakespeare
+  splits: [0.6,0.2,0.2]
+  batch_size: 64
+  subsample: 0.2
+  num_workers: 0
+model:
+  type: lstm
+  in_channels: 80
+  out_channels: 80
+  embed_size: 8
+  hidden: 256
+  dropout: 0.5
+optimizer:
+  lr: 0.8
+  weight_decay: 0.0
+criterion:
+  type: character_loss
+trainer:
+  type: nlptrainer
+eval:
+  freq: 2
+  metrics: ['acc', 'correct', 'f1']
+  split: ['test', 'val', 'train']

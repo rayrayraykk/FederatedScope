@@ -7,7 +7,7 @@ cd ../../..
 
 dataset=pubmed
 
-out_dir=out_${dataset} 
+out_dir=out_${dataset}
 
 echo "HPO starts..."
 
@@ -19,27 +19,20 @@ steps=(1)
 lrs_server=(0.1 0.5 1.0)
 momentums_server=(0.0 0.9)
 
-for (( l=0; l<${#lrs[@]}; l++ ))
-do
-    for (( w=0; w<${#wds[@]}; w++ ))
-    do
-        for (( d=0; d<${#dps[@]}; d++ ))
-        do
-            for (( s=0; s<${#steps[@]}; s++ ))
-            do
-                for (( lrs=0; lrs<${#lrs_server[@]}; lrs++ )) 
-                do
-                    for (( ms=0; ms<${#momentums_server[@]}; ms++ )) 
-                    do
-                        for k in {1..3}
-                        do
-                            python federatedscope/main.py --cfg fedhpo/${dataset}/${dataset}.yaml device $cudaid optimizer.lr ${lrs[$l]} optimizer.weight_decay ${wds[$w]} model.dropout ${dps[$d]} federate.local_update_steps ${steps[$s]} federate.sample_client_num $sample_num fedopt.use True federate.method FedOpt fedopt.lr_server ${lrs_server[$lrs]} fedopt.momentum_server ${momentums_server[$ms]} seed $k outdir out_fedopt/${out_dir}_${sample_num} expname lr${lrs[$l]}_wd${wds[$w]}_dropout${dps[$d]}_step${steps[$s]}_seed${k} >/dev/null 2>&1
-                        done
-                    done
-                done
+for ((l = 0; l < ${#lrs[@]}; l++)); do
+  for ((w = 0; w < ${#wds[@]}; w++)); do
+    for ((d = 0; d < ${#dps[@]}; d++)); do
+      for ((s = 0; s < ${#steps[@]}; s++)); do
+        for ((sl = 0; sl < ${#lrs_server[@]}; sl++)); do
+          for ((ms = 0; ms < ${#momentums_server[@]}; ms++)); do
+            for k in {1..3}; do
+              python federatedscope/main.py --cfg fedhpo/graph/${dataset}/${dataset}.yaml device $cudaid optimizer.lr ${lrs[$l]} optimizer.weight_decay ${wds[$w]} model.dropout ${dps[$d]} federate.local_update_steps ${steps[$s]} federate.sample_client_num $sample_num fedopt.use True federate.method FedOpt fedopt.lr_server ${lrs_server[$sl]} fedopt.momentum_server ${momentums_server[$ms]} seed $k outdir out_fedopt/${out_dir}_${sample_num} expname lr${lrs[$l]}_wd${wds[$w]}_dropout${dps[$d]}_step${steps[$s]}_lrserver${lrs_server[$sl]}_momentumsserver${momentums_server[$ms]}_seed${k} >/dev/null 2>&1
             done
+          done
         done
+      done
     done
+  done
 done
 
 echo "HPO ends."

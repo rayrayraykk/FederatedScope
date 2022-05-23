@@ -32,7 +32,7 @@ for ((l = 0; l < ${#lrs[@]}; l++)); do
           for ((sl = 0; sl < ${#lrs_server[@]}; sl++)); do
             for ((ms = 0; ms < ${#momentums_server[@]}; ms++)); do
               for k in {1..3}; do
-                python federatedscope/main.py --cfg fedhpo/glue/${dataset}.yaml fedopt.use True federate.method FedOpt fedopt.lr_server ${lrs_server[$sl]} fedopt.momentum_server ${momentums_server[$ms]} device $cudaid optimizer.lr ${lrs[$l]} optimizer.weight_decay ${wds[$w]} model.dropout ${dps[$d]} federate.local_update_steps ${steps[$s]} data.batch_size ${batch_sizes[$b]} federate.sample_client_rate $sample_rate seed $k outdir out_fedopt/${out_dir}_${sample_rate} federate.share_local_model False federate.online_aggr False expname lr${lrs[$l]}_wd${wds[$w]}_dropout${dps[$d]}_step${steps[$s]}_batch${batch_sizes[$b]}_lrserver${lrs_server[$sl]}_momentumsserver${momentums_server[$ms]}_seed${k} >/dev/null 2>&1
+                python main.py --cfg fedhpo/glue/${dataset}.yaml fedopt.use True federate.method FedOpt fedopt.lr_server ${lrs_server[$sl]} fedopt.momentum_server ${momentums_server[$ms]} device $cudaid optimizer.lr ${lrs[$l]} optimizer.weight_decay ${wds[$w]} model.dropout ${dps[$d]} federate.local_update_steps ${steps[$s]} data.batch_size ${batch_sizes[$b]} federate.sample_client_rate $sample_rate seed $k outdir out_fedopt/${out_dir}_${sample_rate} federate.share_local_model False federate.online_aggr False expname lr${lrs[$l]}_wd${wds[$w]}_dropout${dps[$d]}_step${steps[$s]}_batch${batch_sizes[$b]}_lrserver${lrs_server[$sl]}_momentumsserver${momentums_server[$ms]}_seed${k} >/dev/null 2>&1
               done
             done
           done

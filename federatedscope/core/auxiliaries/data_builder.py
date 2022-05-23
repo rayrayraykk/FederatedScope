@@ -445,9 +445,9 @@ def load_external_data(config=None):
             train_size=splits[1] / (1. - splits[0]),
             random_state=config.seed)
         data_dict = {
-            'train': [(x, y) for x, y in zip(train_data, train_targets)],
-            'val': [(x, y) for x, y in zip(val_data, val_targets)],
-            'test': [(x, y) for x, y in zip(test_data, test_targets)]
+            'train': [(x, int(y)) for x, y in zip(train_data, train_targets)],
+            'val': [(x, int(y)) for x, y in zip(val_data, val_targets)],
+            'test': [(x, int(y)) for x, y in zip(test_data, test_targets)]
         }
         return data_dict
 

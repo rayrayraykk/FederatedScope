@@ -65,7 +65,7 @@ batch_sizes=(4 8 16 32 64 128 256)
 layers=(2 3 4)
 hiddens=(16 32 64 128 256 512 1024)
 
-for (( sr=0; s<${#sample_rates[@]}; s++ ))
+for (( sr=0; sr<${#sample_rates[@]}; sr++ ))
 do
     for (( l=0; l<${#lrs[@]}; l++ ))
     do

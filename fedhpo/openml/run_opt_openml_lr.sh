@@ -66,7 +66,7 @@ batch_sizes=(4 8 16 32 64 128 256)
 lrs_server=(0.1 0.5 1.0)
 momentums_server=(0.0 0.9)
 
-for ((sr = 0; s < ${#sample_rates[@]}; s++)); do
+for ((sr = 0; sr < ${#sample_rates[@]}; sr++)); do
   for ((l = 0; l < ${#lrs[@]}; l++)); do
     for ((w = 0; w < ${#wds[@]}; w++)); do
       for ((s = 0; s < ${#steps[@]}; s++)); do

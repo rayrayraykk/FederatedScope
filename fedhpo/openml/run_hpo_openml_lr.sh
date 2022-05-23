@@ -63,7 +63,7 @@ wds=(0.0 0.001 0.01 0.1)
 steps=(1 2 3 4)
 batch_sizes=(4 8 16 32 64 128 256)
 
-for (( sr=0; s<${#sample_rates[@]}; s++ ))
+for (( sr=0; sr<${#sample_rates[@]}; sr++ ))
 do
     for (( l=0; l<${#lrs[@]}; l++ ))
     do

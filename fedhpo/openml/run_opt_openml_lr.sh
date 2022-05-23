@@ -61,7 +61,7 @@ sample_rates=(0.2 0.4 0.6 0.8 1.0)
 lrs=(0.00001 0.0001 0.001 0.01 0.1 1.0)
 wds=(0.0 0.001 0.01 0.1)
 steps=(1)
-batch_sizes=(4 8 16 32 64 128 256)
+batch_sizes=(8 16 32 64 128 256)
 
 lrs_server=(0.1 0.5 1.0)
 momentums_server=(0.0 0.9)

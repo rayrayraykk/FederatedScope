@@ -123,15 +123,15 @@ class Monitor(object):
                 avg_sys_metrics[f"sys_avg/{k}"] = np.mean(v)
                 std_sys_metrics[f"sys_std/{k}"] = np.std(v)
 
-        logger.info(
-            f"After merging the system metrics from all works, we got avg: {avg_sys_metrics}"
-        )
-        logger.info(
-            f"After merging the system metrics from all works, we got std: {std_sys_metrics}"
-        )
-        with open(sys_metric_f_name, "a") as f:
-            f.write(json.dumps(avg_sys_metrics) + "\n")
-            f.write(json.dumps(std_sys_metrics) + "\n")
+        # logger.info(
+        #     f"After merging the system metrics from all works, we got avg: {avg_sys_metrics}"
+        # )
+        # logger.info(
+        #     f"After merging the system metrics from all works, we got std: {std_sys_metrics}"
+        # )
+        # with open(sys_metric_f_name, "a") as f:
+        #     f.write(json.dumps(avg_sys_metrics) + "\n")
+        #     f.write(json.dumps(std_sys_metrics) + "\n")
 
     def finish_fed_runner(self, fl_mode=None):
         self.compress_raw_res_file()

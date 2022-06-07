@@ -80,12 +80,14 @@ def summarize_hpo_results(configs, perfs, white_list=None, desc=False):
     ] + [result] for trial_cfg, result in zip(configs, perfs)]
     d = sorted(d, key=lambda ele: ele[-1], reverse=desc)
     df = pd.DataFrame(d, columns=cols)
+    pd.set_option('display.max_columns', None)
     return df
 
 
 def parse_logs(file_list):
     import numpy as np
     import matplotlib.pyplot as plt
+    from tqdm import tqdm
 
     FONTSIZE = 40
     MARKSIZE = 25
@@ -93,13 +95,13 @@ def parse_logs(file_list):
     def process(file):
         history = []
         with open(file, 'r') as F:
-            for line in F:
+            for line in tqdm(F):
                 try:
                     state, line = line.split('INFO: ')
                     config = eval(line[line.find('{'):line.find('}') + 1])
                     performance = float(
                         line[line.find('performance'):].split(' ')[1])
-                    print(config, performance)
+                    # print(config, performance)
                     history.append((config, performance))
                 except:
                     continue
@@ -128,6 +130,6 @@ def parse_logs(file_list):
     for file in file_list:
         x, y = process(file)
         plt.plot(x, y, linewidth=1, markersize=MARKSIZE)
-    plt.legend(file_list, fontsize=23, loc='lower right')
+    plt.legend(file_list, loc='lower left')
     plt.savefig(f'exp2.pdf', bbox_inches='tight')
     plt.close()

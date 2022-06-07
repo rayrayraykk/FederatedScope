@@ -62,10 +62,10 @@ class NodeFullBatchTrainer(GeneralTorchTrainer):
 
                 if self.model_nums > 1 and ctx.mirrored_models:
                     flops_one_batch *= self.model_nums
-                    logger.warning(
-                        "the flops_per_batch is multiplied by internal model nums as self.mirrored_models=True."
-                        "if this is not the case you want, please customize the count hook"
-                    )
+                    # logger.warning(
+                    #     "the flops_per_batch is multiplied by internal model nums as self.mirrored_models=True."
+                    #     "if this is not the case you want, please customize the count hook"
+                    # )
                 self.ctx.monitor.track_avg_flops(flops_one_batch,
                                                  ctx.batch_size)
             except:

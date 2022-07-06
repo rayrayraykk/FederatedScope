@@ -1,6 +1,11 @@
 [flake8]
 exclude =
   doc/source/conf.py
+  scripts/*
+  materials/*
+  tests/*
+  benchmark/*
+  demo/*
 max-line-length = 79
 inline-quotes = "
 ignore =

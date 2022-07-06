@@ -48,8 +48,8 @@ class Client(Worker):
         # Check if is a attacker; a client is a attacker if the
         # config.attack.attack_method is provided
         self.is_attacker = config.attack.attacker_id == ID and \
-                           config.attack.attack_method != '' and \
-                           config.federate.mode == 'standalone'
+            config.attack.attack_method != '' and \
+            config.federate.mode == 'standalone'
 
         # Build Trainer
         # trainer might need configurations other than those of trainer node
@@ -67,8 +67,8 @@ class Client(Worker):
         # Otherwise, we set patience=0 to deactivate the local early-stopper
         patience = self._cfg.early_stop.patience if \
             self._cfg.federate.method in [
-                                            "local", "global"
-                                         ] else 0
+                "local", "global"
+            ] else 0
         self.early_stopper = EarlyStopper(
             patience, self._cfg.early_stop.delta,
             self._cfg.early_stop.improve_indicator_mode,
@@ -213,12 +213,10 @@ class Client(Worker):
             self.trainer.update(content)
             self.state = round
             if self.early_stopper.early_stopped and \
-                    self._cfg.federate.method in [
-                    "local", "global"
-            ]:
+                    self._cfg.federate.method in ["local", "global"]:
                 sample_size, model_para_all, results = \
                     0, self.trainer.get_model_para(
-                ), {}
+                    ), {}
                 logger.info(f"Client #{self.ID} has been early stopped, "
                             f"we will skip the local training")
                 self._monitor.local_converged()
@@ -255,7 +253,7 @@ class Client(Worker):
                 frame_idx = 0
                 for neighbor in self.comm_manager.neighbors:
                     if neighbor != self.server_id:
-                        content_frame = model_para_list_all[0][frame_idx] if\
+                        content_frame = model_para_list_all[0][frame_idx] if \
                             single_model_case else \
                             [model_para_list[frame_idx] for model_para_list
                              in model_para_list_all]
@@ -268,8 +266,8 @@ class Client(Worker):
                         frame_idx += 1
                 content_frame = model_para_list_all[0][frame_idx] if \
                     single_model_case else \
-                        [model_para_list[frame_idx] for model_para_list in
-                         model_para_list_all]
+                    [model_para_list[frame_idx] for model_para_list in
+                     model_para_list_all]
                 self.msg_buffer['train'][self.state] = [(sample_size,
                                                          content_frame)]
             else:

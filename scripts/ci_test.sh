@@ -17,7 +17,7 @@
 # linter test
 #pip install -r requirements/tests.txt
 # use internal project for pre-commit due to the network problem
-#if [ `git remote -v | grep alibaba  | wc -i` -gt 1 ]; then
+#if [ `git remote -v | grep alibaba  | wc -l` -gt 1 ]; then
 #    cp .pre-commit-config.yaml.alibaba  .pre-commit-config.yaml
 #fi
 #pre-commit run --all-files

@@ -6,6 +6,7 @@ exclude =
   tests/*
   benchmark/*
   demo/*
+  federatedscope/core/proto/gRPC_comm_manager_pb2.py
 max-line-length = 79
 inline-quotes = "
 ignore =

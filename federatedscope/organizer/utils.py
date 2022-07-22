@@ -118,7 +118,7 @@ def args2yaml(args):
     return init_cfg
 
 
-def flatten_dict(d, parent_key='', sep='_'):
+def flatten_dict(d, parent_key='', sep='.'):
     items = []
     for key, value in d.items():
         new_key = parent_key + sep + key if parent_key else key

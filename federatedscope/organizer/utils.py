@@ -139,6 +139,7 @@ def config2cmdargs(config):
 
     results = []
     for key, value in config.items():
-        results.append(key)
-        results.append(value)
+        if value:
+            results.append(key)
+            results.append(value)
     return results

@@ -120,6 +120,7 @@ class Lobby(object):
         """
         for p in self.pool:
             p.terminate()
+        self._save('room', {})
         return True
 
 

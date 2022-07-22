@@ -76,7 +76,8 @@ class OrganizerClient(cmd.Cmd):
                 command += f' "{value}"'
             command = command[1:]
             # TODO: manage the process
-            stdout, stderr = ecs.exec_python_cmd(f'python '
+            # TODO: how about using screen to manage?
+            stdout, stderr = ecs.exec_python_cmd(f'nohup python '
                                                  f'federatedscope/main.py'
                                                  f' {command} &')
             print(stdout, stderr)

@@ -72,7 +72,8 @@ class OrganizerClient(cmd.Cmd):
             cfg = config2cmdargs(flatten_dict(cfg))
             command = ''
             for i in cfg:
-                command += f' {i}'
+                value = f'{i}'.replace(' ', '')
+                command += f' {value}'
             command = command[1:]
             # TODO: manage the process
             stdout, stderr = ecs.exec_python_cmd(f'python '

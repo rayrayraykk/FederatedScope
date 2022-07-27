@@ -1,6 +1,7 @@
-import cmd
+import cmd2
 import time
 from celery import Celery
+from cmd2 import Bg, Fg, style
 
 from federatedscope.core.configs.config import CN
 from federatedscope.organizer.cfg_client import server_ip
@@ -11,17 +12,35 @@ organizer = Celery()
 organizer.config_from_object('cfg_client')
 
 
-class OrganizerClient(cmd.Cmd):
-    intro = 'Welcome to the FS organizer shell. Type help or ? to list ' \
-            'commands.\n'
-    prompt = 'FederatedScope>> '
+class OrganizerClient(cmd2.Cmd):
+    SEVER_CATEGORY = 'Server Related Commands'
+    ECS_CATEGORY = 'ECS Related Commands'
+    TASK_CATEGORY = 'Task Related Commands'
     # Maintained several dict
     ecs_dict, room_dict, task_dict = {}, {}, {}
     timeout = 10
 
+    def __init__(self):
+        super().__init__(
+            multiline_commands=['echo'],
+            include_ipy=True,
+        )
+
+        self.intro = style(
+            'Welcome to the FS organizer shell. Type help or '
+            '? to list commands.\n',
+            fg=Fg.RED,
+            bg=Bg.WHITE,
+            bold=True)
+        self.prompt = 'FederatedScope>> '
+        self.self_in_py = True
+        self.default_category = 'Built-in Commands'
+        self.foreground_color = Fg.CYAN.name.lower()
+
     # ---------------------------------------------------------------------- #
     # SSH Manager related
     # ---------------------------------------------------------------------- #
+    @cmd2.with_category(ECS_CATEGORY)
     def do_add_ecs(self, line):
         'Add Ecs (ip, user, psw): add_ecs 172.X.X.X root 123'
         try:
@@ -34,6 +53,7 @@ class OrganizerClient(cmd.Cmd):
         except Exception as error:
             print(f"Exception: {error}")
 
+    @cmd2.with_category(ECS_CATEGORY)
     def do_del_ecs(self, line):
         'Delete Ecs (ip): del_ecs 172.X.X.X'
         try:
@@ -43,6 +63,7 @@ class OrganizerClient(cmd.Cmd):
         except Exception as error:
             print(f"Exception: {error}")
 
+    @cmd2.with_category(ECS_CATEGORY)
     def do_display_ecs(self, line):
         'Display all saved ECS: display_ecs'
         try:
@@ -53,6 +74,7 @@ class OrganizerClient(cmd.Cmd):
         except Exception as error:
             print(f"Exception: {error}")
 
+    @cmd2.with_category(ECS_CATEGORY)
     def do_join_room(self, line):
         'Let an ECS join a specific room (ip room_id other_opts): ' \
             'join_room 172.X.X.X 0 device 0 distribute.data_idx 2 ...'
@@ -87,6 +109,7 @@ class OrganizerClient(cmd.Cmd):
     # ---------------------------------------------------------------------- #
     # Task manager related
     # ---------------------------------------------------------------------- #
+    @cmd2.with_category(TASK_CATEGORY)
     def do_display_task(self, line):
         # TODO: add abort, check status, etc
         print(self.task_dict)
@@ -94,6 +117,7 @@ class OrganizerClient(cmd.Cmd):
     # ---------------------------------------------------------------------- #
     # Server related messages
     # ---------------------------------------------------------------------- #
+    @cmd2.with_category(SEVER_CATEGORY)
     def do_create_room(self, line):
         'Create FS room in server with specific command (command, psw): ' \
             'create_room --cfg ../../federatedscope/example_configs' \
@@ -112,6 +136,7 @@ class OrganizerClient(cmd.Cmd):
         except Exception as error:
             print(f"Exception: {error}")
 
+    @cmd2.with_category(SEVER_CATEGORY)
     def do_update_room(self, line):
         'Fetch all FS rooms from Lobby: update_room'
         try:
@@ -132,6 +157,7 @@ class OrganizerClient(cmd.Cmd):
         except Exception as error:
             print(f"Exception: {error}")
 
+    @cmd2.with_category(SEVER_CATEGORY)
     def do_view_room(self, line):
         'View specific FS room (room_id, psw, verbose): view_room 0 123 0\n' \
             'verbose 0: print no information\n' \
@@ -159,6 +185,7 @@ class OrganizerClient(cmd.Cmd):
         except Exception as error:
             print(f"Exception: {error}")
 
+    @cmd2.with_category(SEVER_CATEGORY)
     def do_shut_down(self, line):
         'Shut down all rooms and quit: shut_down'
         global organizer
@@ -169,9 +196,6 @@ class OrganizerClient(cmd.Cmd):
             time.sleep(1)
             cnt += 1
         print(result.get(timeout=1))
-        return True
-
-    def do_quit(self, line):
         return True
 
 

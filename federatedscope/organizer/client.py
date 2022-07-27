@@ -16,6 +16,7 @@ class OrganizerClient(cmd2.Cmd):
     SEVER_CATEGORY = 'Server Related Commands'
     ECS_CATEGORY = 'ECS Related Commands'
     TASK_CATEGORY = 'Task Related Commands'
+
     # Maintained several dict
     ecs_dict, room_dict, task_dict = {}, {}, {}
     timeout = 10
@@ -49,16 +50,16 @@ class OrganizerClient(cmd2.Cmd):
             '   user, user name of ECS\n' \
             '   psw, password of user\n\n' \
             'Example:\n' \
-            '   add_ecs 172.X.X.X root 123\n'
+            '   add_ecs 172.X.X.X root 12345\n'
         try:
             ip, user, psw = line.split(' ')
             key = f"{ip}"
             if key in self.ecs_dict:
                 raise ValueError(f"ECS `{key}` already exists.")
             self.ecs_dict[key] = SSHManager(ip, user, psw)
-            print(f"{self.ecs_dict[key]} added.")
+            self.poutput(f"{self.ecs_dict[key]} added.")
         except Exception as error:
-            print(f"Exception: {error}")
+            self.pexcept(f"Exception: {error}")
 
     @cmd2.with_category(ECS_CATEGORY)
     def do_del_ecs(self, line):
@@ -70,10 +71,10 @@ class OrganizerClient(cmd2.Cmd):
             '   del_ecs 172.X.X.X\n'
         try:
             key = line
-            print(f"Delete {key}: {self.ecs_dict[key]}.")
+            self.poutput(f"Delete {key}: {self.ecs_dict[key]}.")
             del self.ecs_dict[key]
         except Exception as error:
-            print(f"Exception: {error}")
+            self.pexcept(f"Exception: {error}")
 
     @cmd2.with_category(ECS_CATEGORY)
     def do_display_ecs(self, line):
@@ -85,9 +86,9 @@ class OrganizerClient(cmd2.Cmd):
             info = ""
             for key, value in self.ecs_dict.items():
                 info += f"ecs: {key}, info: {value}\n"
-            print(info)
+            self.poutput(info)
         except Exception as error:
-            print(f"Exception: {error}")
+            self.pexcept(f"Exception: {error}")
 
     @cmd2.with_category(ECS_CATEGORY)
     def do_join_room(self, line):
@@ -123,9 +124,9 @@ class OrganizerClient(cmd2.Cmd):
                                                  f'federatedscope/main.py'
                                                  f' {command} > /dev/null '
                                                  f'2>&1 &')
-            print(stdout, stderr)
+            self.poutput(stdout, stderr)
         except Exception as error:
-            print(f"Exception: {error}")
+            self.pexcept(f"Exception: {error}")
 
     # ---------------------------------------------------------------------- #
     # Task manager related
@@ -137,7 +138,7 @@ class OrganizerClient(cmd2.Cmd):
             'Example:\n' \
             '   display_task\n'
         # TODO: add abort, check status, etc
-        print(self.task_dict)
+        self.poutput(self.task_dict)
 
     # ---------------------------------------------------------------------- #
     # Server related messages
@@ -159,12 +160,12 @@ class OrganizerClient(cmd2.Cmd):
             result = organizer.send_task('server.create_room', [command, psw])
             cnt = 0
             while (not result.ready()) and cnt < self.timeout:
-                print('Waiting for response... (will re-try in 1s)')
+                self.poutput('Waiting for response... (will re-try in 1s)')
                 time.sleep(1)
                 cnt += 1
-            print(result.get(timeout=1))
+            self.poutput(result.get(timeout=1))
         except Exception as error:
-            print(f"Exception: {error}")
+            self.pexcept(f"Exception: {error}")
 
     @cmd2.with_category(SEVER_CATEGORY)
     def do_update_room(self, line):
@@ -174,11 +175,11 @@ class OrganizerClient(cmd2.Cmd):
             '   update_room\n'
         try:
             global organizer
-            print('Forget all saved room due to `update_room`.')
+            self.poutput('Forget all saved room due to `update_room`.')
             result = organizer.send_task('server.display_room')
             cnt = 0
             while (not result.ready()) and cnt < self.timeout:
-                print('Waiting for response... (will re-try in 1s)')
+                self.poutput('Waiting for response... (will re-try in 1s)')
                 time.sleep(1)
                 cnt += 1
             self.room_dict = result.get(timeout=1)
@@ -186,9 +187,9 @@ class OrganizerClient(cmd2.Cmd):
             for key, value in self.room_dict.items():
                 tmp = f"room_id: {key}, info: {value}\n"
                 info += tmp
-            print(info)
+            self.poutput(info)
         except Exception as error:
-            print(f"Exception: {error}")
+            self.pexcept(f"Exception: {error}")
 
     @cmd2.with_category(SEVER_CATEGORY)
     def do_view_room(self, line):
@@ -209,21 +210,21 @@ class OrganizerClient(cmd2.Cmd):
             result = organizer.send_task('server.view_room', [room_id, psw])
             cnt = 0
             while (not result.ready()) and cnt < self.timeout:
-                print('Waiting for response... (will re-try in 1s)')
+                self.poutput('Waiting for response... (will re-try in 1s)')
                 time.sleep(1)
                 cnt += 1
             info = result.get(timeout=1)
             if isinstance(info, dict):
                 self.room_dict[room_id] = info
-                print(f'Room {room_id} has been updated to joinable.')
+                self.poutput(f'Room {room_id} has been updated to joinable.')
                 if verbose == '1':
-                    print(info)
+                    self.poutput(info)
                 elif verbose == '2':
-                    print(self.room_dict)
+                    self.poutput(self.room_dict)
             else:
-                print(info)
+                self.poutput(info)
         except Exception as error:
-            print(f"Exception: {error}")
+            self.pexcept(f"Exception: {error}")
 
     @cmd2.with_category(SEVER_CATEGORY)
     def do_shut_down(self, line):
@@ -235,10 +236,10 @@ class OrganizerClient(cmd2.Cmd):
         result = organizer.send_task('server.shut_down')
         cnt = 0
         while (not result.ready()) and cnt < self.timeout:
-            print('Waiting for response... (will re-try in 1s)')
+            self.poutput('Waiting for response... (will re-try in 1s)')
             time.sleep(1)
             cnt += 1
-        print(result.get(timeout=1))
+        self.poutput(result.get(timeout=1))
         return True
 
 

@@ -38,6 +38,9 @@ class OrganizerClient(cmd2.Cmd):
         self.default_category = 'Built-in Commands'
         self.foreground_color = Fg.CYAN.name.lower()
 
+    def fancy_output(self, out):
+        return self.poutput(style(out, fg=Fg.GREEN))
+
     # ---------------------------------------------------------------------- #
     # SSH Manager related
     # ---------------------------------------------------------------------- #
@@ -57,7 +60,7 @@ class OrganizerClient(cmd2.Cmd):
             if key in self.ecs_dict:
                 raise ValueError(f"ECS `{key}` already exists.")
             self.ecs_dict[key] = SSHManager(ip, user, psw)
-            self.poutput(f"{self.ecs_dict[key]} added.")
+            self.fancy_output(f"{self.ecs_dict[key]} added.")
         except Exception as error:
             self.pexcept(f"Exception: {error}")
 
@@ -71,7 +74,7 @@ class OrganizerClient(cmd2.Cmd):
             '   del_ecs 172.X.X.X\n'
         try:
             key = line
-            self.poutput(f"Delete {key}: {self.ecs_dict[key]}.")
+            self.fancy_output(f"Delete {key}: {self.ecs_dict[key]}.")
             del self.ecs_dict[key]
         except Exception as error:
             self.pexcept(f"Exception: {error}")
@@ -86,7 +89,7 @@ class OrganizerClient(cmd2.Cmd):
             info = ""
             for key, value in self.ecs_dict.items():
                 info += f"ecs: {key}, info: {value}\n"
-            self.poutput(info)
+            self.fancy_output(info)
         except Exception as error:
             self.pexcept(f"Exception: {error}")
 
@@ -124,7 +127,7 @@ class OrganizerClient(cmd2.Cmd):
                                                  f'federatedscope/main.py'
                                                  f' {command} > /dev/null '
                                                  f'2>&1 &')
-            self.poutput(f'{stdout}, {stderr}')
+            self.fancy_output(f'{stdout}, {stderr}')
         except Exception as error:
             self.pexcept(f"Exception: {error}")
 
@@ -138,7 +141,7 @@ class OrganizerClient(cmd2.Cmd):
             'Example:\n' \
             '   display_task\n'
         # TODO: add abort, check status, etc
-        self.poutput(self.task_dict)
+        self.fancy_output(self.task_dict)
 
     # ---------------------------------------------------------------------- #
     # Server related messages
@@ -160,10 +163,11 @@ class OrganizerClient(cmd2.Cmd):
             result = organizer.send_task('server.create_room', [command, psw])
             cnt = 0
             while (not result.ready()) and cnt < self.timeout:
-                self.poutput('Waiting for response... (will re-try in 1s)')
+                self.fancy_output(
+                    'Waiting for response... (will re-try in 1s)')
                 time.sleep(1)
                 cnt += 1
-            self.poutput(result.get(timeout=1))
+            self.fancy_output(result.get(timeout=1))
         except Exception as error:
             self.pexcept(f"Exception: {error}")
 
@@ -175,11 +179,12 @@ class OrganizerClient(cmd2.Cmd):
             '   update_room\n'
         try:
             global organizer
-            self.poutput('Forget all saved room due to `update_room`.')
+            self.fancy_output('Forget all saved room due to `update_room`.')
             result = organizer.send_task('server.display_room')
             cnt = 0
             while (not result.ready()) and cnt < self.timeout:
-                self.poutput('Waiting for response... (will re-try in 1s)')
+                self.fancy_output(
+                    'Waiting for response... (will re-try in 1s)')
                 time.sleep(1)
                 cnt += 1
             self.room_dict = result.get(timeout=1)
@@ -187,7 +192,7 @@ class OrganizerClient(cmd2.Cmd):
             for key, value in self.room_dict.items():
                 tmp = f"room_id: {key}, info: {value}\n"
                 info += tmp
-            self.poutput(info)
+            self.fancy_output(info)
         except Exception as error:
             self.pexcept(f"Exception: {error}")
 
@@ -210,19 +215,21 @@ class OrganizerClient(cmd2.Cmd):
             result = organizer.send_task('server.view_room', [room_id, psw])
             cnt = 0
             while (not result.ready()) and cnt < self.timeout:
-                self.poutput('Waiting for response... (will re-try in 1s)')
+                self.fancy_output(
+                    'Waiting for response... (will re-try in 1s)')
                 time.sleep(1)
                 cnt += 1
             info = result.get(timeout=1)
             if isinstance(info, dict):
                 self.room_dict[room_id] = info
-                self.poutput(f'Room {room_id} has been updated to joinable.')
+                self.fancy_output(
+                    f'Room {room_id} has been updated to joinable.')
                 if verbose == '1':
-                    self.poutput(info)
+                    self.fancy_output(info)
                 elif verbose == '2':
-                    self.poutput(self.room_dict)
+                    self.fancy_output(self.room_dict)
             else:
-                self.poutput(info)
+                self.fancy_output(info)
         except Exception as error:
             self.pexcept(f"Exception: {error}")
 
@@ -236,10 +243,10 @@ class OrganizerClient(cmd2.Cmd):
         result = organizer.send_task('server.shut_down')
         cnt = 0
         while (not result.ready()) and cnt < self.timeout:
-            self.poutput('Waiting for response... (will re-try in 1s)')
+            self.fancy_output('Waiting for response... (will re-try in 1s)')
             time.sleep(1)
             cnt += 1
-        self.poutput(result.get(timeout=1))
+        self.fancy_output(result.get(timeout=1))
         return True
 
 

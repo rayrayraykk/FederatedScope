@@ -124,7 +124,7 @@ class OrganizerClient(cmd2.Cmd):
                                                  f'federatedscope/main.py'
                                                  f' {command} > /dev/null '
                                                  f'2>&1 &')
-            self.poutput(stdout, stderr)
+            self.poutput(f'{stdout}, {stderr}')
         except Exception as error:
             self.pexcept(f"Exception: {error}")
 

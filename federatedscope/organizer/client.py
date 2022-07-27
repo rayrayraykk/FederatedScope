@@ -27,9 +27,9 @@ class OrganizerClient(cmd2.Cmd):
         )
 
         self.intro = style(
-            'Welcome to the FS organizer shell. Type help or '
-            '? to list commands.\n',
-            fg=Fg.RED,
+            'Welcome to the FS organizer shell. Type help or ? to list '
+            'commands.\n',
+            fg=Fg.BLUE,
             bg=Bg.WHITE,
             bold=True)
         self.prompt = 'FederatedScope>> '
@@ -42,7 +42,14 @@ class OrganizerClient(cmd2.Cmd):
     # ---------------------------------------------------------------------- #
     @cmd2.with_category(ECS_CATEGORY)
     def do_add_ecs(self, line):
-        'Add Ecs (ip, user, psw): add_ecs 172.X.X.X root 123'
+        'Usage: add_ecs ip user psw\n\n' \
+            'Add ECS to client control list\n\n' \
+            'required arguments:\n' \
+            '   ip, ip address 172.X.X.X\n' \
+            '   user, user name of ECS\n' \
+            '   psw, password of user\n\n' \
+            'Example:\n' \
+            '   add_ecs 172.X.X.X root 123\n'
         try:
             ip, user, psw = line.split(' ')
             key = f"{ip}"
@@ -55,7 +62,12 @@ class OrganizerClient(cmd2.Cmd):
 
     @cmd2.with_category(ECS_CATEGORY)
     def do_del_ecs(self, line):
-        'Delete Ecs (ip): del_ecs 172.X.X.X'
+        'Usage: del_ecs ip\n\n' \
+            'Delete ECS from client control list\n\n' \
+            'required arguments:\n' \
+            '   ip, ip address 172.X.X.X\n\n' \
+            'Example:\n' \
+            '   del_ecs 172.X.X.X\n'
         try:
             key = line
             print(f"Delete {key}: {self.ecs_dict[key]}.")
@@ -65,7 +77,10 @@ class OrganizerClient(cmd2.Cmd):
 
     @cmd2.with_category(ECS_CATEGORY)
     def do_display_ecs(self, line):
-        'Display all saved ECS: display_ecs'
+        'Usage: display_ecs' \
+            'Display saved ECS in client control list\n\n' \
+            'Example:\n' \
+            '   display_ecs\n'
         try:
             info = ""
             for key, value in self.ecs_dict.items():
@@ -76,8 +91,14 @@ class OrganizerClient(cmd2.Cmd):
 
     @cmd2.with_category(ECS_CATEGORY)
     def do_join_room(self, line):
-        'Let an ECS join a specific room (ip room_id other_opts): ' \
-            'join_room 172.X.X.X 0 device 0 distribute.data_idx 2 ...'
+        'Usage: join_room ip room_id other_opts\n\n' \
+            'Let an ECS join a specific room\n\n' \
+            'required arguments:\n' \
+            '   ip, ip address 172.X.X.X\n' \
+            '   room_id, room id joining \n' \
+            '   other_opts, other operations in FS\n\n' \
+            'Example:\n' \
+            '   join_room 172.X.X.X 0 device 0 distribute.data_idx 2 ...\n'
         try:
             line = line.split(' ')
             ip, room_id, opts = line[0], line[1], line[2:]
@@ -111,6 +132,10 @@ class OrganizerClient(cmd2.Cmd):
     # ---------------------------------------------------------------------- #
     @cmd2.with_category(TASK_CATEGORY)
     def do_display_task(self, line):
+        'Usage: display_task' \
+            'Display all running tasks in client task list\n\n' \
+            'Example:\n' \
+            '   display_task\n'
         # TODO: add abort, check status, etc
         print(self.task_dict)
 
@@ -119,9 +144,14 @@ class OrganizerClient(cmd2.Cmd):
     # ---------------------------------------------------------------------- #
     @cmd2.with_category(SEVER_CATEGORY)
     def do_create_room(self, line):
-        'Create FS room in server with specific command (command, psw): ' \
-            'create_room --cfg ../../federatedscope/example_configs' \
-            '/distributed_femnist_server.yaml 123'
+        'Usage: create_room command psw\n\n' \
+            'Create FS room in server with specific command\n\n' \
+            'required arguments:\n' \
+            '   command, extra command to launch FS\n' \
+            '   psw, password for room \n\n' \
+            'Example:\n' \
+            '   create_room --cfg ../../federatedscope/example_configs' \
+            '/distributed_femnist_server.yaml 12345\n'
         try:
             global organizer
             psw = line.split(' ')[-1]
@@ -138,7 +168,10 @@ class OrganizerClient(cmd2.Cmd):
 
     @cmd2.with_category(SEVER_CATEGORY)
     def do_update_room(self, line):
-        'Fetch all FS rooms from Lobby: update_room'
+        'Usage: update_room' \
+            'Fetch all FS rooms from Lobby (will forget all saved room)\n\n' \
+            'Example:\n' \
+            '   update_room\n'
         try:
             global organizer
             print('Forget all saved room due to `update_room`.')
@@ -159,10 +192,17 @@ class OrganizerClient(cmd2.Cmd):
 
     @cmd2.with_category(SEVER_CATEGORY)
     def do_view_room(self, line):
-        'View specific FS room (room_id, psw, verbose): view_room 0 123 0\n' \
-            'verbose 0: print no information\n' \
-            'verbose 1: print information of a specific room\n' \
-            'verbose 2: print information of all the rooms'
+        'Usage: view_room room_id psw verbose\n\n' \
+            'View specific FS room\n\n' \
+            'required arguments:\n' \
+            '   room_id, extra command to launch FS\n' \
+            '   psw, password for room \n' \
+            '   verbose,\n' \
+            '       0: print no information\n' \
+            '       1: print information of a specific room\n' \
+            '       2: print information of all the rooms\n\n' \
+            'Example:\n' \
+            '   view_room 0 12345 0\n'
         try:
             global organizer
             room_id, psw, verbose = line.split(' ')
@@ -187,7 +227,10 @@ class OrganizerClient(cmd2.Cmd):
 
     @cmd2.with_category(SEVER_CATEGORY)
     def do_shut_down(self, line):
-        'Shut down all rooms and quit: shut_down'
+        'Usage: shut_down' \
+            'Shut down all rooms and quit\n\n' \
+            'Example:\n' \
+            '   shut_down\n'
         global organizer
         result = organizer.send_task('server.shut_down')
         cnt = 0

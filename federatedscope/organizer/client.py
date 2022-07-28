@@ -39,7 +39,7 @@ class OrganizerClient(cmd2.Cmd):
         self.foreground_color = Fg.CYAN.name.lower()
 
     def fancy_output(self, out):
-        return self.poutput(style(out, fg=Fg.GREEN))
+        return self.poutput(style(out, fg=Fg.GREEN, bg=Bg.WHITE))
 
     # ---------------------------------------------------------------------- #
     # SSH Manager related
@@ -123,7 +123,7 @@ class OrganizerClient(cmd2.Cmd):
                 value = f'{i}'.replace(' ', '')
                 command += f' "{value}"'
             command = command[1:]
-            pid = ecs.lauch_task(command)
+            pid = ecs.launch_task(command)
             self.fancy_output(f'{ecs.ip}({pid}) launched,')
         except Exception as error:
             self.pexcept(f"Exception: {error}")

@@ -108,7 +108,7 @@ class SSHManager(object):
         stdout, _ = self._exec_python_cmd(f'nohup python '
                                           f'federatedscope/main.py {command} '
                                           f'> /dev/null 2>&1 & echo $!')
-        self.task.add(stdout)
+        self.tasks.add(stdout)
         return stdout
 
 

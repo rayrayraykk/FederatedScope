@@ -36,6 +36,7 @@ class OrganizerClient(cmd2.Cmd):
         self.prompt = 'FederatedScope>> '
         self.self_in_py = True
         self.default_category = 'Built-in Commands'
+        self.debug = True
         self.foreground_color = Fg.CYAN.name.lower()
 
     def fancy_output(self, out):
@@ -108,6 +109,8 @@ class OrganizerClient(cmd2.Cmd):
             line = line.split(' ')
             ip, room_id, opts = line[0], line[1], line[2:]
             ecs, room = self.ecs_dict[ip], self.room_dict[room_id]
+            if room['cfg'] == '******':
+                raise ValueError('Please view room before joining.')
             cfg = CN(room['cfg'])
 
             # Convert necessary configurations

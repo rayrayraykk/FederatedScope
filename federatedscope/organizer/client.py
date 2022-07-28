@@ -18,7 +18,7 @@ class OrganizerClient(cmd2.Cmd):
     TASK_CATEGORY = 'Task Related Commands'
 
     # Maintained several dict
-    ecs_dict, room_dict, task_dict = {}, {}, {}
+    ecs_dict, room_dict = {}, {}
     timeout = 10
 
     def __init__(self):
@@ -75,6 +75,7 @@ class OrganizerClient(cmd2.Cmd):
         try:
             key = line
             self.fancy_output(f"Delete {key}: {self.ecs_dict[key]}.")
+            # TODO: Del all task
             del self.ecs_dict[key]
         except Exception as error:
             self.pexcept(f"Exception: {error}")
@@ -122,12 +123,8 @@ class OrganizerClient(cmd2.Cmd):
                 value = f'{i}'.replace(' ', '')
                 command += f' "{value}"'
             command = command[1:]
-            # TODO: manage the process
-            stdout, stderr = ecs.exec_python_cmd(f'nohup python '
-                                                 f'federatedscope/main.py'
-                                                 f' {command} > /dev/null '
-                                                 f'2>&1 &')
-            self.fancy_output(f'{stdout}, {stderr}')
+            pid = ecs.lauch_task(command)
+            self.fancy_output(f'{ecs.ip}({pid}) launched,')
         except Exception as error:
             self.pexcept(f"Exception: {error}")
 
@@ -141,7 +138,9 @@ class OrganizerClient(cmd2.Cmd):
             'Example:\n' \
             '   display_task\n'
         # TODO: add abort, check status, etc
-        self.fancy_output(self.task_dict)
+        for i in self.ecs_dict:
+            self.fancy_output(f'{self.ecs_dict[i].ip}:'
+                              f' {self.ecs_dict[i].tasks}')
 
     # ---------------------------------------------------------------------- #
     # Server related messages

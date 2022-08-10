@@ -218,4 +218,9 @@ RUN conda install -y wandb -c conda-forge \
     && pip install grpcio grpcio-tools protobuf==3.19.4 setuptools==61.2.0  \
     && conda clean -a -y
     
+COPY ../../../../FederatedScope/  /usr/local/FederatedScope/
+
+RUN cd /usr/local/FederatedScope/ \
+    && pip install -e .
+    
 USER ${NB_UID}

@@ -19,7 +19,7 @@ class BaseDataTranslator(StandaloneDataDict):
         self.splitter = get_splitter(global_cfg)
         if package is not None:
             self.transform_funcs = get_transform(global_cfg, package)
-        datadict = self.process()
+        datadict = self.split_to_client()
         super(BaseDataTranslator, self).__init__(datadict, global_cfg)
 
     def split_train_val_test(self):
@@ -33,10 +33,6 @@ class BaseDataTranslator(StandaloneDataDict):
         return random_split(dataset, [train_size, val_size, test_size])
 
     def split_to_client(self):
-        data_dict = {
-            x: {}
-            for x in range(1, self.global_cfg.federate.client_num + 1)
-        }
         train, val, test = self.split_train_val_test()
 
         # Build data dict
@@ -56,10 +52,4 @@ class BaseDataTranslator(StandaloneDataDict):
                                               train=split_train[client_id - 1],
                                               val=split_val[client_id - 1],
                                               test=split_test[client_id - 1])
-
-        data_dict = {
-            x: ClientData(self.loader, )
-            for x in range(1, self.global_cfg.federate.client_num + 1)
-        }
-
         return data_dict

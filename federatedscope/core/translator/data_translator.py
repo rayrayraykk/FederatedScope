@@ -42,7 +42,7 @@ class BaseDataTranslator(StandaloneDataDict):
         """
         from torch.utils.data.dataset import random_split
 
-        dataset, splits = self.global_cfg.data.splits, self.dataset
+        dataset, splits = self.dataset, self.global_cfg.data.splits
         train_size = int(splits[0] * len(dataset))
         val_size = int(splits[1] * len(dataset))
         test_size = len(dataset) - train_size - val_size

@@ -4,9 +4,9 @@ import logging
 from random import shuffle
 
 import numpy as np
-from collections import defaultdict
 
 from federatedscope.core.auxiliaries.utils import setup_seed
+from federatedscope.core.interface.base_data import StandaloneDataDict
 
 import federatedscope.register as register
 
@@ -21,7 +21,6 @@ except ImportError as error:
 
 
 def load_toy_data(config=None):
-
     generate = config.federate.mode.lower() == 'standalone'
 
     def _generate_data(client_num=5,
@@ -131,7 +130,7 @@ def load_toy_data(config=None):
                          for k, v in data[key].items()
                          } if data[key] is not None else None
 
-    return data, config
+    return StandaloneDataDict(data, config), config
 
 
 def load_external_data(config=None):
@@ -401,13 +400,11 @@ def load_external_data(config=None):
         return data_dict
 
     def load_torchaudio_data(name, splits=None, config=None):
-        import torchaudio
 
         # dataset_func = getattr(import_module('torchaudio.datasets'), name)
         raise NotImplementedError
 
     def load_torch_geometric_data(name, splits=None, config=None):
-        import torch_geometric
 
         # dataset_func = getattr(import_module('torch_geometric.datasets'),
         # name)
@@ -600,7 +597,8 @@ def load_external_data(config=None):
                 train_labels) > 0:
             train_label_distribution = train_labels
 
-    return data_local_dict, modified_config
+    return StandaloneDataDict(data_local_dict, modified_config), \
+        modified_config
 
 
 def get_data(config):
@@ -673,7 +671,7 @@ def get_data(config):
             config.attack.trigger_type:
         import os
         import torch
-        from federatedscope.attack.auxiliary import\
+        from federatedscope.attack.auxiliary import \
             create_ardis_poisoned_dataset, create_ardis_test_dataset
         if not os.path.exists(config.attack.edge_path):
             os.makedirs(config.attack.edge_path)
@@ -690,8 +688,8 @@ def get_data(config):
                       "wb") as saved_data_file:
                 torch.save(poisoned_edgeset, saved_data_file)
 
-            with open(config.attack.edge_path+"ardis_test_dataset.pt", "wb") \
-                    as ardis_data_file:
+            with open(config.attack.edge_path + "ardis_test_dataset.pt",
+                      "wb") as ardis_data_file:
                 torch.save(ardis_test_dataset, ardis_data_file)
             logger.warning('please notice: downloading the poisoned dataset \
                 on cifar-10 from \
@@ -720,59 +718,3 @@ def get_data(config):
         return data[data_idx], config
 
     setup_seed(config.seed)
-
-
-def merge_data(all_data, merged_max_data_id, specified_dataset_name=None):
-    if specified_dataset_name is None:
-        dataset_names = list(all_data[1].keys())  # e.g., train, test, val
-    else:
-        if not isinstance(specified_dataset_name, list):
-            specified_dataset_name = [specified_dataset_name]
-        dataset_names = specified_dataset_name
-
-    import torch.utils.data
-    assert len(dataset_names) >= 1, \
-        "At least one sub-dataset is required in client 1"
-    data_name = "test" if "test" in dataset_names else dataset_names[0]
-    id_has_key = 1
-    while "test" not in all_data[id_has_key]:
-        id_has_key += 1
-        if len(all_data) <= id_has_key:
-            raise KeyError(f'All data do not key {data_name}.')
-    if isinstance(all_data[id_has_key][data_name], dict):
-        data_elem_names = list(
-            all_data[id_has_key][data_name].keys())  # e.g., x, y
-        merged_data = {name: defaultdict(list) for name in dataset_names}
-        for data_id in range(1, merged_max_data_id):
-            for d_name in dataset_names:
-                if d_name not in all_data[data_id]:
-                    continue
-                for elem_name in data_elem_names:
-                    merged_data[d_name][elem_name].append(
-                        all_data[data_id][d_name][elem_name])
-        for d_name in dataset_names:
-            for elem_name in data_elem_names:
-                merged_data[d_name][elem_name] = np.concatenate(
-                    merged_data[d_name][elem_name])
-    elif issubclass(type(all_data[id_has_key][data_name]),
-                    torch.utils.data.DataLoader):
-        merged_data = {
-            name: all_data[id_has_key][name]
-            for name in dataset_names
-        }
-        for data_id in range(1, merged_max_data_id):
-            if data_id == id_has_key:
-                continue
-            for d_name in dataset_names:
-                if d_name not in all_data[data_id]:
-                    continue
-                merged_data[d_name].dataset.extend(
-                    all_data[data_id][d_name].dataset)
-    else:
-        raise NotImplementedError(
-            "Un-supported type when merging data across different clients."
-            f"Your data type is {type(all_data[id_has_key][data_name])}. "
-            f"Currently we only support the following forms: "
-            " 1): {data_id: {train: {x:ndarray, y:ndarray}} }"
-            " 2): {data_id: {train: DataLoader }")
-    return merged_data

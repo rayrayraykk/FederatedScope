@@ -57,8 +57,8 @@ class BaseDataTranslator(StandaloneDataDict):
             datadict (dict): dict of `ClientData` with client_idx as key.
 
         """
-        train_label_distribution = [x[1] for x in train]
-        split_train = self.splitter(train, prior=train_label_distribution)
+        split_train = self.splitter(train)
+        train_label_distribution = [[j[1] for j in x] for x in split_train]
         split_val = self.splitter(val, prior=train_label_distribution)
         split_test = self.splitter(test, prior=train_label_distribution)
 
@@ -69,6 +69,8 @@ class BaseDataTranslator(StandaloneDataDict):
                 client_cfg = self.global_cfg.clone().defrost()
                 client_cfg.merge_from_other_cfg(
                     self.client_cfgs.get(f'client_{client_id}'))
+            else:
+                client_cfg = self.global_cfg
             datadict[client_id] = ClientData(self.loader,
                                              client_cfg,
                                              train=split_train[client_id - 1],

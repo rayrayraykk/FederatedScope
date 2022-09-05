@@ -62,7 +62,7 @@ class ClientData(dict):
         """
 
         Args:
-            loader: Dataloader class or dict
+            loader: Dataloader class or data dict which have been built
             client_cfg: client-specific CfgNode
             train: train dataset
             val: valid dataset

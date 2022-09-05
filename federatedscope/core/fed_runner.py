@@ -27,14 +27,14 @@ class FedRunner(object):
         client_class: The client class is used for instantiating a (
         customized) client.
         config: The configurations of the FL course.
-        client_config: The clients' configurations.
+        client_configs: The clients' configurations.
     """
     def __init__(self,
                  data,
                  server_class=Server,
                  client_class=Client,
                  config=None,
-                 client_config=None):
+                 client_configs=None):
         self.data = data
         self.server_class = server_class
         self.client_class = client_class
@@ -43,7 +43,7 @@ class FedRunner(object):
         if not config.is_ready_for_run:
             config.ready_for_run()
         self.cfg = config
-        self.client_cfg = client_config
+        self.client_cfgs = client_configs
 
         self.mode = self.cfg.federate.mode.lower()
         self.gpu_manager = GPUManager(gpu_available=self.cfg.use_gpu,
@@ -352,10 +352,10 @@ class FedRunner(object):
 
         if self.client_class:
             client_specific_config = self.cfg.clone()
-            if self.client_cfg:
+            if self.client_cfgs:
                 client_specific_config.defrost()
                 client_specific_config.merge_from_other_cfg(
-                    self.client_cfg.get('client_{}'.format(client_id)))
+                    self.client_cfgs.get('client_{}'.format(client_id)))
                 client_specific_config.freeze()
             client_device = self._server_device if \
                 self.cfg.federate.share_local_model else \

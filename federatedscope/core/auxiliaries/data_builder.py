@@ -7,6 +7,7 @@ import numpy as np
 
 from federatedscope.core.auxiliaries.utils import setup_seed
 from federatedscope.core.interface.base_data import StandaloneDataDict
+from federatedscope.translator import BaseDataTranslator
 
 import federatedscope.register as register
 
@@ -160,7 +161,6 @@ def load_external_data(config=None):
     import inspect
     from importlib import import_module
     from torch.utils.data import DataLoader
-    from federatedscope.core.auxiliaries.splitter_builder import get_splitter
     from federatedscope.core.auxiliaries.transform_builder import get_transform
 
     def get_func_args(func):
@@ -563,42 +563,12 @@ def load_external_data(config=None):
     name, package = modified_config.data.type.split('@')
 
     dataset = DATA_LOAD_FUNCS[package.lower()](name, splits, modified_config)
-    splitter = get_splitter(modified_config)
+    dataset = (dataset.get('train'), dataset.get('val'), dataset.get('test'))
 
-    data_local_dict = {
-        x: {}
-        for x in range(1, modified_config.federate.client_num + 1)
-    }
+    # Translate dataset to `StandaloneDataDict`
+    datadict = BaseDataTranslator(dataset, modified_config, DataLoader)
 
-    # Build dict of Dataloader
-    train_label_distribution = None
-    for split in dataset:
-        if dataset[split] is None:
-            continue
-        train_labels = list()
-        for i, ds in enumerate(
-                splitter(dataset[split], prior=train_label_distribution)):
-            labels = [x[1] for x in ds]
-            if split == 'train':
-                train_labels.append(labels)
-                data_local_dict[i + 1][split] = DataLoader(
-                    ds,
-                    batch_size=modified_config.data.batch_size,
-                    shuffle=True,
-                    num_workers=modified_config.data.num_workers)
-            else:
-                data_local_dict[i + 1][split] = DataLoader(
-                    ds,
-                    batch_size=modified_config.data.batch_size,
-                    shuffle=False,
-                    num_workers=modified_config.data.num_workers)
-
-        if modified_config.data.consistent_label_distribution and len(
-                train_labels) > 0:
-            train_label_distribution = train_labels
-
-    return StandaloneDataDict(data_local_dict, modified_config), \
-        modified_config
+    return datadict, modified_config
 
 
 def get_data(config):

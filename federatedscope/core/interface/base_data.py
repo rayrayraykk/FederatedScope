@@ -29,20 +29,20 @@ class StandaloneDataDict(dict):
             global_cfg: enable new config for `ClientData`
             client_cfg: enable new client-specific config for `ClientData`
         """
-        if self.cfg != global_cfg or self.client_cfgs != client_cfgs:
-            for client_id, client_data in self.items():
-                if isinstance(client_data, ClientData):
-                    if client_cfgs is not None:
-                        client_cfg = global_cfg.clone()
-                        client_cfg.merge_from_other_cfg(
-                            client_cfgs.get(f'client_{client_id}'))
-                    else:
-                        client_cfg = global_cfg
-                    client_data.setup(client_cfg)
+        self.cfg, self.client_cfgs = global_cfg, client_cfgs
+        for client_id, client_data in self.items():
+            if isinstance(client_data, ClientData):
+                if client_cfgs is not None:
+                    client_cfg = global_cfg.clone()
+                    client_cfg.merge_from_other_cfg(
+                        client_cfgs.get(f'client_{client_id}'))
                 else:
-                    logger.warning('`client_data` is subclass of '
-                                   '`ClientData`, and cannot resetup '
-                                   'Dataoader with new configs.')
+                    client_cfg = global_cfg
+                client_data.setup(client_cfg)
+            else:
+                logger.warning('`client_data` is not subclass of '
+                               '`ClientData`, and cannot resetup '
+                               'Dataoader with new configs.')
 
     def preprocess(self, datadict):
         """
@@ -93,15 +93,12 @@ class ClientData(dict):
             val: valid dataset
             test: test dataset
         """
-        if isinstance(loader, dict):
-            super(ClientData, self).__init__(loader)
-        else:
-            self.train = train
-            self.val = val
-            self.test = test
-            self.loader = loader
-            self.setup(client_cfg)
-            super(ClientData, self).__init__()
+        self.train = train
+        self.val = val
+        self.test = test
+        self.loader = loader
+        self.setup(client_cfg)
+        super(ClientData, self).__init__()
 
     def setup(self, new_client_cfg=None):
         """
@@ -112,9 +109,6 @@ class ClientData(dict):
         Returns:
             Status: indicate whether the client_cfg is updated
         """
-        if new_client_cfg == self.client_cfg:
-            return False
-
         self.client_cfg = new_client_cfg
         if self.train is not None:
             self['train'] = self.loader(

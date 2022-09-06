@@ -41,8 +41,8 @@ class StandaloneDataDict(dict):
                 client_data.setup(client_cfg)
             else:
                 logger.warning('`client_data` is not subclass of '
-                               '`ClientData`, and cannot resetup '
-                               'Dataoader with new configs.')
+                               '`ClientData`, and cannot re-setup '
+                               'DataLoader with new configs.')
 
     def preprocess(self, datadict):
         """

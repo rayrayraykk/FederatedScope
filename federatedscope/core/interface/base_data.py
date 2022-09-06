@@ -8,6 +8,8 @@ class StandaloneDataDict(dict):
     """
         `StandaloneDataDict` maintain several `ClientData`.
     """
+    client_cfgs = None
+
     def __init__(self, datadict, global_cfg):
         """
 
@@ -18,6 +20,29 @@ class StandaloneDataDict(dict):
         self.cfg = global_cfg
         datadict = self.preprocess(datadict)
         super(StandaloneDataDict, self).__init__(datadict)
+
+    def resetup(self, global_cfg, client_cfgs=None):
+        """
+        Resetup new configs for `ClientData`, which might be used in HPO.
+
+        Args:
+            global_cfg: enable new config for `ClientData`
+            client_cfg: enable new client-specific config for `ClientData`
+        """
+        if self.cfg != global_cfg or self.client_cfgs != client_cfgs:
+            for client_id, client_data in self.items():
+                if isinstance(client_data, ClientData):
+                    if client_cfgs is not None:
+                        client_cfg = global_cfg.clone()
+                        client_cfg.merge_from_other_cfg(
+                            client_cfgs.get(f'client_{client_id}'))
+                    else:
+                        client_cfg = global_cfg
+                    client_data.setup(client_cfg)
+                else:
+                    logger.warning('`client_data` is subclass of '
+                                   '`ClientData`, and cannot resetup '
+                                   'Dataoader with new configs.')
 
     def preprocess(self, datadict):
         """
@@ -75,10 +100,10 @@ class ClientData(dict):
             self.val = val
             self.test = test
             self.loader = loader
-            self._setup(client_cfg)
+            self.setup(client_cfg)
             super(ClientData, self).__init__()
 
-    def _setup(self, new_client_cfg=None):
+    def setup(self, new_client_cfg=None):
         """
 
         Args:

@@ -44,7 +44,7 @@ def raw2loader(raw_data, config=None):
     return sampler
 
 
-def load_linklevel_dataset(config=None):
+def load_linklevel_dataset(config=None, client_cfgs=None):
     r"""
     :returns:
         data_local_dict
@@ -88,9 +88,15 @@ def load_linklevel_dataset(config=None):
     # get local dataset
     data_local_dict = dict()
 
-    for client_idx in range(len(dataset)):
-        local_data = raw2loader(dataset[client_idx], config)
-        data_local_dict[client_idx + 1] = local_data
+    for client_idx in range(1, len(dataset) + 1):
+        if client_cfgs is not None:
+            client_cfg = config.clone()
+            client_cfg.merge_from_other_cfg(
+                client_cfgs.get(f'client_{client_idx}'))
+        else:
+            client_cfg = config
+        local_data = raw2loader(dataset[client_idx - 1], client_cfg)
+        data_local_dict[client_idx] = local_data
 
     if global_dataset is not None:
         # Recode train & valid & test mask for global data

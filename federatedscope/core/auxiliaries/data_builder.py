@@ -21,7 +21,7 @@ except ImportError as error:
         f'available.')
 
 
-def load_toy_data(config=None):
+def load_toy_data(config=None, client_cfgs=None):
     generate = config.federate.mode.lower() == 'standalone'
 
     def _generate_data(client_num=5,
@@ -134,7 +134,7 @@ def load_toy_data(config=None):
     return StandaloneDataDict(data, config), config
 
 
-def load_external_data(config=None):
+def load_external_data(config=None, client_cfgs=None):
     r""" Based on the configuration file, this function imports external
     datasets and applies train/valid/test splits and split by some specific
     `splitter` into the standard FederatedScope input data format.
@@ -566,12 +566,13 @@ def load_external_data(config=None):
     dataset = (dataset.get('train'), dataset.get('val'), dataset.get('test'))
 
     # Translate dataset to `StandaloneDataDict`
-    datadict = BaseDataTranslator(dataset, modified_config, DataLoader)
+    datadict = BaseDataTranslator(dataset, modified_config, DataLoader,
+                                  client_cfgs)
 
     return datadict, modified_config
 
 
-def get_data(config):
+def get_data(config, client_cfgs=None):
     """Instantiate the dataset and update the configuration accordingly if
     necessary.
     Arguments:
@@ -584,22 +585,22 @@ def get_data(config):
     # will restore the user-specified on after the generation
     setup_seed(12345)
     for func in register.data_dict.values():
-        data_and_config = func(config)
+        data_and_config = func(config, client_cfgs)
         if data_and_config is not None:
             return data_and_config
     if config.data.type.lower() == 'toy':
-        data, modified_config = load_toy_data(config)
+        data, modified_config = load_toy_data(config, client_cfgs)
     elif config.data.type.lower() == 'quadratic':
         from federatedscope.tabular.dataloader import load_quadratic_dataset
-        data, modified_config = load_quadratic_dataset(config)
+        data, modified_config = load_quadratic_dataset(config, client_cfgs)
     elif config.data.type.lower() in ['femnist', 'celeba']:
         from federatedscope.cv.dataloader import load_cv_dataset
-        data, modified_config = load_cv_dataset(config)
+        data, modified_config = load_cv_dataset(config, client_cfgs)
     elif config.data.type.lower() in [
             'shakespeare', 'twitter', 'subreddit', 'synthetic'
     ]:
         from federatedscope.nlp.dataloader import load_nlp_dataset
-        data, modified_config = load_nlp_dataset(config)
+        data, modified_config = load_nlp_dataset(config, client_cfgs)
     elif config.data.type.lower() in [
             'cora',
             'citeseer',
@@ -608,28 +609,28 @@ def get_data(config):
             'dblp_org',
     ] or config.data.type.lower().startswith('csbm'):
         from federatedscope.gfl.dataloader import load_nodelevel_dataset
-        data, modified_config = load_nodelevel_dataset(config)
+        data, modified_config = load_nodelevel_dataset(config, client_cfgs)
     elif config.data.type.lower() in ['ciao', 'epinions', 'fb15k-237', 'wn18']:
         from federatedscope.gfl.dataloader import load_linklevel_dataset
-        data, modified_config = load_linklevel_dataset(config)
+        data, modified_config = load_linklevel_dataset(config, client_cfgs)
     elif config.data.type.lower() in [
             'hiv', 'proteins', 'imdb-binary', 'bbbp', 'tox21', 'bace', 'sider',
             'clintox', 'esol', 'freesolv', 'lipo'
     ] or config.data.type.startswith('graph_multi_domain'):
         from federatedscope.gfl.dataloader import load_graphlevel_dataset
-        data, modified_config = load_graphlevel_dataset(config)
+        data, modified_config = load_graphlevel_dataset(config, client_cfgs)
     elif config.data.type.lower() == 'vertical_fl_data':
         from federatedscope.vertical_fl.dataloader import load_vertical_data
         data, modified_config = load_vertical_data(config, generate=True)
     elif 'movielens' in config.data.type.lower(
     ) or 'netflix' in config.data.type.lower():
         from federatedscope.mf.dataloader import load_mf_dataset
-        data, modified_config = load_mf_dataset(config)
+        data, modified_config = load_mf_dataset(config, client_cfgs)
     elif '@' in config.data.type.lower():
-        data, modified_config = load_external_data(config)
+        data, modified_config = load_external_data(config, client_cfgs)
     elif 'cikmcup' in config.data.type.lower():
         from federatedscope.gfl.dataset.cikm_cup import load_cikmcup_data
-        data, modified_config = load_cikmcup_data(config)
+        data, modified_config = load_cikmcup_data(config, client_cfgs)
     elif config.data.type is None or config.data.type == "":
         # The participant (only for server in this version) does not own data
         data = None

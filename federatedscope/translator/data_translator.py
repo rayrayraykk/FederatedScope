@@ -70,7 +70,7 @@ class BaseDataTranslator(StandaloneDataDict):
         datadict = {}
         for client_id in range(1, client_num + 1):
             if self.client_cfgs is not None:
-                client_cfg = self.global_cfg.clone().defrost()
+                client_cfg = self.global_cfg.clone()
                 client_cfg.merge_from_other_cfg(
                     self.client_cfgs.get(f'client_{client_id}'))
             else:

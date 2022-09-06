@@ -8,7 +8,7 @@ from federatedscope.core.interface.base_data import ClientData, \
     StandaloneDataDict
 
 
-def load_nlp_dataset(config=None):
+def load_nlp_dataset(config=None, client_cfgs=None):
     r"""
     return {
                 'client_id': {
@@ -51,12 +51,18 @@ def load_nlp_dataset(config=None):
 
     # get local dataset
     data_local_dict = dict()
-    for client_idx in range(client_num):
+    for client_idx in range(1, client_num + 1):
+        if client_cfgs is not None:
+            client_cfg = config.clone()
+            client_cfg.merge_from_other_cfg(
+                client_cfgs.get(f'client_{client_idx}'))
+        else:
+            client_cfg = config
         client_data = ClientData(DataLoader,
-                                 config,
-                                 train=dataset[client_idx].get('train'),
-                                 val=dataset[client_idx].get('val'),
-                                 test=dataset[client_idx].get('test'))
-        data_local_dict[client_idx + 1] = client_data
+                                 client_cfg,
+                                 train=dataset[client_idx - 1].get('train'),
+                                 val=dataset[client_idx - 1].get('val'),
+                                 test=dataset[client_idx - 1].get('test'))
+        data_local_dict[client_idx] = client_data
 
     return StandaloneDataDict(data_local_dict, config), config

@@ -1,6 +1,4 @@
-import abc
 from federatedscope.core.auxiliaries.splitter_builder import get_splitter
-from federatedscope.core.auxiliaries.transform_builder import get_transform
 from federatedscope.core.interface.base_data import ClientData, \
     StandaloneDataDict
 
@@ -28,8 +26,7 @@ class BaseDataTranslator(StandaloneDataDict):
 
     def split_train_val_test(self):
         """
-        Split dataset to train, val, test.
-        This method should be overridden.
+        Split dataset to train, val, test if not provided.
 
         Returns:
             split_data (List): List of split dataset, [train, val, test]
@@ -37,7 +34,7 @@ class BaseDataTranslator(StandaloneDataDict):
         """
         dataset, splits = self.dataset, self.global_cfg.data.splits
         if isinstance(dataset, tuple):
-            return dataset[0], dataset[1], dataset[2]
+            return [dataset[0], dataset[1], dataset[2]]
 
         from torch.utils.data.dataset import random_split
         train_size = int(splits[0] * len(dataset))

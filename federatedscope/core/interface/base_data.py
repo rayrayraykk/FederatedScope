@@ -109,6 +109,14 @@ class ClientData(dict):
         Returns:
             Status: indicate whether the client_cfg is updated
         """
+        # if `batch_size` or `shuffle` change, reinstantiate DataLoader
+        if self.client_cfg is not None:
+            if self.client_cfg.data.batch_size == \
+                    new_client_cfg.data.batch_size or \
+                    self.client_cfg.data.shuffle == \
+                    new_client_cfg.data.shuffle:
+                return False
+
         self.client_cfg = new_client_cfg
         if self.train is not None:
             self['train'] = self.loader(

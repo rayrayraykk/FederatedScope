@@ -317,6 +317,7 @@ def merge_data(all_data, merged_max_data_id, specified_dataset_name=None):
         dataset_names = specified_dataset_name
 
     import torch.utils.data
+    from federatedscope.core.interface.base_data import ClientData
     assert len(dataset_names) >= 1, \
         "At least one sub-dataset is required in client 1"
     data_name = "test" if "test" in dataset_names else dataset_names[0]
@@ -342,10 +343,7 @@ def merge_data(all_data, merged_max_data_id, specified_dataset_name=None):
                     merged_data[d_name][elem_name])
     elif issubclass(type(all_data[id_has_key][data_name]),
                     torch.utils.data.DataLoader):
-        merged_data = {
-            name: all_data[id_has_key][name]
-            for name in dataset_names
-        }
+        merged_data = all_data[id_has_key]
         for data_id in range(1, merged_max_data_id):
             if data_id == id_has_key:
                 continue

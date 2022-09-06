@@ -6,35 +6,26 @@ from federatedscope.core.interface.base_data import ClientData, \
 
 
 class BaseDataTranslator(StandaloneDataDict):
-    def __init__(self,
-                 dataset,
-                 global_cfg,
-                 loader,
-                 client_cfgs=None,
-                 package=None):
+    def __init__(self, dataset, global_cfg, loader, client_cfgs=None):
         """
 
         Args:
-            dataset: `torch.utils.data.Dataset` or `List` of (feature, label)
+            dataset: `torch.utils.data.Dataset`, `List` of (feature, label)
+                or split dataset tuple of (train, val, test)
             global_cfg: global CfgNode
             loader: `torch.utils.data.DataLoader` or subclass of it
             client_cfgs: client cfg `Dict`
-            package: package name to get transform functions
         """
         self.dataset = dataset
         self.loader = loader
         self.global_cfg = global_cfg.clone()
         self.client_cfgs = client_cfgs
-
         self.splitter = get_splitter(global_cfg)
-        if package is not None:
-            self.transform_funcs = get_transform(global_cfg, package)
 
-        train, val, test = self.split_train_val_test()
+        train, val, test = self.split_train_val_test(dataset)
         datadict = self.split_to_client(train, val, test)
         super(BaseDataTranslator, self).__init__(datadict, global_cfg)
 
-    @abc.abstractmethod
     def split_train_val_test(self):
         """
         Split dataset to train, val, test.
@@ -44,9 +35,11 @@ class BaseDataTranslator(StandaloneDataDict):
             split_data (List): List of split dataset, [train, val, test]
 
         """
-        from torch.utils.data.dataset import random_split
-
         dataset, splits = self.dataset, self.global_cfg.data.splits
+        if isinstance(dataset, tuple):
+            return dataset[0], dataset[1], dataset[2]
+
+        from torch.utils.data.dataset import random_split
         train_size = int(splits[0] * len(dataset))
         val_size = int(splits[1] * len(dataset))
         test_size = len(dataset) - train_size - val_size
@@ -61,14 +54,24 @@ class BaseDataTranslator(StandaloneDataDict):
             datadict (dict): dict of `ClientData` with client_idx as key.
 
         """
-        split_train = self.splitter(train)
-        train_label_distribution = [[j[1] for j in x] for x in split_train]
-        split_val = self.splitter(val, prior=train_label_distribution)
-        split_test = self.splitter(test, prior=train_label_distribution)
 
-        # Build data dict
+        # Initialization
+        client_num = self.global_cfg.federate.client_num
+        split_train, split_val, split_test = [[None] * client_num] * 3
+        train_label_distribution = None
+
+        # Split train/val/test to client
+        if len(train) > 0:
+            split_train = self.splitter(train)
+            train_label_distribution = [[j[1] for j in x] for x in split_train]
+        if len(val) > 0:
+            split_val = self.splitter(val, prior=train_label_distribution)
+        if len(test) > 0:
+            split_test = self.splitter(test, prior=train_label_distribution)
+
+        # Build data dict with `ClientData`
         datadict = {}
-        for client_id in range(1, self.global_cfg.federate.client_num + 1):
+        for client_id in range(1, client_num + 1):
             if self.client_cfgs is not None:
                 client_cfg = self.global_cfg.clone().defrost()
                 client_cfg.merge_from_other_cfg(

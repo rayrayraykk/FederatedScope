@@ -4,19 +4,23 @@ from federatedscope.core.auxiliaries.transform_builder import get_transform
 from federatedscope.core.interface.base_data import ClientData, \
     StandaloneDataDict
 
-try:
-    from torch.utils.data import DataLoader
-except ImportError:
-    DataLoader = None
-
 
 class BaseDataTranslator(StandaloneDataDict):
     def __init__(self,
                  dataset,
                  global_cfg,
+                 loader,
                  client_cfgs=None,
-                 loader=DataLoader,
                  package=None):
+        """
+
+        Args:
+            dataset: `torch.utils.data.Dataset` or `List` of (feature, label)
+            global_cfg: global CfgNode
+            loader: `torch.utils.data.DataLoader` or subclass of it
+            client_cfgs: client cfg `Dict`
+            package: package name to get transform functions
+        """
         self.dataset = dataset
         self.loader = loader
         self.global_cfg = global_cfg.clone()

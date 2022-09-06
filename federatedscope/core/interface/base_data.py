@@ -12,7 +12,7 @@ class StandaloneDataDict(dict):
         """
 
         Args:
-            datadict: dict with `client_id` as key,  `ClientData` as value.
+            datadict: `Dict` with `client_id` as key,  `ClientData` as value.
             global_cfg: global CfgNode
         """
         self.cfg = global_cfg

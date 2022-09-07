@@ -171,7 +171,7 @@ def eval_in_fs(cfg, config, budget, client_cfgs=None):
                            server_class=get_server_cls(trial_cfg),
                            client_class=get_client_cls(trial_cfg),
                            config=trial_cfg.clone(),
-                           client_cfg=client_cfgs)
+                           client_config=client_cfgs)
     results = Fed_runner.run()
     key1, key2 = trial_cfg.hpo.metric.split('.')
     return results[key1][key2]

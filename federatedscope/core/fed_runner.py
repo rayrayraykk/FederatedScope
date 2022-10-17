@@ -79,6 +79,54 @@ class BaseRunner(object):
         # Set up for Runner
         self._set_up()
 
+    @abc.abstractmethod
+    def _set_up(self):
+        """
+        Set up client and/or server
+        """
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def _get_server_args(self, resource_info, client_resource_info):
+        """
+        Get the args for instantiating the server.
+
+        Args:
+            resource_info: information of resource
+            client_resource_info: information of client's resource
+
+        Returns:
+            server_data: None or data which server holds.
+            model: model to be aggregated.
+            kw: kwargs dict to instantiate the server.
+        """
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def _get_client_args(self, client_id, resource_info):
+        """
+        Get the args for instantiating the server.
+
+        Args:
+            client_id: ID of client
+            resource_info: information of resource
+
+        Returns:
+            client_data: data which client holds.
+            kw: kwargs dict to instantiate the client.
+        """
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def run(self):
+        """
+        Launch the worker
+
+        Returns:
+            best_results: best results during the FL course
+        """
+        raise NotImplementedError
+
     def _setup_server(self, resource_info=None, client_resource_info=None):
         """
         Set up the server
@@ -147,22 +195,6 @@ class BaseRunner(object):
 
         return client
 
-    @abc.abstractmethod
-    def _set_up(self):
-        raise NotImplementedError
-
-    @abc.abstractmethod
-    def _get_server_args(self, resource_info, client_resource_info):
-        raise NotImplementedError
-
-    @abc.abstractmethod
-    def _get_client_args(self, client_id, resource_info):
-        raise NotImplementedError
-
-    @abc.abstractmethod
-    def run(self):
-        raise NotImplementedError
-
 
 class StandaloneRunner(BaseRunner):
     def _set_up(self):
@@ -172,7 +204,6 @@ class StandaloneRunner(BaseRunner):
         self.shared_comm_queue = deque()
         # in standalone mode, by default, we print the trainer info only
         # once for better logs readability
-
         if self.cfg.backend == 'torch':
             import torch
             torch.set_num_threads(1)

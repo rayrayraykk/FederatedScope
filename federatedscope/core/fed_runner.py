@@ -263,7 +263,8 @@ class StandaloneRunner(BaseRunner):
 
         # Show meta_info of trainer
         trainer_representative = self.client[1].trainer
-        if trainer_representative is not None:
+        if trainer_representative is not None and hasattr(
+                trainer_representative, 'print_trainer_meta_info'):
             trainer_representative.print_trainer_meta_info()
 
     def _get_server_args(self, resource_info=None, client_resource_info=None):

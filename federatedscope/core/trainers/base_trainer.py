@@ -24,6 +24,5 @@ class BaseTrainer(abc.ABC):
     def get_model_para(self):
         raise NotImplementedError
 
-    @abc.abstractmethod
     def print_trainer_meta_info(self):
-        raise NotImplementedError
+        pass

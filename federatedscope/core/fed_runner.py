@@ -268,65 +268,30 @@ class StandaloneRunner(BaseRunner):
             self.client[each_client].join_in()
 
         if self.cfg.federate.online_aggr:
-            # any broadcast operation would be executed client-by-client
+            # Run for online_aggr.
+            # Any broadcast operation would be executed client-by-client
             # to avoid the existence of #clients messages at the same time.
             # currently, only consider centralized topology
-            self._run_simulation_online()
-        else:
-            self._run_simulation()
-        self.server._monitor.finish_fed_runner(fl_mode=self.mode)
-        return self.server.best_results
+            def is_broadcast(msg):
+                return len(msg.receiver) >= 1 and msg.sender == 0
 
-    def _run_simulation(self):
-        server_msg_cache = list()
-        while True:
-            if len(self.shared_comm_queue) > 0:
-                msg = self.shared_comm_queue.popleft()
-                if msg.receiver == [self.server_id]:
-                    # For the server, move the received message to a
-                    # cache for reordering the messages according to
-                    # the timestamps
-                    heapq.heappush(server_msg_cache, msg)
-                else:
-                    self._handle_msg(msg)
-            elif len(server_msg_cache) > 0:
-                msg = heapq.heappop(server_msg_cache)
-                if self.cfg.asyn.use and self.cfg.asyn.aggregator \
-                        == 'time_up':
-                    # When the timestamp of the received message beyond
-                    # the deadline for the currency round, trigger the
-                    # time up event first and push the message back to
-                    # the cache
-                    if self.server.trigger_for_time_up(msg.timestamp):
-                        heapq.heappush(server_msg_cache, msg)
+            cached_bc_msgs = []
+            cur_idx = 0
+            while True:
+                if len(self.shared_comm_queue) > 0:
+                    msg = self.shared_comm_queue.popleft()
+                    if is_broadcast(msg):
+                        cached_bc_msgs.append(msg)
+                        # assume there is at least one client
+                        msg = cached_bc_msgs[0]
+                        self._handle_msg(msg, rcv=msg.receiver[cur_idx])
+                        cur_idx += 1
+                        if cur_idx >= len(msg.receiver):
+                            del cached_bc_msgs[0]
+                            cur_idx = 0
                     else:
                         self._handle_msg(msg)
-                else:
-                    self._handle_msg(msg)
-            else:
-                if self.cfg.asyn.use and self.cfg.asyn.aggregator \
-                        == 'time_up':
-                    self.server.trigger_for_time_up()
-                    if len(self.shared_comm_queue) == 0 and \
-                            len(server_msg_cache) == 0:
-                        break
-                else:
-                    # terminate when shared_comm_queue and
-                    # server_msg_cache are all empty
-                    break
-
-    def _run_simulation_online(self):
-        def is_broadcast(msg):
-            return len(msg.receiver) >= 1 and msg.sender == 0
-
-        cached_bc_msgs = []
-        cur_idx = 0
-        while True:
-            if len(self.shared_comm_queue) > 0:
-                msg = self.shared_comm_queue.popleft()
-                if is_broadcast(msg):
-                    cached_bc_msgs.append(msg)
-                    # assume there is at least one client
+                elif len(cached_bc_msgs) > 0:
                     msg = cached_bc_msgs[0]
                     self._handle_msg(msg, rcv=msg.receiver[cur_idx])
                     cur_idx += 1
@@ -334,17 +299,48 @@ class StandaloneRunner(BaseRunner):
                         del cached_bc_msgs[0]
                         cur_idx = 0
                 else:
-                    self._handle_msg(msg)
-            elif len(cached_bc_msgs) > 0:
-                msg = cached_bc_msgs[0]
-                self._handle_msg(msg, rcv=msg.receiver[cur_idx])
-                cur_idx += 1
-                if cur_idx >= len(msg.receiver):
-                    del cached_bc_msgs[0]
-                    cur_idx = 0
-            else:
-                # finished
-                break
+                    # finished
+                    break
+        else:
+            # Run for simulation.
+            server_msg_cache = list()
+            while True:
+                if len(self.shared_comm_queue) > 0:
+                    msg = self.shared_comm_queue.popleft()
+                    if msg.receiver == [self.server_id]:
+                        # For the server, move the received message to a
+                        # cache for reordering the messages according to
+                        # the timestamps
+                        heapq.heappush(server_msg_cache, msg)
+                    else:
+                        self._handle_msg(msg)
+                elif len(server_msg_cache) > 0:
+                    msg = heapq.heappop(server_msg_cache)
+                    if self.cfg.asyn.use and self.cfg.asyn.aggregator \
+                            == 'time_up':
+                        # When the timestamp of the received message beyond
+                        # the deadline for the currency round, trigger the
+                        # time up event first and push the message back to
+                        # the cache
+                        if self.server.trigger_for_time_up(msg.timestamp):
+                            heapq.heappush(server_msg_cache, msg)
+                        else:
+                            self._handle_msg(msg)
+                    else:
+                        self._handle_msg(msg)
+                else:
+                    if self.cfg.asyn.use and self.cfg.asyn.aggregator \
+                            == 'time_up':
+                        self.server.trigger_for_time_up()
+                        if len(self.shared_comm_queue) == 0 and \
+                                len(server_msg_cache) == 0:
+                            break
+                    else:
+                        # terminate when shared_comm_queue and
+                        # server_msg_cache are all empty
+                        break
+        self.server._monitor.finish_fed_runner(fl_mode=self.mode)
+        return self.server.best_results
 
     def _handle_msg(self, msg, rcv=-1):
         """

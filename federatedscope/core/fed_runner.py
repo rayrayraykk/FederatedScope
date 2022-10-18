@@ -15,6 +15,7 @@ logger = logging.getLogger(__name__)
 
 
 def get_runner(data, server_class, client_class, config, client_configs):
+    # Instantiate a Runner based on a configuration file
     mode = config.federate.mode.lower()
     runner_dict = {
         'standalone': StandaloneRunner,
@@ -201,9 +202,9 @@ class StandaloneRunner(BaseRunner):
         """
         To set up server and client for standalone mode.
         """
+        self.is_run_online = True if self.cfg.federate.online_aggr else False
         self.shared_comm_queue = deque()
-        # in standalone mode, by default, we print the trainer info only
-        # once for better logs readability
+
         if self.cfg.backend == 'torch':
             import torch
             torch.set_num_threads(1)
@@ -261,7 +262,8 @@ class StandaloneRunner(BaseRunner):
                 resource_info=client_resource_info[client_id - 1]
                 if client_resource_info is not None else None)
 
-        # Show meta_info of trainer
+        # in standalone mode, by default, we print the trainer info only
+        # once for better logs readability
         trainer_representative = self.client[1].trainer
         if trainer_representative is not None and hasattr(
                 trainer_representative, 'print_trainer_meta_info'):
@@ -297,80 +299,14 @@ class StandaloneRunner(BaseRunner):
 
     def run(self):
         for each_client in self.client:
+            # Launch each client
             self.client[each_client].join_in()
 
-        if self.cfg.federate.online_aggr:
-            # Run for online_aggr.
-            # Any broadcast operation would be executed client-by-client
-            # to avoid the existence of #clients messages at the same time.
-            # currently, only consider centralized topology
-            def is_broadcast(msg):
-                return len(msg.receiver) >= 1 and msg.sender == 0
-
-            cached_bc_msgs = []
-            cur_idx = 0
-            while True:
-                if len(self.shared_comm_queue) > 0:
-                    msg = self.shared_comm_queue.popleft()
-                    if is_broadcast(msg):
-                        cached_bc_msgs.append(msg)
-                        # assume there is at least one client
-                        msg = cached_bc_msgs[0]
-                        self._handle_msg(msg, rcv=msg.receiver[cur_idx])
-                        cur_idx += 1
-                        if cur_idx >= len(msg.receiver):
-                            del cached_bc_msgs[0]
-                            cur_idx = 0
-                    else:
-                        self._handle_msg(msg)
-                elif len(cached_bc_msgs) > 0:
-                    msg = cached_bc_msgs[0]
-                    self._handle_msg(msg, rcv=msg.receiver[cur_idx])
-                    cur_idx += 1
-                    if cur_idx >= len(msg.receiver):
-                        del cached_bc_msgs[0]
-                        cur_idx = 0
-                else:
-                    # finished
-                    break
+        if self.is_run_online:
+            self._run_simulation_online()
         else:
-            # Run for simulation.
-            server_msg_cache = list()
-            while True:
-                if len(self.shared_comm_queue) > 0:
-                    msg = self.shared_comm_queue.popleft()
-                    if msg.receiver == [self.server_id]:
-                        # For the server, move the received message to a
-                        # cache for reordering the messages according to
-                        # the timestamps
-                        heapq.heappush(server_msg_cache, msg)
-                    else:
-                        self._handle_msg(msg)
-                elif len(server_msg_cache) > 0:
-                    msg = heapq.heappop(server_msg_cache)
-                    if self.cfg.asyn.use and self.cfg.asyn.aggregator \
-                            == 'time_up':
-                        # When the timestamp of the received message beyond
-                        # the deadline for the currency round, trigger the
-                        # time up event first and push the message back to
-                        # the cache
-                        if self.server.trigger_for_time_up(msg.timestamp):
-                            heapq.heappush(server_msg_cache, msg)
-                        else:
-                            self._handle_msg(msg)
-                    else:
-                        self._handle_msg(msg)
-                else:
-                    if self.cfg.asyn.use and self.cfg.asyn.aggregator \
-                            == 'time_up':
-                        self.server.trigger_for_time_up()
-                        if len(self.shared_comm_queue) == 0 and \
-                                len(server_msg_cache) == 0:
-                            break
-                    else:
-                        # terminate when shared_comm_queue and
-                        # server_msg_cache are all empty
-                        break
+            self._run_simulation()
+        # TODO: avoid using private attr
         self.server._monitor.finish_fed_runner(fl_mode=self.mode)
         return self.server.best_results
 
@@ -396,6 +332,84 @@ class StandaloneRunner(BaseRunner):
                 self.client[each_receiver].msg_handlers[msg.msg_type](msg)
                 self.client[each_receiver]._monitor.track_download_bytes(
                     download_bytes)
+
+    def _run_simulation_online(self):
+        """
+        Run for online aggregation.
+        Any broadcast operation would be executed client-by-clien to avoid
+        the existence of #clients messages at the same time. Currently,
+        only consider centralized topology
+        """
+        def is_broadcast(msg):
+            return len(msg.receiver) >= 1 and msg.sender == 0
+
+        cached_bc_msgs = []
+        cur_idx = 0
+        while True:
+            if len(self.shared_comm_queue) > 0:
+                msg = self.shared_comm_queue.popleft()
+                if is_broadcast(msg):
+                    cached_bc_msgs.append(msg)
+                    # assume there is at least one client
+                    msg = cached_bc_msgs[0]
+                    self._handle_msg(msg, rcv=msg.receiver[cur_idx])
+                    cur_idx += 1
+                    if cur_idx >= len(msg.receiver):
+                        del cached_bc_msgs[0]
+                        cur_idx = 0
+                else:
+                    self._handle_msg(msg)
+            elif len(cached_bc_msgs) > 0:
+                msg = cached_bc_msgs[0]
+                self._handle_msg(msg, rcv=msg.receiver[cur_idx])
+                cur_idx += 1
+                if cur_idx >= len(msg.receiver):
+                    del cached_bc_msgs[0]
+                    cur_idx = 0
+            else:
+                # finished
+                break
+
+    def _run_simulation(self):
+        """
+        Run for standalone simulation (W/O online aggr)
+        """
+        server_msg_cache = list()
+        while True:
+            if len(self.shared_comm_queue) > 0:
+                msg = self.shared_comm_queue.popleft()
+                if msg.receiver == [self.server_id]:
+                    # For the server, move the received message to a
+                    # cache for reordering the messages according to
+                    # the timestamps
+                    heapq.heappush(server_msg_cache, msg)
+                else:
+                    self._handle_msg(msg)
+            elif len(server_msg_cache) > 0:
+                msg = heapq.heappop(server_msg_cache)
+                if self.cfg.asyn.use and self.cfg.asyn.aggregator \
+                        == 'time_up':
+                    # When the timestamp of the received message beyond
+                    # the deadline for the currency round, trigger the
+                    # time up event first and push the message back to
+                    # the cache
+                    if self.server.trigger_for_time_up(msg.timestamp):
+                        heapq.heappush(server_msg_cache, msg)
+                    else:
+                        self._handle_msg(msg)
+                else:
+                    self._handle_msg(msg)
+            else:
+                if self.cfg.asyn.use and self.cfg.asyn.aggregator \
+                        == 'time_up':
+                    self.server.trigger_for_time_up()
+                    if len(self.shared_comm_queue) == 0 and \
+                            len(server_msg_cache) == 0:
+                        break
+                else:
+                    # terminate when shared_comm_queue and
+                    # server_msg_cache are all empty
+                    break
 
 
 class DistributedRunner(BaseRunner):

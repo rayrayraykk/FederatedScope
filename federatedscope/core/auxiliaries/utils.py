@@ -1,5 +1,3 @@
-import collections
-import json
 import logging
 import math
 import os
@@ -12,15 +10,17 @@ import pickle
 
 import numpy as np
 
-# Blind torch
 try:
     import torch
-    import torchvision
     import torch.distributions as distributions
 except ImportError:
     torch = None
-    torchvision = None
     distributions = None
+
+try:
+    import tensorflow as tf
+except ImportError:
+    tf = None
 
 logger = logging.getLogger(__name__)
 
@@ -32,69 +32,8 @@ def setup_seed(seed):
         torch.manual_seed(seed)
         torch.cuda.manual_seed_all(seed)
         torch.backends.cudnn.deterministic = True
-    else:
-        import tensorflow as tf
+    if tf is not None:
         tf.set_random_seed(seed)
-
-
-def get_dataset(type, root, transform, target_transform, download=True):
-    if isinstance(type, str):
-        if hasattr(torchvision.datasets, type):
-            return getattr(torchvision.datasets,
-                           type)(root=root,
-                                 transform=transform,
-                                 target_transform=target_transform,
-                                 download=download)
-        else:
-            raise NotImplementedError('Dataset {} not implement'.format(type))
-    else:
-        raise TypeError()
-
-
-def save_local_data(dir_path,
-                    train_data=None,
-                    train_targets=None,
-                    test_data=None,
-                    test_targets=None,
-                    val_data=None,
-                    val_targets=None):
-    r"""
-    https://github.com/omarfoq/FedEM/blob/main/data/femnist/generate_data.py
-
-    save (`train_data`, `train_targets`) in {dir_path}/train.pt,
-    (`val_data`, `val_targets`) in {dir_path}/val.pt
-    and (`test_data`, `test_targets`) in {dir_path}/test.pt
-    :param dir_path:
-    :param train_data:
-    :param train_targets:
-    :param test_data:
-    :param test_targets:
-    :param val_data:
-    :param val_targets
-    """
-    if (train_data is not None) and (train_targets is not None):
-        torch.save((train_data, train_targets), osp.join(dir_path, "train.pt"))
-
-    if (test_data is not None) and (test_targets is not None):
-        torch.save((test_data, test_targets), osp.join(dir_path, "test.pt"))
-
-    if (val_data is not None) and (val_targets is not None):
-        torch.save((val_data, val_targets), osp.join(dir_path, "val.pt"))
-
-
-def filter_by_specified_keywords(param_name, filter_keywords):
-    '''
-    Arguments:
-        param_name (str): parameter name.
-    Returns:
-        preserve (bool): whether to preserve this parameter.
-    '''
-    preserve = True
-    for kw in filter_keywords:
-        if kw in param_name:
-            preserve = False
-            break
-    return preserve
 
 
 def get_random(type, sample_shape, params, device):
@@ -225,21 +164,6 @@ class Timeout(object):
 
     def exceed_max_failure(self, num_failure):
         return num_failure > self.max_failure
-
-
-def format_log_hooks(hooks_set):
-    def format_dict(target_dict):
-        print_dict = collections.defaultdict(list)
-        for k, v in target_dict.items():
-            for element in v:
-                print_dict[k].append(element.__name__)
-        return print_dict
-
-    if isinstance(hooks_set, list):
-        print_obj = [format_dict(_) for _ in hooks_set]
-    elif isinstance(hooks_set, dict):
-        print_obj = format_dict(hooks_set)
-    return json.dumps(print_obj, indent=2).replace('\n', '\n\t')
 
 
 def get_resource_info(filename):

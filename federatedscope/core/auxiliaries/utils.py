@@ -3,9 +3,6 @@ import math
 import os
 import random
 import signal
-import ssl
-import urllib.request
-from os import path as osp
 import pickle
 
 import numpy as np
@@ -77,37 +74,6 @@ def merge_dict(dict1, dict2):
             else:
                 dict1[key].append(value)
     return dict1
-
-
-def download_url(url: str, folder='folder'):
-    r"""Downloads the content of an url to a folder.
-
-    Modified from `https://github.com/pyg-team/pytorch_geometric/blob/master
-    /torch_geometric/data/download.py`
-
-    Args:
-        url (string): The url of target file.
-        folder (string): The target folder.
-
-    Returns:
-        path (string): File path of downloaded files.
-    """
-
-    file = url.rpartition('/')[2]
-    file = file if file[0] == '?' else file.split('?')[0]
-    path = osp.join(folder, file)
-    if osp.exists(path):
-        logger.info(f'File {file} exists, use existing file.')
-        return path
-
-    logger.info(f'Downloading {url}')
-    os.makedirs(folder, exist_ok=True)
-    ctx = ssl._create_unverified_context()
-    data = urllib.request.urlopen(url, context=ctx)
-    with open(path, 'wb') as f:
-        f.write(data.read())
-
-    return path
 
 
 def move_to(obj, device):

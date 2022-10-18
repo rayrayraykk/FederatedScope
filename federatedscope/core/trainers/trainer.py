@@ -2,27 +2,18 @@ import collections
 import copy
 import logging
 
-from federatedscope.core.auxiliaries.enums import MODE
-from federatedscope.core.auxiliaries.enums import LIFECYCLE
+from federatedscope.core.trainers.base_trainer import BaseTrainer
+from federatedscope.core.auxiliaries.enums import MODE, LIFECYCLE
 from federatedscope.core.auxiliaries.decorators import use_diff
-from federatedscope.core.auxiliaries.utils import format_log_hooks
-from federatedscope.core.auxiliaries.utils import filter_by_specified_keywords
-from federatedscope.core.trainers.context import Context
-from federatedscope.core.trainers.context import CtxVar
-from federatedscope.core.trainers.context import lifecycle
-
-try:
-    import torch
-    from torch.utils.data import DataLoader, Dataset
-except ImportError:
-    torch = None
-    DataLoader = None
-    Dataset = None
+from federatedscope.core.trainers.utils import format_log_hooks, \
+    filter_by_specified_keywords
+from federatedscope.core.trainers.context import Context, CtxVar, lifecycle
+from federatedscope.core.monitors.metric_calculator import MetricCalculator
 
 logger = logging.getLogger(__name__)
 
 
-class Trainer(object):
+class Trainer(BaseTrainer):
     """
         Register, organize and run the train/test/val procedures
     """

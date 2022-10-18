@@ -2,6 +2,7 @@ import logging
 import importlib
 
 import federatedscope.register as register
+from federatedscope.core.trainers import Trainer
 
 logger = logging.getLogger(__name__)
 
@@ -106,6 +107,11 @@ def get_trainer(model=None,
         if trainer is None:
             raise ValueError('Trainer {} is not provided'.format(
                 config.trainer.type))
+
+    if not issubclass(trainer, Trainer):
+        logger.warning(f'When using {trainer}, trainer plug-in cannot be '
+                       f'enabled. Please use {Trainer} instead.')
+        return trainer
 
     # differential privacy plug-in
     if config.nbafl.use:

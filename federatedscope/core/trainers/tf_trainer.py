@@ -1,4 +1,7 @@
-import tensorflow as tf
+try:
+    import tensorflow as tf
+except ImportError:
+    tf = None
 
 import numpy as np
 from federatedscope.core.trainers import Trainer
@@ -23,9 +26,8 @@ class GeneralTFTrainer(Trainer):
         return num_samples, self.ctx.model.state_dict(), self.ctx.eval_metrics
 
     def parse_data(self, data):
-        """Populate "{}_data", "{}_loader" and "num_{}_data" for different
-        modes
-
+        """
+        Populate "{}_data", "{}_loader" and "num_{}_data" for different modes
         """
         init_dict = dict()
         if isinstance(data, dict):

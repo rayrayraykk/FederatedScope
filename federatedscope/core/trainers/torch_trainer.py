@@ -236,6 +236,7 @@ class GeneralTorchTrainer(Trainer):
                         "please customize the count hook")
                 ctx.monitor.track_avg_flops(flops_one_batch, ctx.batch_size)
             except:
+                # Raise warning at the first failure
                 logger.warning(
                     "current flop count implementation is for general "
                     "trainer case: "
@@ -243,8 +244,7 @@ class GeneralTorchTrainer(Trainer):
                     "2) the ctx.model takes only x as input."
                     "Please check the forward format or implement your own "
                     "flop_count function")
-                ctx.monitor.flops_per_sample = -1  # warning at the
-                # first failure
+                ctx.monitor.flops_per_sample = -1
 
         # by default, we assume the data has the same input shape,
         # thus simply multiply the flops to avoid redundant forward

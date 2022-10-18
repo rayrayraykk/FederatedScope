@@ -108,7 +108,7 @@ def get_trainer(model=None,
             raise ValueError('Trainer {} is not provided'.format(
                 config.trainer.type))
 
-    if not issubclass(trainer, Trainer):
+    if not isinstance(trainer, Trainer):
         logger.warning(f'When using {trainer}, trainer plug-in cannot be '
                        f'enabled. Please use {Trainer} instead.')
         return trainer

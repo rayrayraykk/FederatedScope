@@ -46,7 +46,9 @@ class LifecycleDict(dict):
 
 
 class Context(LifecycleDict):
-    """Record and pass variables among different hook functions
+    """
+    Record and pass variables among different hook functions.
+
     Arguments:
         model: training model
         cfg: config
@@ -82,8 +84,8 @@ class Context(LifecycleDict):
         More details please refer to our
         [tutorial](https://federatedscope.io/docs/trainer/).
 
-        - Context also maintains some special variables across
-        different routines, like
+        Context also maintains some special variables across different
+        routines, like
             - cfg
             - model
             - data

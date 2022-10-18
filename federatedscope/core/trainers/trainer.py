@@ -31,7 +31,6 @@ class Trainer(BaseTrainer):
                  only_for_eval=False,
                  monitor=None):
         self.cfg = config
-        self.metric_calculator = MetricCalculator(config.eval.metrics)
 
         self.ctx = Context(model,
                            self.cfg,
@@ -39,9 +38,8 @@ class Trainer(BaseTrainer):
                            device,
                            init_dict=self.parse_data(data))
 
-        if monitor is None:
-            logger.warning(
-                f"Will not use monitor in trainer with class {type(self)}")
+        assert monitor is not None, \
+            f"Monitor not found in trainer with class {type(self)}"
         self.ctx.monitor = monitor
         # the "model_nums", and "models" are used for multi-model case and
         # model size calculation

@@ -1,0 +1,31 @@
+use_gpu: True
+device: 0
+early_stop:
+  patience: 0
+seed: 2
+federate:
+  mode: standalone
+  total_round_num: 100
+  merge_test_data: True
+  share_local_model: False
+  client_num: 1
+data:
+  root: data/
+  type: MNIST@torchvision
+  args: [{'download': True}]
+  splits: [0.8,0.2,0.2]
+  transform: [['ToTensor'], ['Normalize', {'mean': [0.1307], 'std': [0.3081]}]]
+  splitter: 'lda'
+  splitter_args: [{'alpha': 0.2}]
+dataloader:
+  batch_size: 1000
+model:
+  type: locoprop_mlp
+  out_channels: 10
+train:
+  local_update_steps: 1
+trainer:
+  type: locoprop_trainer
+eval:
+  freq: 1
+  best_res_update_round_wise_key: 'val_loss'

@@ -8,7 +8,6 @@ from federatedscope.core.auxiliaries.decorators import use_diff
 from federatedscope.core.trainers.utils import format_log_hooks, \
     filter_by_specified_keywords
 from federatedscope.core.trainers.context import Context, CtxVar, lifecycle
-from federatedscope.core.monitors.metric_calculator import MetricCalculator
 
 logger = logging.getLogger(__name__)
 
@@ -288,26 +287,26 @@ class Trainer(BaseTrainer):
                     break
 
     def update(self, model_parameters, strict=False):
-        '''
+        """
             Called by the FL client to update the model parameters
         Arguments:
             model_parameters (dict): {model_name: model_val}
             strict (bool): ensure the k-v paris are strictly same
-        '''
+        """
         pass
 
     def get_model_para(self):
-        '''
+        """
 
         :return: model_parameters (dict): {model_name: model_val}
-        '''
+        """
         pass
 
     def print_trainer_meta_info(self):
-        '''
+        """
             print some meta info for code-users, e.g., model type; the para
             names will be filtered out, etc.,
-        '''
+        """
         logger.info(f"Model meta-info: {type(self.ctx.model)}.")
         logger.debug(f"Model meta-info: {self.ctx.model}.")
         # logger.info(f"Data meta-info: {self.ctx['data']}.")
@@ -335,7 +334,7 @@ class Trainer(BaseTrainer):
             t{format_log_hooks(self.hooks_in_eval)}")
 
     def _param_filter(self, state_dict, filter_keywords=None):
-        '''
+        """
         model parameter filter when transmit between local and gloabl,
         which is useful in personalization.
         e.g., setting cfg.personalization.local_param= ['bn', 'norms']
@@ -349,7 +348,7 @@ class Trainer(BaseTrainer):
         Returns:
             state_dict (dict): remove the keys that match any of the given
             keywords.
-        '''
+        """
         if self.cfg.federate.method in ["local", "global"]:
             return {}
 

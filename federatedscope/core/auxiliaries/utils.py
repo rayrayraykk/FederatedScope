@@ -33,13 +33,13 @@ def setup_seed(seed):
         tf.set_random_seed(seed)
 
 
-def get_random(type, sample_shape, params, device):
-    if not hasattr(distributions, type):
+def get_random(dis_type, sample_shape, params, device):
+    if not hasattr(distributions, dis_type):
         raise NotImplementedError("Distribution {} is not implemented, "
                                   "please refer to ```torch.distributions```"
                                   "(https://pytorch.org/docs/stable/ "
-                                  "distributions.html).".format(type))
-    generator = getattr(distributions, type)(**params)
+                                  "distributions.html).".format(dis_type))
+    generator = getattr(distributions, dis_type)(**params)
     return generator.sample(sample_shape=sample_shape).to(device)
 
 
@@ -74,24 +74,6 @@ def merge_dict(dict1, dict2):
             else:
                 dict1[key].append(value)
     return dict1
-
-
-def move_to(obj, device):
-    import torch
-    if torch.is_tensor(obj):
-        return obj.to(device)
-    elif isinstance(obj, dict):
-        res = {}
-        for k, v in obj.items():
-            res[k] = move_to(v, device)
-        return res
-    elif isinstance(obj, list):
-        res = []
-        for v in obj:
-            res.append(move_to(v, device))
-        return res
-    else:
-        raise TypeError("Invalid type for move_to")
 
 
 def param2tensor(param):

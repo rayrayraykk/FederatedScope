@@ -1,3 +1,4 @@
+import federatedscope.core.trainers.utils
 from federatedscope.register import register_trainer
 from federatedscope.core.trainers import GeneralTorchTrainer
 from federatedscope.core.auxiliaries import utils
@@ -5,7 +6,10 @@ from federatedscope.core.auxiliaries import utils
 
 class NLPTrainer(GeneralTorchTrainer):
     def _hook_on_batch_forward(self, ctx):
-        x, label = [utils.move_to(_, ctx.device) for _ in ctx.data_batch]
+        x, label = [
+            federatedscope.core.trainers.utils.move_to(_, ctx.device)
+            for _ in ctx.data_batch
+        ]
         if isinstance(x, dict):
             pred = ctx.model(**x)[0]
         else:

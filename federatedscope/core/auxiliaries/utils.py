@@ -9,10 +9,8 @@ import numpy as np
 
 try:
     import torch
-    import torch.distributions as distributions
 except ImportError:
     torch = None
-    distributions = None
 
 try:
     import tensorflow as tf
@@ -22,25 +20,32 @@ except ImportError:
 logger = logging.getLogger(__name__)
 
 
-def setup_seed(seed):
-    np.random.seed(seed)
-    random.seed(seed)
-    if torch is not None:
-        torch.manual_seed(seed)
-        torch.cuda.manual_seed_all(seed)
-        torch.backends.cudnn.deterministic = True
-    if tf is not None:
-        tf.set_random_seed(seed)
+# ****** Worker-related utils ******
+class Timeout(object):
+    def __init__(self, seconds, max_failure=5):
+        self.seconds = seconds
+        self.max_failure = max_failure
 
+    def __enter__(self):
+        def signal_handler(signum, frame):
+            raise TimeoutError()
 
-def get_random(dis_type, sample_shape, params, device):
-    if not hasattr(distributions, dis_type):
-        raise NotImplementedError("Distribution {} is not implemented, "
-                                  "please refer to ```torch.distributions```"
-                                  "(https://pytorch.org/docs/stable/ "
-                                  "distributions.html).".format(dis_type))
-    generator = getattr(distributions, dis_type)(**params)
-    return generator.sample(sample_shape=sample_shape).to(device)
+        if self.seconds > 0:
+            signal.signal(signal.SIGALRM, signal_handler)
+            signal.alarm(self.seconds)
+        return self
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        signal.alarm(0)
+
+    def reset(self):
+        signal.alarm(self.seconds)
+
+    def block(self):
+        signal.alarm(0)
+
+    def exceed_max_failure(self, num_failure):
+        return num_failure > self.max_failure
 
 
 def batch_iter(data, batch_size=64, shuffled=True):
@@ -77,7 +82,6 @@ def merge_dict(dict1, dict2):
 
 
 def param2tensor(param):
-    import torch
     if isinstance(param, list):
         param = torch.FloatTensor(param)
     elif isinstance(param, int):
@@ -87,48 +91,10 @@ def param2tensor(param):
     return param
 
 
-class Timeout(object):
-    def __init__(self, seconds, max_failure=5):
-        self.seconds = seconds
-        self.max_failure = max_failure
-
-    def __enter__(self):
-        def signal_handler(signum, frame):
-            raise TimeoutError()
-
-        if self.seconds > 0:
-            signal.signal(signal.SIGALRM, signal_handler)
-            signal.alarm(self.seconds)
-        return self
-
-    def __exit__(self, exc_type, exc_value, traceback):
-        signal.alarm(0)
-
-    def reset(self):
-        signal.alarm(self.seconds)
-
-    def block(self):
-        signal.alarm(0)
-
-    def exceed_max_failure(self, num_failure):
-        return num_failure > self.max_failure
-
-
-def get_resource_info(filename):
-    if filename is None or not os.path.exists(filename):
-        logger.info('The device information file is not provided')
-        return None
-
-    # Users can develop this loading function according to resource_info_file
-    # As an example, we use the device_info provided by FedScale (FedScale:
-    # Benchmarking Model and System Performance of Federated Learning
-    # at Scale), which can be downloaded from
-    # https://github.com/SymbioticLab/FedScale/blob/master/benchmark/dataset/
-    # data/device_info/client_device_capacity The expected format is
-    # { INDEX:{'computation': FLOAT_VALUE_1, 'communication': FLOAT_VALUE_2}}
-    with open(filename, 'br') as f:
-        device_info = pickle.load(f)
-    return device_info
+def merge_param_dict(raw_param, filtered_param):
+    for key in filtered_param.keys():
+        raw_param[key] = filtered_param[key]
+    return raw_param
 
 
 def calculate_time_cost(instance_number,
@@ -150,28 +116,30 @@ def calculate_time_cost(instance_number,
     return comp_cost, comm_cost
 
 
-def calculate_batch_epoch_num(steps, batch_or_epoch, num_data, batch_size,
-                              drop_last):
-    num_batch_per_epoch = num_data // batch_size + int(
-        not drop_last and bool(num_data % batch_size))
-    if num_batch_per_epoch == 0:
-        raise RuntimeError(
-            "The number of batch is 0, please check 'batch_size' or set "
-            "'drop_last' as False")
-    elif batch_or_epoch == "epoch":
-        num_epoch = steps
-        num_batch_last_epoch = num_batch_per_epoch
-        num_total_batch = steps * num_batch_per_epoch
-    else:
-        num_epoch = math.ceil(steps / num_batch_per_epoch)
-        num_batch_last_epoch = steps % num_batch_per_epoch or \
-            num_batch_per_epoch
-        num_total_batch = steps
-    return num_batch_per_epoch, num_batch_last_epoch, num_epoch, \
-        num_total_batch
+# ****** Runner-related utils ******
+def setup_seed(seed):
+    np.random.seed(seed)
+    random.seed(seed)
+    if torch is not None:
+        torch.manual_seed(seed)
+        torch.cuda.manual_seed_all(seed)
+        torch.backends.cudnn.deterministic = True
+    if tf is not None:
+        tf.set_random_seed(seed)
 
 
-def merge_param_dict(raw_param, filtered_param):
-    for key in filtered_param.keys():
-        raw_param[key] = filtered_param[key]
-    return raw_param
+def get_resource_info(filename):
+    if filename is None or not os.path.exists(filename):
+        logger.info('The device information file is not provided')
+        return None
+
+    # Users can develop this loading function according to resource_info_file
+    # As an example, we use the device_info provided by FedScale (FedScale:
+    # Benchmarking Model and System Performance of Federated Learning
+    # at Scale), which can be downloaded from
+    # https://github.com/SymbioticLab/FedScale/blob/master/benchmark/dataset/
+    # data/device_info/client_device_capacity The expected format is
+    # { INDEX:{'computation': FLOAT_VALUE_1, 'communication': FLOAT_VALUE_2}}
+    with open(filename, 'br') as f:
+        device_info = pickle.load(f)
+    return device_info

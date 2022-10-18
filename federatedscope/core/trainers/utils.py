@@ -1,5 +1,6 @@
 import collections
 import json
+import math
 
 
 def format_log_hooks(hooks_set):
@@ -48,3 +49,35 @@ def move_to(obj, device):
         return res
     else:
         raise TypeError("Invalid type for move_to")
+
+
+def get_random(dis_type, sample_shape, params, device):
+    import torch.distributions as distributions
+    if not hasattr(distributions, dis_type):
+        raise NotImplementedError("Distribution {} is not implemented, "
+                                  "please refer to ```torch.distributions```"
+                                  "(https://pytorch.org/docs/stable/ "
+                                  "distributions.html).".format(dis_type))
+    generator = getattr(distributions, dis_type)(**params)
+    return generator.sample(sample_shape=sample_shape).to(device)
+
+
+def calculate_batch_epoch_num(steps, batch_or_epoch, num_data, batch_size,
+                              drop_last):
+    num_batch_per_epoch = num_data // batch_size + int(
+        not drop_last and bool(num_data % batch_size))
+    if num_batch_per_epoch == 0:
+        raise RuntimeError(
+            "The number of batch is 0, please check 'batch_size' or set "
+            "'drop_last' as False")
+    elif batch_or_epoch == "epoch":
+        num_epoch = steps
+        num_batch_last_epoch = num_batch_per_epoch
+        num_total_batch = steps * num_batch_per_epoch
+    else:
+        num_epoch = math.ceil(steps / num_batch_per_epoch)
+        num_batch_last_epoch = steps % num_batch_per_epoch or \
+            num_batch_per_epoch
+        num_total_batch = steps
+    return num_batch_per_epoch, num_batch_last_epoch, num_epoch, \
+        num_total_batch

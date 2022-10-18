@@ -6,7 +6,7 @@ from federatedscope.core.auxiliaries.model_builder import \
     get_trainable_para_names
 from federatedscope.core.auxiliaries.regularizer_builder import get_regularizer
 from federatedscope.core.auxiliaries.enums import MODE
-from federatedscope.core.auxiliaries.utils import calculate_batch_epoch_num
+from federatedscope.core.trainers.utils import calculate_batch_epoch_num
 from federatedscope.core.data import ClientData
 
 logger = logging.getLogger(__name__)

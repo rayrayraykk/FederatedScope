@@ -14,6 +14,7 @@ def load_toy_data(config=None):
                        save_data=False):
         """
         Generate data in Runner format
+
         Args:
             client_num:
             instance_num:

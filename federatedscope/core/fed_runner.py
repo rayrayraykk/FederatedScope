@@ -10,6 +10,7 @@ from federatedscope.core.workers import Server, Client
 from federatedscope.core.gpu_manager import GPUManager
 from federatedscope.core.auxiliaries.model_builder import get_model
 from federatedscope.core.auxiliaries.utils import get_resource_info
+from federatedscope.core.data.utils import merge_data
 
 logger = logging.getLogger(__name__)
 

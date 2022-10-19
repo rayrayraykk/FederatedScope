@@ -2,7 +2,7 @@
 
 FederatedScope decouples the local learning process and details of FL communication and schedule, allowing users to freely customize the local learning algorithm via the `trainer`. Each worker holds a `trainer` object to manage the details of local learning, such as the loss function, optimizer, training step, evaluation, etc.
 
-This tutorial is a shorter version of [Doc](https://federatedscope.io/docs/trainer/), where you can access more details in the full version tutorials.
+This tutorial is a shorter version of [full verison tutorial](https://federatedscope.io/docs/trainer/), where you can learn more details about FS Trainer.
 
 ## Code Structure
 
@@ -68,17 +68,187 @@ As the figure shows, in FederatedScope `Trainer` (a subclass of `BaseTrainer`), 
 <img src="https://img.alicdn.com/imgextra/i4/O1CN01H8OEeS1tdhR38C4dK_!!6000000005925-2-tps-1504-874.png" alt="undefined" style="zoom:50%;" />
 
 #### Context
-TBD
-The `Context` class is used to hold learning-related attributes, including data, model, optimizer and etc.
 
-```python
-dict_keys(['train_data', 'train_loader', 'num_train_data', 'val_data', 'val_loader', 'num_val_data', 'test_data', 'test_loader', 'num_test_data', 'lifecycles', 'cfg', 'model', 'data', 'device', 'cur_mode', 'mode_stack', 'cur_split', 'split_stack', 'trainable_para_names', 'criterion', 'regularizer', 'grad_clip', 'num_train_batch', 'num_train_batch_last_epoch', 'num_train_epoch', 'num_total_train_batch', 'num_val_epoch', 'num_val_batch', 'num_test_epoch', 'num_test_batch', 'monitor', 'models', 'mirrored_models', 'optimizer', 'scheduler', 'loss_batch_total', 'loss_regular_total', 'num_samples', 'ys_true', 'ys_prob', 'eval_metrics'])
-```
+The `Context` class (a subclass of `dict`) is used to hold learning-related attributes, including data, model, optimizer and etc, and user and add or delete these attributes in hook functions. We classify and show the default attributes below:
+
+* Data-related attributes
+  * `ctx.data`: the raw data (not split) the trainer holds
+  * `ctx.num_samples`: the number of samples used in training
+  * `ctx.train_data`, `ctx.val_data`, `ctx.test_data`: the split data the trainer holds
+  * `ctx.train_loader`, `ctx.val_loader`, `ctx.test_loader`: the DataLoader of each split data
+  * `ctx.num_train_data`, `ctx.num_val_data`, `ctx.num_test_data`: the number of samples of  the split data
+* Model-related attributes
+  * `ctx.model`: the model used
+  * `ctx.models`: the multi models if use
+  * `ctx.mirrored_models`: the mirrored models
+  * `ctx.trainable_para_names`: the trainable parameter names of the model
+* Optimizer-related attributes
+  * `ctx.optimizer`: see [`torch.optim`](https://pytorch.org/docs/stable/optim.html#module-torch.optim) for details
+  * `ctx.scheduler`: decays the learning rate of each parameter group
+  * `ctx.criterion`: loss/criterion function
+  * `ctx.regularizer`: regular terms
+  * `ctx.grad_clip`: gradient clipping
+* Mode-related attributes
+  * `ctx.cur_mode`: mode of trainer, which is one of `['train', 'val', 'test']`
+  * `ctx.mode_stack`: stack of mode, only used for switching mode 
+  * `ctx.cur_split`: split of data, which is one of `['train', 'val', 'test']` (Note: use `train` data in `test` mode is allowed)
+  * `ctx.split_stack`: stack of split, only used for switching data split 
+* Metric-related attributes
+  * `ctx.loss_batch_total`: Loss of current batch
+  * `ctx.loss_regular_total`: Loss of regular term 
+  * `ctx.ys_true`: true label of data
+  * `ctx.ys_prob`: output of the model
+  * `ctx.eval_metrics`: evaluation metrics caculated by `Monitor`
+* Other (statistics) attributes
+  * `ctx.cfg`: configuration of FL course, see [link](https://github.com/alibaba/FederatedScope/tree/master/federatedscope/core/configs) for details
+  * `ctx.device`: current device, such as `cpu` and `gpu0`.
+  * `ctx.monitor`: used for monitor trainer's behavior and statistics
+  * `ctx.num_train_batch_last_epoch`, `ctx.num_total_train_batch`: the number of batch
+  * `ctx.num_train_epoch`, `ctx.num_val_epoch`, `ctx.num_test_epoch`: the number of epoch in each data split
+  * `ctx.num_train_batch`, `ctx.num_val_batch`, `ctx.num_test_batch`: the number of batch in each data split
 
 #### Hooks
 
-The `Hooks` represent fine-grained learning behaviors at different point-in-times, which provides a simple yet powerful way to customize learning behaviors with a few modifications and easy re-use of fruitful default hooks. In this section, we will show the detail of each hook in `Trainer`.
+The `Hooks` represent fine-grained learning behaviors at different point-in-times, which provides a simple yet powerful way to customize learning behaviors with a few modifications and easy re-use of fruitful default hooks. In this section, we will show the detail of each hook used in `Trainer`.
 
-* hook1
-* hook2
-* hook3
+##### Hook trigger
+
+Hook trigger is where the hook functions are executed,  and all the hook functions are executed following the pattern bellow:
+
+* **on_fit_start**
+  * **on_epoch_start**
+    * **on_batch_start**
+    * **on_batch_forward**
+    * **on_batch_backward**
+    * **on_batch_end**
+  * **on_epoch_end**
+* **on_fit_end**
+
+##### Train hooks
+
+* **on_fit_start**
+
+  `_hook_on_fit_start_init`
+
+  `_hook_on_fit_start_calculate_model_size`
+
+  * **on_epoch_start**
+
+    `_hook_on_epoch_start`
+
+    * **on_batch_start**
+
+      `_hook_on_batch_start_init`
+
+    * **on_batch_forward**
+
+      `_hook_on_batch_forward`
+
+      `_hook_on_batch_forward_regularizer`
+
+      `_hook_on_batch_forward_flop_count`
+
+    * **on_batch_backward**
+
+      `_hook_on_batch_backward`
+
+    * **on_batch_end**
+
+      `_hook_on_batch_end`
+
+  * **on_epoch_end**
+
+    `None`
+
+* **on_fit_end**
+
+  `_hook_on_fit_end`
+
+##### Evaluation (val/test) hooks
+
+* **on_fit_start**
+
+  `_hook_on_fit_start_init`
+
+  * **on_epoch_start**
+
+    `_hook_on_epoch_start`
+
+    * **on_batch_start**
+
+      `_hook_on_batch_start_init`
+
+    * **on_batch_forward**
+
+      `_hook_on_batch_forward`
+
+    * **on_batch_backward**
+
+      `None`
+
+    * **on_batch_end**
+
+      `_hook_on_batch_end`
+
+  * **on_epoch_end**
+
+    `None`
+
+* **on_fit_end**
+
+  `_hook_on_fit_end`
+
+##### Finetune hooks
+
+* **on_fit_start**
+
+  `_hook_on_fit_start_init`
+
+  `_hook_on_fit_start_calculate_model_size`
+
+  * **on_epoch_start**
+
+    `_hook_on_epoch_start`
+
+    * **on_batch_start**
+
+      `_hook_on_batch_start_init`
+
+    * **on_batch_forward**
+
+      `_hook_on_batch_forward`
+
+      `_hook_on_batch_forward_regularizer`
+
+      `_hook_on_batch_forward_flop_count`
+
+    * **on_batch_backward**
+
+      `_hook_on_batch_backward`
+
+    * **on_batch_end**
+
+      `_hook_on_batch_end`
+
+  * **on_epoch_end**
+
+    `None`
+
+* **on_fit_end**
+
+  `_hook_on_fit_end`
+
+##### Hook functions
+
+In this section, we will briefly describe what the hook functions do with the properties/variables in ctx.
+
+* `_hook_on_fit_start_init`
+* `_hook_on_fit_start_calculate_model_size`
+* `_hook_on_epoch_start`
+* `_hook_on_batch_start_init`
+* `_hook_on_batch_forward`
+* `_hook_on_batch_forward_regularizer`
+* `_hook_on_batch_forward_flop_count`
+* `_hook_on_batch_backward`
+* `_hook_on_batch_end`
+* `_hook_on_fit_end`

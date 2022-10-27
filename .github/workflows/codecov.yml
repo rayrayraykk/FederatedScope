@@ -17,7 +17,7 @@ jobs:
         include:
           - torch-version: 1.12.0
             torchvision-version: 0.11.2
-            torchaudio-version: 0.10.
+            torchaudio-version: 0.10.1
 
     steps:
       - uses: actions/checkout@v3
@@ -29,15 +29,17 @@ jobs:
       - name: Install PyTorch ${{ matrix.torch-version }}+cpu
         run: |
           pip install numpy typing-extensions dataclasses
-          pip install torch==${{ matrix.torch-version}}+cpu torchvision==${{ matrix.torchvision-version}}+cpu -f https://download.pytorch.org/whl/torch_stable.html
-      
-      - name: Install develop version of FS
+          pip install torch==${{ matrix.torch-version}}+cpu torchvision==${{matrix.torchvision-version}}+cpu torchaudio==${{matrix.torchaudio-version}}+cpu -f https://download.pytorch.org/whl/torch_stable.html
+
+      - name: Install application dependencies
         run: |
-          pip install -e . [dev]
-          
-      - name: Install application dependenies
+          pip install torch-scatter torch-sparse torch-cluster torch-spline-conv -f https://data.pyg.org/whl/torch-${{ matrix.torch-version }}+cpu.html
+          pip install torch-geometric==2.0.4
+          pip install rdkit-pypi===2021.9.4
+
+      - name: Install full version of FS
         run: |
-          pip install numpy # To be fixed.
+          pip install -e . [test,full]
 
       - name: Generate coverage report
         run: |

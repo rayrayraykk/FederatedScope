@@ -12,17 +12,26 @@ minimal_requires = [
     'wandb', 'tensorboard', 'tensorboardX', 'pympler', 'protobuf==3.19.4'
 ]
 
-test_requires = []
+test_requires = ['pytest', 'pytest-cov']
 
 dev_requires = test_requires + ['pre-commit']
 
 org_requires = ['paramiko==2.11.0', 'celery[redis]', 'cmd2']
+
+app_requires = [
+    'torch-geometric==2.0.4', 'nltk', 'transformers==4.16.2',
+    'tokenizers==0.10.3', 'datasets', 'sentencepiece', 'textgrid', 'typeguard',
+    'torchtext', 'openml==0.12.2'
+]
 
 benchmark_hpo_requires = [
     'configspace==0.5.0', 'hpbandster==0.7.4', 'smac==1.3.3', 'optuna==2.10.0'
 ]
 
 benchmark_htl_requires = ['learn2learn']
+
+full_requires = org_requires + benchmark_hpo_requires + \
+                benchmark_htl_requires + app_requires
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
@@ -45,10 +54,12 @@ setuptools.setup(
     install_requires=minimal_requires,
     extras_require={
         'test': test_requires,
+        'app': app_requires,
         'org': org_requires,
         'dev': dev_requires,
         'hpo': benchmark_hpo_requires,
         'htl': benchmark_htl_requires,
+        'full': full_requires
     },
     license="Apache License 2.0",
     classifiers=[

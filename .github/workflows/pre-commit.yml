@@ -25,5 +25,5 @@ jobs:
       run: |
         pre-commit run --all-files > pre-commit.out
         cat pre-commit.out
-        is_found=$(grep -q "Failed" pre-commit.out)"
+        is_found="$(grep -q 'Failed' pre-commit.out)"
         [ $is_found -eq 1 ] && echo "Failed" || echo "Passed"

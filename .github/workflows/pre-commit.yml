@@ -23,6 +23,7 @@ jobs:
         pre-commit install
     - name: Launch pre-commit
       run: |
-        nohup pre-commit run --all-files
+        nohup pre-commit run --all-files &> nohup.out
+        ls
         cat nohup.out
         grep -q "Failed" nohup.out; [ $? -eq 0 ] && exist 1 || echo "Passed"

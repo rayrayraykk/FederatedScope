@@ -25,4 +25,3 @@ jobs:
       run: |
         nohup pre-commit run --all-files &> nohup.out
         cat nohup.out
-        grep -q "Failed" nohup.out; [ $? -eq 0 ] && echo "Passed" || exist 1

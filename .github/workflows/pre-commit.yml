@@ -25,9 +25,4 @@ jobs:
       run: |
         pre-commit run --all-files > pre-commit.log
         cat pre-commit.log
-    - name: Check failure
-      if: ${{grep -q "Failed" pre-commit.log > 0}}
-      uses: actions/github-script@v3
-      with:
-        script: |
-            core.setFailed('Pre-commit check failed!')
+        grep -q "Failed" pre-commit.log; [ $? -eq 0 ] && exist 0 || echo "Passed"

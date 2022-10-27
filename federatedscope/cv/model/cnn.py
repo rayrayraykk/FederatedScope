@@ -11,7 +11,7 @@ from torch.nn import MaxPool2d
 from torch.nn import ReLU
 
 
-class ConvNet2(Module):
+class ConvNet2(Module):####################################################################################
     def __init__(self,
                  in_channels,
                  h=32,

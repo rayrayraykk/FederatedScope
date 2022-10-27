@@ -21,8 +21,9 @@ jobs:
       run: |
         pip install pre-commit
         pre-commit install
-    - name: Launch pre-commit
+    - name: Pre-commit starts
       run: |
         nohup pre-commit run --all-files &> nohup.out
         cat nohup.out
-        grep -q "Failed" nohup.out; [ $? -eq 0 ] && echo "111" || echo "222"
+        grep -q "Failed" nohup.out
+        [ $? -eq 0 ] && echo "Passed" || echo "Failed"

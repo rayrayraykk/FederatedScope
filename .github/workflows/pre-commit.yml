@@ -3,10 +3,10 @@ name: pre-commit
 on: [push, pull_request]
 
 jobs:
-  branding:
-    icon: 'file-text'
-    color: 'white'
   run:
+    branding:
+      icon: 'file-text'
+      color: 'white'
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:

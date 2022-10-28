@@ -3,10 +3,10 @@ name: Codecov
 on: [push, pull_request]
 
 jobs:
-  branding:
-    icon: 'eye'
-    color: 'white'
   run:
+    branding:
+      icon: 'eye'
+      color: 'white'
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:

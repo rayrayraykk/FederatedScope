@@ -1,5 +1,11 @@
 name: Codecov
+
+branding:
+  icon: 'eye'
+  color: 'white'
+
 on: [push, pull_request]
+
 jobs:
   run:
     runs-on: ${{ matrix.os }}

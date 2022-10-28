@@ -1,5 +1,9 @@
 name: pre-commit
 
+branding:
+  icon: 'file-text'
+  color: 'white'
+
 on: [push, pull_request]
 
 jobs:

@@ -1,5 +1,9 @@
 name: CodeQL (Code Scanning)
 
+branding:
+  icon: 'info'
+  color: 'white'
+
 on:
   push:
     branches: [ "master" ]

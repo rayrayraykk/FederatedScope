@@ -1,9 +1,5 @@
 name: CodeQL (Code Scanning)
 
-branding:
-  icon: 'info'
-  color: 'white'
-
 on:
   push:
     branches: [ "master" ]
@@ -13,6 +9,9 @@ on:
     - cron: '0 8 * * *'
 
 jobs:
+  branding:
+    icon: 'info'
+    color: 'white'
   analyze:
     name: Analyze
     runs-on: ubuntu-latest

@@ -9,7 +9,8 @@ URL = 'https://github.com/alibaba/FederatedScope'
 minimal_requires = [
     'numpy<1.23.0', 'scikit-learn==1.0.2', 'scipy==1.7.3', 'pandas',
     'grpcio>=1.45.0', 'grpcio-tools', 'pyyaml>=5.1', 'fvcore', 'iopath',
-    'wandb', 'tensorboard', 'tensorboardX', 'pympler', 'protobuf==3.19.4'
+    'wandb', 'tensorboard', 'tensorboardX', 'pympler', 'protobuf==3.19.4',
+    'matplotlib'
 ]
 
 test_requires = ['pytest', 'pytest-cov']
@@ -21,7 +22,7 @@ org_requires = ['paramiko==2.11.0', 'celery[redis]', 'cmd2']
 app_requires = [
     'torch-geometric==2.0.4', 'nltk', 'transformers==4.16.2',
     'tokenizers==0.10.3', 'datasets', 'sentencepiece', 'textgrid', 'typeguard',
-    'torchtext', 'openml==0.12.2'
+    'openml==0.12.2'
 ]
 
 benchmark_hpo_requires = [

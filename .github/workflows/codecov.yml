@@ -1,4 +1,4 @@
-name: Codecov
+name: Codecov UnitTests
 
 on: [push, pull_request]
 
@@ -12,6 +12,7 @@ jobs:
         torch-version: ['1.10.1']
         torchvision-version: ['0.11.2']
         torchaudio-version: ['0.10.1']
+        torchtext-version: ['0.11.1']
     env:
       OS: ${{ matrix.os }}
       PYTHON: '3.9'
@@ -24,7 +25,7 @@ jobs:
     - name: Install PyTorch ${{ matrix.torch-version }}+cpu
       run: |
         pip install numpy typing-extensions dataclasses
-        pip install torch==${{ matrix.torch-version}}+cpu torchvision==${{matrix.torchvision-version}}+cpu torchaudio==${{matrix.torchaudio-version}}+cpu -f https://download.pytorch.org/whl/torch_stable.html
+        pip install torch==${{ matrix.torch-version}}+cpu torchvision==${{matrix.torchvision-version}}+cpu torchaudio==${{matrix.torchaudio-version}} torchtext==${{matrix.torchtext-version}}+cpu -f https://download.pytorch.org/whl/torch_stable.html
     - name: Install FS
       run: |
         pip install -e .[test]

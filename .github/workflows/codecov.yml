@@ -1,11 +1,13 @@
-name: Full Testing
+name: Codecov
 
-on: [push, pull_request]
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
 
 jobs:
-
   pytest:
-    # if: github.repository == 'alibaba/FederatedScope'
     runs-on: ${{ matrix.os }}
 
     strategy:
@@ -48,4 +50,4 @@ jobs:
       - name: Upload coverage
         uses: codecov/codecov-action@v2
         with:
-          fail_ci_if_error: false
+          fail_ci_if_error: True

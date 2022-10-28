@@ -1,0 +1,29 @@
+name: Codecov UnitTests
+
+on: [push, pull_request]
+
+jobs:
+  run:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        python-version: ['3.9']
+        torch-version: ['1.10.1']
+        torchvision-version: ['0.11.2']
+        torchaudio-version: ['0.10.1']
+        torchtext-version: ['0.11.1']
+    env:
+      OS: ${{ matrix.os }}
+      PYTHON: '3.9'
+    steps:
+    - uses: Jimver/cuda-toolkit@v0.2.8
+      id: cuda-toolkit
+      with:
+        cuda: '11.3.0'
+    - name: Valid CUDA
+      run: |
+        echo "Installed cuda version is: ${{steps.cuda-toolkit.outputs.cuda}}"
+        echo "Cuda install location: ${{steps.cuda-toolkit.outputs.CUDA_PATH}}"
+        nvcc -V
+        nvidia-smi

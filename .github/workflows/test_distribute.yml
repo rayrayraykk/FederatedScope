@@ -37,4 +37,5 @@ jobs:
         sleep 2
         python federatedscope/main.py --cfg scripts/distributed_scripts/distributed_configs/distributed_client_2.yaml &
         sleep 2
-        python federatedscope/main.py --cfg scripts/distributed_scripts/distributed_configs/distributed_client_3.yaml &
+        python federatedscope/main.py --cfg scripts/distributed_scripts/distributed_configs/distributed_client_3.yaml
+        [ $? -eq 1 ] && exit 1 || echo "Passed"

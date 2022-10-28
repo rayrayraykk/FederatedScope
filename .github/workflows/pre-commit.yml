@@ -4,9 +4,6 @@ on: [push, pull_request]
 
 jobs:
   run:
-    branding:
-      icon: 'file-text'
-      color: 'white'
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:

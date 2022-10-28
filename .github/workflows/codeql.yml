@@ -10,9 +10,6 @@ on:
 
 jobs:
   analyze:
-    branding:
-      icon: 'info'
-      color: 'white'
     name: Analyze
     runs-on: ubuntu-latest
     permissions:

@@ -55,6 +55,8 @@ def get_data(config, client_cfgs=None):
     # Load dataset from source files
     dataset, modified_config = load_dataset(config)
 
+    print(dataset)
+
     # Perform translator to non-FL dataset
     translator = getattr(import_module('federatedscope.core.data'),
                          DATA_TRANS_MAP[config.data.type.lower()])(

@@ -25,7 +25,7 @@ jobs:
         pip install torch==${{ matrix.torch-version}}+cpu torchvision==${{matrix.torchvision-version}}+cpu torchaudio==${{matrix.torchaudio-version}}+cpu -f https://download.pytorch.org/whl/torch_stable.html
     - name: Install FS
       run: |
-        pip install -e . [test]
+        pip install -e .[test]
     - name: Generate coverage report
       run: |
         pytest --cov=./ --cov-report=xml

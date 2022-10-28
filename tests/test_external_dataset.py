@@ -27,6 +27,8 @@ class ExternalDatasetTest(unittest.TestCase):
         cfg.train.batch_or_epoch = 'epoch'
         cfg.federate.client_num = 5
         cfg.federate.sample_client_rate = 0.2
+        cfg.federate.share_local_model = True
+        cfg.federate.online_aggr = True
 
         cfg.data.root = 'test_data/'
         cfg.data.type = 'MNIST@torchvision'
@@ -67,10 +69,12 @@ class ExternalDatasetTest(unittest.TestCase):
 
         cfg.federate.mode = 'standalone'
         cfg.train.local_update_steps = 1
-        cfg.federate.total_round_num = 20
+        cfg.federate.total_round_num = 10
         cfg.train.batch_or_epoch = 'epoch'
         cfg.federate.client_num = 5
         cfg.federate.sample_client_rate = 0.2
+        cfg.federate.share_local_model = True
+        cfg.federate.online_aggr = True
 
         cfg.data.root = 'test_data/'
         cfg.data.args = [{'max_len': 100}]
@@ -139,7 +143,7 @@ class ExternalDatasetTest(unittest.TestCase):
         init_cfg.merge_from_other_cfg(backup_cfg)
         self.assertGreater(
             test_best_results["client_summarized_weighted_avg"]['test_acc'],
-            0.65)
+            0.6)
 
 
 if __name__ == '__main__':

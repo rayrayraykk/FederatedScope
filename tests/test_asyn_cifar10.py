@@ -33,7 +33,7 @@ class AsynCIFAR10Test(unittest.TestCase):
 
         cfg.data.root = 'test_data/'
         cfg.data.type = 'CIFAR10@torchvision'
-        cfg.data.args = [{'download': False}]
+        cfg.data.args = [{'download': True}]
         cfg.data.splits = [0.8, 0.2, 0.2]
         cfg.data.batch_size = 10
         cfg.data.subsample = 0.2
@@ -49,7 +49,7 @@ class AsynCIFAR10Test(unittest.TestCase):
         cfg.data.splitter_args = [{'alpha': 0.2}]
 
         cfg.model.type = 'convnet2'
-        cfg.model.hidden = 512
+        cfg.model.hidden = 128
         cfg.model.out_channels = 10
 
         cfg.train.local_update_steps = 2
@@ -92,7 +92,7 @@ class AsynCIFAR10Test(unittest.TestCase):
 
         cfg.data.root = 'test_data/'
         cfg.data.type = 'CIFAR10@torchvision'
-        cfg.data.args = [{'download': False}]
+        cfg.data.args = [{'download': True}]
         cfg.data.splits = [0.8, 0.2, 0.2]
         cfg.data.batch_size = 10
         cfg.data.subsample = 0.2
@@ -108,7 +108,7 @@ class AsynCIFAR10Test(unittest.TestCase):
         cfg.data.splitter_args = [{'alpha': 0.2}]
 
         cfg.model.type = 'convnet2'
-        cfg.model.hidden = 512
+        cfg.model.hidden = 128
         cfg.model.out_channels = 10
 
         cfg.train.local_update_steps = 2
@@ -152,7 +152,7 @@ class AsynCIFAR10Test(unittest.TestCase):
 
         cfg.data.root = 'test_data/'
         cfg.data.type = 'CIFAR10@torchvision'
-        cfg.data.args = [{'download': False}]
+        cfg.data.args = [{'download': True}]
         cfg.data.splits = [0.8, 0.2, 0.2]
         cfg.data.batch_size = 10
         cfg.data.subsample = 0.2
@@ -168,7 +168,7 @@ class AsynCIFAR10Test(unittest.TestCase):
         cfg.data.splitter_args = [{'alpha': 0.2}]
 
         cfg.model.type = 'convnet2'
-        cfg.model.hidden = 512
+        cfg.model.hidden = 128
         cfg.model.out_channels = 10
 
         cfg.train.local_update_steps = 2

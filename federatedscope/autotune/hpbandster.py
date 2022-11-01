@@ -17,6 +17,12 @@ logger = logging.getLogger(__name__)
 
 
 def clear_cache(working_folder):
+    """
+    Clear cached ckpts for a given folder
+
+    Args:
+        working_folder: write your description
+    """
     # Clear cached ckpt
     for name in os.listdir(working_folder):
         if name.endswith('.pth'):
@@ -25,16 +31,38 @@ def clear_cache(working_folder):
 
 class MyRandomSearch(RandomSearch):
     def __init__(self, working_folder, **kwargs):
+        """
+        Initialize the search.
+
+        Args:
+            self: write your description
+            working_folder: write your description
+        """
         self.working_folder = working_folder
         super(MyRandomSearch, self).__init__(**kwargs)
 
 
 class MyBOHB(BOHB):
     def __init__(self, working_folder, **kwargs):
+        """
+        Initialize the object with the working_folder
+
+        Args:
+            self: write your description
+            working_folder: write your description
+        """
         self.working_folder = working_folder
         super(MyBOHB, self).__init__(**kwargs)
 
     def get_next_iteration(self, iteration, iteration_kwargs={}):
+        """
+        Clear cache after each iteration.
+
+        Args:
+            self: write your description
+            iteration: write your description
+            iteration_kwargs: write your description
+        """
         if os.path.exists(self.working_folder):
             clear_cache(self.working_folder)
         return super(MyBOHB, self).get_next_iteration(iteration,
@@ -43,10 +71,25 @@ class MyBOHB(BOHB):
 
 class MyHyperBand(HyperBand):
     def __init__(self, working_folder, **kwargs):
+        """
+        Initializes the hyperband.
+
+        Args:
+            self: write your description
+            working_folder: write your description
+        """
         self.working_folder = working_folder
         super(MyHyperBand, self).__init__(**kwargs)
 
     def get_next_iteration(self, iteration, iteration_kwargs={}):
+        """
+        Clear cache after each iteration.
+
+        Args:
+            self: write your description
+            iteration: write your description
+            iteration_kwargs: write your description
+        """
         if os.path.exists(self.working_folder):
             clear_cache(self.working_folder)
         return super(MyHyperBand,
@@ -55,6 +98,15 @@ class MyHyperBand(HyperBand):
 
 class MyWorker(Worker):
     def __init__(self, cfg, ss, sleep_interval=0, *args, **kwargs):
+        """
+        Initialize a MyWorker instance.
+
+        Args:
+            self: write your description
+            cfg: write your description
+            ss: write your description
+            sleep_interval: write your description
+        """
         super(MyWorker, self).__init__(**kwargs)
         self.sleep_interval = sleep_interval
         self.cfg = cfg
@@ -63,6 +115,14 @@ class MyWorker(Worker):
         self._perfs = []
 
     def compute(self, config, budget, **kwargs):
+        """
+        Evaluate a single function.
+
+        Args:
+            self: write your description
+            config: write your description
+            budget: write your description
+        """
         res = eval_in_fs(self.cfg, config, int(budget))
         config = dict(config)
         config['federate.total_round_num'] = budget
@@ -74,6 +134,12 @@ class MyWorker(Worker):
         return {'loss': float(res), 'info': res}
 
     def summarize(self):
+        """
+        Summarize the results of the HPO algorithm.
+
+        Args:
+            self: write your description
+        """
         from federatedscope.autotune.utils import summarize_hpo_results
         results = summarize_hpo_results(self._init_configs,
                                         self._perfs,
@@ -88,6 +154,13 @@ class MyWorker(Worker):
 
 
 def run_hpbandster(cfg, scheduler):
+    """
+    Run the HPAbandster hyperbandster scheduler.
+
+    Args:
+        cfg: write your description
+        scheduler: write your description
+    """
     config_space = scheduler._search_space
     if cfg.hpo.scheduler.startswith('wrap_'):
         ss = CS.ConfigurationSpace()

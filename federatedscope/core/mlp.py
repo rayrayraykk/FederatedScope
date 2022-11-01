@@ -13,6 +13,16 @@ class MLP(torch.nn.Module):
                  dropout=0.,
                  batch_norm=True,
                  relu_first=False):
+        """
+        Initialize the channel_list.
+
+        Args:
+            self: write your description
+            channel_list: write your description
+            dropout: write your description
+            batch_norm: write your description
+            relu_first: write your description
+        """
         super().__init__()
         assert len(channel_list) >= 2
         self.channel_list = channel_list
@@ -28,6 +38,13 @@ class MLP(torch.nn.Module):
                 BatchNorm1d(out_channel) if batch_norm else Identity())
 
     def forward(self, x):
+        """
+        Forward pass through the network.
+
+        Args:
+            self: write your description
+            x: write your description
+        """
         x = self.linears[0](x)
         for layer, norm in zip(self.linears[1:], self.norms[:-1]):
             if self.relu_first:

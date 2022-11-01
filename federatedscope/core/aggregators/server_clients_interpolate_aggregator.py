@@ -7,11 +7,28 @@ class ServerClientsInterpolateAggregator(ClientsAvgAggregator):
         local models from clients
     """
     def __init__(self, model=None, device='cpu', config=None, beta=1.0):
+        """
+        Initialize the aggregator with the given configuration.
+
+        Args:
+            self: write your description
+            model: write your description
+            device: write your description
+            config: write your description
+            beta: write your description
+        """
         super(ServerClientsInterpolateAggregator,
               self).__init__(model, device, config)
         self.beta = beta  # the weight for local models used in interpolation
 
     def aggregate(self, agg_info):
+        """
+        Aggregates the results of the various aggregation functions.
+
+        Args:
+            self: write your description
+            agg_info: write your description
+        """
         models = agg_info["client_feedback"]
         global_model = self.model
         elem_each_client = next(iter(models))

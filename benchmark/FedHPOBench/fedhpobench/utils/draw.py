@@ -14,6 +14,12 @@ COLORS = [
 
 
 def logloader(file):
+    """
+    Load a log file.
+
+    Args:
+        file: write your description
+    """
     log = []
     with open(file) as f:
         file = f.readlines()
@@ -24,6 +30,16 @@ def logloader(file):
 
 
 def ecdf(model, data_list, algo, sample_client=None, key='test_acc'):
+    """
+    Draw ECDF from data_list using the specified algorithm.
+
+    Args:
+        model: write your description
+        data_list: write your description
+        algo: write your description
+        sample_client: write your description
+        key: write your description
+    """
     from fedhpob.benchmarks import TabularBenchmark
 
     # Draw ECDF from target data_list
@@ -72,6 +88,12 @@ def ecdf(model, data_list, algo, sample_client=None, key='test_acc'):
 
 
 def get_mean_rank(traj_dict):
+    """
+    Compute mean rank bbo and MF for each loss in a dictionary.
+
+    Args:
+        traj_dict: write your description
+    """
     from scipy.stats import rankdata
 
     xs = np.logspace(-4, 0, 500)
@@ -102,6 +124,12 @@ def get_mean_rank(traj_dict):
 
 
 def get_mean_loss(traj_dict):
+    """
+    Compute mean loss and rank of the model.
+
+    Args:
+        traj_dict: write your description
+    """
     xs = np.logspace(-4, 0, 500)
     for repeat in traj_dict:
         logs = traj_dict[repeat]
@@ -133,6 +161,20 @@ def get_mean_loss(traj_dict):
 
 def draw_rank(mean_ranks, mean_ranks_bbo, mean_ranks_mf, xs, opt_all, dataset,
               family, suffix, Y_label):
+    """
+    Draws rank plots for each column of the data.
+
+    Args:
+        mean_ranks: write your description
+        mean_ranks_bbo: write your description
+        mean_ranks_mf: write your description
+        xs: write your description
+        opt_all: write your description
+        dataset: write your description
+        family: write your description
+        suffix: write your description
+        Y_label: write your description
+    """
     os.makedirs('figures', exist_ok=True)
     # BBO + MF
     plt.figure(figsize=(10, 7.5))
@@ -215,6 +257,17 @@ def rank_over_time(root,
                    algo='avg',
                    repeat=5,
                    loss=False):
+    """
+    Ranks all the datasets in the specified family over time.
+
+    Args:
+        root: write your description
+        family: write your description
+        mode: write your description
+        algo: write your description
+        repeat: write your description
+        loss: write your description
+    """
     suffix = f'{mode}_{algo}'
     if family == 'cnn':
         data_list = ['femnist']
@@ -293,6 +346,16 @@ def landscape(model='cnn',
               algo='avg',
               sample_client=None,
               key='test_acc'):
+    """
+    Landscape visualization.
+
+    Args:
+        model: write your description
+        dname: write your description
+        algo: write your description
+        sample_client: write your description
+        key: write your description
+    """
     import plotly.graph_objects as go
     from fedhpob.config import fhb_cfg
     from fedhpob.benchmarks import TabularBenchmark
@@ -301,6 +364,12 @@ def landscape(model='cnn',
     benchmark = TabularBenchmark(model, dname, algo, device=-1)
 
     def get_best_config(benchmark):
+        """
+        Get the best config for a benchmark.
+
+        Args:
+            benchmark: write your description
+        """
         results, config = [], []
         for idx in tqdm(range(len(benchmark.table))):
             row = benchmark.table.iloc[idx]

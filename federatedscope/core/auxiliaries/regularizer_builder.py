@@ -34,7 +34,20 @@ class DummyRegularizer(Module):
 
     """
     def __init__(self):
+        """
+        Initializes the regularizer with a dummy value.
+
+        Args:
+            self: write your description
+        """
         super(DummyRegularizer, self).__init__()
 
     def forward(self, ctx):
+        """
+        Forward pass of the optimizer
+
+        Args:
+            self: write your description
+            ctx: write your description
+        """
         return 0.

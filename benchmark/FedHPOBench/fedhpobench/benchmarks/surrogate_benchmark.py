@@ -15,6 +15,19 @@ class SurrogateBenchmark(BaseBenchmark):
                  rng=None,
                  cost_mode='estimated',
                  **kwargs):
+        """
+        Loads the surrogate model and the specified algorithm.
+
+        Args:
+            self: write your description
+            model: write your description
+            dname: write your description
+            algo: write your description
+            modeldir: write your description
+            datadir: write your description
+            rng: write your description
+            cost_mode: write your description
+        """
         self.model, self.dname, self.algo, self.cost_mode = model, dname, \
                                                             algo, cost_mode
         assert datadir or modeldir, 'Please provide at least one of ' \
@@ -29,6 +42,14 @@ class SurrogateBenchmark(BaseBenchmark):
                                                  rng, **kwargs)
 
     def _check(self, configuration, fidelity):
+        """
+        Check that the configuration and fidelity are in the correct space.
+
+        Args:
+            self: write your description
+            configuration: write your description
+            fidelity: write your description
+        """
         for key in configuration:
             assert key in self.configuration_space, 'configuration invalid, ' \
                                                     'check ' \
@@ -40,6 +61,15 @@ class SurrogateBenchmark(BaseBenchmark):
                                                'help.'
 
     def _make_prediction(self, configuration, fidelity, seed):
+        """
+        Make a prediction from the given configuration fidelity and seed.
+
+        Args:
+            self: write your description
+            configuration: write your description
+            fidelity: write your description
+            seed: write your description
+        """
         model = self.surrogate_models[self.rng.randint(seed) %
                                       len(self.surrogate_models)]
         x_in = []
@@ -57,6 +87,15 @@ class SurrogateBenchmark(BaseBenchmark):
                            fidelity=None,
                            seed=1,
                            **kwargs):
+        """
+        Returns the objective function for the given configuration.
+
+        Args:
+            self: write your description
+            configuration: write your description
+            fidelity: write your description
+            seed: write your description
+        """
         fidelity = self._init_fidelity(fidelity)
         self._check(configuration, fidelity)
         return {
@@ -66,6 +105,12 @@ class SurrogateBenchmark(BaseBenchmark):
         }
 
     def get_configuration_space(self):
+        """
+        Get the configuration space
+
+        Args:
+            self: write your description
+        """
         new_list = []
         for i in self.meta_info['configuration_space']:
             if i == 'batch':
@@ -76,9 +121,21 @@ class SurrogateBenchmark(BaseBenchmark):
         return new_list
 
     def get_fidelity_space(self):
+        """
+        Get the FIdelity Space for a given image
+
+        Args:
+            self: write your description
+        """
         return self.meta_info['fidelity_space']
 
     def get_meta_info(self):
+        """
+        Return meta information about the dataset
+
+        Args:
+            self: write your description
+        """
         return {
             'model': self.model,
             'dname': self.dname,

@@ -54,6 +54,12 @@ class FedSagePlusServer(Server):
         self.grad_cnt = 0
 
     def _register_default_handlers(self):
+        """
+        Register the default handlers for the module.
+
+        Args:
+            self: write your description
+        """
         self.register_handlers('join_in', self.callback_funcs_for_join_in)
         self.register_handlers('join_in_info', self.callback_funcs_for_join_in)
         self.register_handlers('clf_para', self.callback_funcs_model_para)
@@ -62,6 +68,13 @@ class FedSagePlusServer(Server):
         self.register_handlers('metrics', self.callback_funcs_for_metrics)
 
     def callback_funcs_for_join_in(self, message: Message):
+        """
+        Callback functions for join_in.
+
+        Args:
+            self: write your description
+            message: write your description
+        """
         if 'info' in message.msg_type:
             sender, info = message.sender, message.content
             for key in self._cfg.federate.join_in_info:
@@ -104,6 +117,13 @@ class FedSagePlusServer(Server):
                         state=self.state))
 
     def callback_funcs_gradient(self, message: Message):
+        """
+        Callback for gradients.
+
+        Args:
+            self: write your description
+            message: write your description
+        """
         round, _, content = message.state, message.sender, message.content
         gen_grad, ID = content
         # For a new round
@@ -123,6 +143,13 @@ class FedSagePlusServer(Server):
         self.check_and_move_on()
 
     def check_and_move_on(self, check_eval_result=False):
+        """
+        Evaluate the model and embeddings and move on to the next round of training or evaluation.
+
+        Args:
+            self: write your description
+            check_eval_result: write your description
+        """
         client_IDs = [i for i in range(1, self.client_num + 1)]
 
         if check_eval_result:
@@ -252,6 +279,20 @@ class FedSagePlusClient(Client):
                  strategy=None,
                  *args,
                  **kwargs):
+        """
+        Initialize a client for a FedSagePlus server.
+
+        Args:
+            self: write your description
+            ID: write your description
+            server_id: write your description
+            state: write your description
+            config: write your description
+            data: write your description
+            model: write your description
+            device: write your description
+            strategy: write your description
+        """
         super(FedSagePlusClient,
               self).__init__(ID, server_id, state, config, data, model, device,
                              strategy, *args, **kwargs)
@@ -287,6 +328,13 @@ class FedSagePlusClient(Client):
         self.register_handlers('setup', self.callback_funcs_for_setup_fedsage)
 
     def callback_funcs_for_local_pre_train(self, message: Message):
+        """
+        Callback functions for local pre - training of locgen.
+
+        Args:
+            self: write your description
+            message: write your description
+        """
         round, sender, _ = message.state, message.sender, message.content
         # Local pre-train
         logger.info(f'\tClient #{self.ID} pre-train start...')
@@ -318,6 +366,13 @@ class FedSagePlusClient(Client):
         logger.info(f'\tClient #{self.ID} send gen_para to Server #{sender}.')
 
     def callback_funcs_for_gen_para(self, message: Message):
+        """
+        Calculates the gradient of the FEDGENERATOR functions for the current round.
+
+        Args:
+            self: write your description
+            message: write your description
+        """
         round, sender, content = message.state, message.sender, message.content
         gen_para, embedding, label, ID = content
 
@@ -333,6 +388,13 @@ class FedSagePlusClient(Client):
         logger.info(f'\tClient #{self.ID}: send gradient to Server #{sender}.')
 
     def callback_funcs_for_gradient(self, message):
+        """
+        Callback function for gradient update
+
+        Args:
+            self: write your description
+            message: write your description
+        """
         # Aggregate gen_grad on server
         round, sender, content = message.state, message.sender, message.content
         gen_grad = content
@@ -351,6 +413,13 @@ class FedSagePlusClient(Client):
         logger.info(f'\tClient #{self.ID}: send gen_para to Server #{sender}.')
 
     def callback_funcs_for_setup_fedsage(self, message: Message):
+        """
+        Callback functions for the Sage algorithm
+
+        Args:
+            self: write your description
+            message: write your description
+        """
         round, sender, _ = message.state, message.sender, message.content
         self.filled_data = GraphMender(
             model=self.fedgen,
@@ -395,6 +464,13 @@ class FedSagePlusClient(Client):
                     content=(sample_size, clf_para)))
 
     def callback_funcs_for_model_para(self, message: Message):
+        """
+        Callback function for model parameter processing.
+
+        Args:
+            self: write your description
+            message: write your description
+        """
         round, sender, content = message.state, message.sender, message.content
         self.trainer_clf.update(content)
         self.state = round

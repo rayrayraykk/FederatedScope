@@ -3,6 +3,14 @@ from federatedscope.core.auxiliaries.model_builder import get_model
 
 
 def merge_cfg(cfg, configuration, fidelity):
+    """
+    Merges the given configuration with the one from the Federate optimizer and the configuration.
+
+    Args:
+        cfg: write your description
+        configuration: write your description
+        fidelity: write your description
+    """
     init_cfg = cfg.clone()
     # Configuration related
     if 'lr' in configuration:
@@ -48,6 +56,14 @@ def get_cost_model(mode='estimated'):
 
 
 def communication_csilo_cost(cfg, model_size, fhb_cfg):
+    """
+    Compute the combined cost of the communication csilo.
+
+    Args:
+        cfg: write your description
+        model_size: write your description
+        fhb_cfg: write your description
+    """
     t_up = model_size / fhb_cfg.cost.bandwidth.client_up
     t_down = max(
         cfg.federate.client_num * cfg.federate.sample_client_rate *
@@ -57,6 +73,14 @@ def communication_csilo_cost(cfg, model_size, fhb_cfg):
 
 
 def communication_cdevice_cost(cfg, model_size, fhb_cfg):
+    """
+    Return the cost of a communication cdevice.
+
+    Args:
+        cfg: write your description
+        model_size: write your description
+        fhb_cfg: write your description
+    """
     t_up = model_size / fhb_cfg.cost.bandwidth.client_up
     t_down = model_size / fhb_cfg.cost.bandwidth.client_down
     return t_up + t_down
@@ -76,10 +100,24 @@ def computation_cost(cfg, fhb_cfg, const):
 
 
 def raw_cost(**kwargs):
+    """
+    Get the raw cost.
+
+    Args:
+    """
     return None
 
 
 def get_info(cfg, configuration, fidelity, data):
+    """
+    Get the configuration and model size for a given data set.
+
+    Args:
+        cfg: write your description
+        configuration: write your description
+        fidelity: write your description
+        data: write your description
+    """
     cfg = merge_cfg(cfg, configuration, fidelity)
     model = get_model(cfg.model, list(data.values())[0])
     model_size = sum([param.nelement() for param in model.parameters()])

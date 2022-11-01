@@ -30,34 +30,80 @@ from torch_geometric.data import InMemoryDataset, Data, download_url
 
 class KG(InMemoryDataset):
     def __init__(self, root, name, transform=None, pre_transform=None):
+        """
+        Initializes the ANTsImage from the root.
+
+        Args:
+            self: write your description
+            root: write your description
+            name: write your description
+            transform: write your description
+            pre_transform: write your description
+        """
         self.name = name
         super().__init__(root, transform, pre_transform)
         self.data, self.slices = torch.load(self.processed_paths[0])
 
     @property
     def num_relations(self):
+        """
+        Number of connected edges in the network.
+
+        Args:
+            self: write your description
+        """
         return int(self.data.edge_type.max()) + 1
 
     @property
     def raw_dir(self):
+        """
+        Return the raw directory path.
+
+        Args:
+            self: write your description
+        """
         return os.path.join(self.root, self.name, 'raw')
 
     @property
     def processed_dir(self):
+        """
+        Return the directory where the file is processed.
+
+        Args:
+            self: write your description
+        """
         return os.path.join(self.root, self.name, 'processed')
 
     @property
     def processed_file_names(self):
+        """
+        Return a space to separate the processed file names.
+
+        Args:
+            self: write your description
+        """
         return 'data.pt'
 
     @property
     def raw_file_names(self):
+        """
+        List of file names in the format
+
+        Args:
+            self: write your description
+        """
         return [
             'entities.dict', 'relations.dict', 'test.txt', 'train.txt',
             'valid.txt'
         ]
 
     def download(self):
+        """
+        Downloads all files in the archive to the raw_dir.
+
+        Args:
+            self: write your description
+        """
         url = 'https://raw.githubusercontent.com/MichSchli/' \
               'RelationPrediction/master/data/'
         urls = {
@@ -70,6 +116,12 @@ class KG(InMemoryDataset):
             download_url(f'{urls[self.name]}/{file_name}', self.raw_dir)
 
     def process(self):
+        """
+        Process the raw data files
+
+        Args:
+            self: write your description
+        """
         with open(osp.join(self.raw_dir, 'entities.dict'), 'r') as f:
             lines = [row.split('\t') for row in f.read().split('\n')[:-1]]
             entities_dict = {key: int(value) for value, key in lines}

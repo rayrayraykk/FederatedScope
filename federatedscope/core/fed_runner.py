@@ -48,6 +48,19 @@ class BaseRunner(object):
                  client_class=Client,
                  config=None,
                  client_configs=None):
+        """
+        Initialize the run engine.
+
+        Args:
+            self: write your description
+            data: write your description
+            server_class: write your description
+            Server: write your description
+            client_class: write your description
+            Client: write your description
+            config: write your description
+            client_configs: write your description
+        """
         self.data = data
         self.server_class = server_class
         self.client_class = client_class
@@ -211,6 +224,12 @@ class BaseRunner(object):
 
 class StandaloneRunner(BaseRunner):
     def _set_up(self):
+        """
+        Sets up the servers and client objects.
+
+        Args:
+            self: write your description
+        """
         self.is_run_online = True if self.cfg.federate.online_aggr else False
         self.shared_comm_queue = deque()
 
@@ -278,6 +297,14 @@ class StandaloneRunner(BaseRunner):
             trainer_representative.print_trainer_meta_info()
 
     def _get_server_args(self, resource_info=None, client_resource_info=None):
+        """
+        Get server args.
+
+        Args:
+            self: write your description
+            resource_info: write your description
+            client_resource_info: write your description
+        """
         if self.server_id in self.data:
             server_data = self.data[self.server_id]
             model = get_model(self.cfg.model,
@@ -298,6 +325,14 @@ class StandaloneRunner(BaseRunner):
         return server_data, model, kw
 
     def _get_client_args(self, client_id=-1, resource_info=None):
+        """
+        Get client args.
+
+        Args:
+            self: write your description
+            client_id: write your description
+            resource_info: write your description
+        """
         client_data = self.data[client_id]
         kw = {
             'shared_comm_queue': self.shared_comm_queue,
@@ -306,6 +341,12 @@ class StandaloneRunner(BaseRunner):
         return client_data, kw
 
     def run(self):
+        """
+        Run simulation.
+
+        Args:
+            self: write your description
+        """
         for each_client in self.client:
             # Launch each client
             self.client[each_client].join_in()
@@ -349,6 +390,12 @@ class StandaloneRunner(BaseRunner):
         only consider centralized topology \
         """
         def is_broadcast(msg):
+            """
+            Check if a message is a broadcast message.
+
+            Args:
+                msg: write your description
+            """
             return len(msg.receiver) >= 1 and msg.sender == 0
 
         cached_bc_msgs = []
@@ -422,6 +469,12 @@ class StandaloneRunner(BaseRunner):
 
 class DistributedRunner(BaseRunner):
     def _set_up(self):
+        """
+        Setup the servers and clients based on the configuration.
+
+        Args:
+            self: write your description
+        """
         # sample resource information
         if self.resource_info is not None:
             sampled_index = np.random.choice(list(self.resource_info.keys()))
@@ -445,6 +498,14 @@ class DistributedRunner(BaseRunner):
             self.client = self._setup_client(resource_info=sampled_resource)
 
     def _get_server_args(self, resource_info, client_resource_info):
+        """
+        Return args for the server.
+
+        Args:
+            self: write your description
+            resource_info: write your description
+            client_resource_info: write your description
+        """
         server_data = self.data
         model = get_model(self.cfg.model,
                           server_data,
@@ -454,6 +515,14 @@ class DistributedRunner(BaseRunner):
         return server_data, model, kw
 
     def _get_client_args(self, client_id, resource_info):
+        """
+        Return the client args for a given client id and resource info.
+
+        Args:
+            self: write your description
+            client_id: write your description
+            resource_info: write your description
+        """
         client_data = self.data
         kw = self.client_address
         kw['server_host'] = self.server_address['host']
@@ -462,6 +531,12 @@ class DistributedRunner(BaseRunner):
         return client_data, kw
 
     def run(self):
+        """
+        Run the server and client.
+
+        Args:
+            self: write your description
+        """
         if self.cfg.distribute.role == 'server':
             self.server.run()
             return self.server.best_results
@@ -497,6 +572,19 @@ class FedRunner(object):
                  client_class=Client,
                  config=None,
                  client_configs=None):
+        """
+        Initialize the server and client.
+
+        Args:
+            self: write your description
+            data: write your description
+            server_class: write your description
+            Server: write your description
+            client_class: write your description
+            Client: write your description
+            config: write your description
+            client_configs: write your description
+        """
         logger.warning('`federate.core.fed_runner.FedRunner` will be '
                        'removed in the future, please use'
                        '`federate.core.fed_runner.get_runner` to get '
@@ -662,7 +750,19 @@ class FedRunner(object):
                 self.client.run()
 
     def _run_simulation_online(self):
+        """
+        Run the simulation forever.
+
+        Args:
+            self: write your description
+        """
         def is_broadcast(msg):
+            """
+            Check if a message is a broadcast message.
+
+            Args:
+                msg: write your description
+            """
             return len(msg.receiver) >= 1 and msg.sender == 0
 
         cached_bc_msgs = []
@@ -693,6 +793,12 @@ class FedRunner(object):
                 break
 
     def _run_simulation(self):
+        """
+        Run the simulation.
+
+        Args:
+            self: write your description
+        """
         server_msg_cache = list()
         while True:
             if len(self.shared_comm_queue) > 0:

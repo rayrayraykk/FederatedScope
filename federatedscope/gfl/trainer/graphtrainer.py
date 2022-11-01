@@ -11,6 +11,13 @@ logger = logging.getLogger(__name__)
 
 class GraphMiniBatchTrainer(GeneralTorchTrainer):
     def _hook_on_batch_forward(self, ctx):
+        """
+        Augment the loss context with the batch forward data.
+
+        Args:
+            self: write your description
+            ctx: write your description
+        """
         batch = ctx.data_batch.to(ctx.device)
         pred = ctx.model(batch)
         # TODO: deal with the type of data within the dataloader or dataset
@@ -27,6 +34,13 @@ class GraphMiniBatchTrainer(GeneralTorchTrainer):
         ctx.y_prob = CtxVar(pred, LIFECYCLE.BATCH)
 
     def _hook_on_batch_forward_flop_count(self, ctx):
+        """
+        Calculates the flops per sample for the batch forward call.
+
+        Args:
+            self: write your description
+            ctx: write your description
+        """
         if not isinstance(self.ctx.monitor, Monitor):
             logger.warning(
                 f"The trainer {type(self)} does contain a valid monitor, "
@@ -73,6 +87,12 @@ class GraphMiniBatchTrainer(GeneralTorchTrainer):
 
 
 def call_graph_level_trainer(trainer_type):
+    """
+    Call a trainer if it is a minibatch trainer.
+
+    Args:
+        trainer_type: write your description
+    """
     if trainer_type == 'graphminibatch_trainer':
         trainer_builder = GraphMiniBatchTrainer
         return trainer_builder

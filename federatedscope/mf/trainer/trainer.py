@@ -45,6 +45,13 @@ class MFTrainer(GeneralTorchTrainer):
         return init_dict
 
     def _hook_on_fit_end(self, ctx):
+        """
+        Finish a fit.
+
+        Args:
+            self: write your description
+            ctx: write your description
+        """
         results = {
             f"{ctx.cur_mode}_avg_loss": ctx.loss_batch_total / ctx.num_samples,
             f"{ctx.cur_mode}_total": ctx.num_samples
@@ -52,6 +59,13 @@ class MFTrainer(GeneralTorchTrainer):
         setattr(ctx, 'eval_metrics', results)
 
     def _hook_on_batch_forward(self, ctx):
+        """
+        Rewrite the loss_batch context variable based on the current data batch forward computation.
+
+        Args:
+            self: write your description
+            ctx: write your description
+        """
         indices, ratings = ctx.data_batch
         pred, label, ratio = ctx.model(indices, ratings)
         ctx.loss_batch = CtxVar(
@@ -60,12 +74,26 @@ class MFTrainer(GeneralTorchTrainer):
         ctx.batch_size = len(ratings)
 
     def _hook_on_batch_end(self, ctx):
+        """
+        Update batch statistics after a batch end event.
+
+        Args:
+            self: write your description
+            ctx: write your description
+        """
         # update statistics
         ctx.num_samples += ctx.batch_size
         ctx.loss_batch_total += ctx.loss_batch.item() * ctx.batch_size
         ctx.loss_regular_total += float(ctx.get("loss_regular", 0.))
 
     def _hook_on_batch_forward_flop_count(self, ctx):
+        """
+        Calculates the flops per sample for the given batch and updates the monitor.
+
+        Args:
+            self: write your description
+            ctx: write your description
+        """
         if not isinstance(self.ctx.monitor, Monitor):
             logger.warning(
                 f"The trainer {type(self)} does contain a valid monitor, "
@@ -113,6 +141,12 @@ class MFTrainer(GeneralTorchTrainer):
 
 
 def call_mf_trainer(trainer_type):
+    """
+    Call MF trainer if trainer_type is not None.
+
+    Args:
+        trainer_type: write your description
+    """
     if trainer_type == "mftrainer":
         trainer_builder = MFTrainer
         return trainer_builder

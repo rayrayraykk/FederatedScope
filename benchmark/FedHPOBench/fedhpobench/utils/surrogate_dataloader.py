@@ -11,6 +11,16 @@ from fedhpob.utils.tabular_dataloader import load_data
 
 
 def sampling(X, Y, over_rate=1, down_rate=1.0, cvg_score=0.5):
+    """
+    Samples the data based on the cross - validation score.
+
+    Args:
+        X: write your description
+        Y: write your description
+        over_rate: write your description
+        down_rate: write your description
+        cvg_score: write your description
+    """
     rel_score = Y
     over_X = np.repeat(X[rel_score > cvg_score], over_rate, axis=0)
     over_Y = np.repeat(Y[rel_score > cvg_score], over_rate, axis=0)
@@ -26,6 +36,15 @@ def sampling(X, Y, over_rate=1, down_rate=1.0, cvg_score=0.5):
 
 
 def load_surrogate_model(modeldir, model, dname, algo):
+    """
+    Load a surrogate model.
+
+    Args:
+        modeldir: write your description
+        model: write your description
+        dname: write your description
+        algo: write your description
+    """
     model_list = []
     path = os.path.join(modeldir, model, dname, algo)
     file_names = os.listdir(path)

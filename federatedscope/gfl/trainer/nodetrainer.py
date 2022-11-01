@@ -29,6 +29,13 @@ class NodeFullBatchTrainer(GeneralTorchTrainer):
         return init_dict
 
     def _hook_on_batch_forward(self, ctx):
+        """
+        Augment the context with the batch - forward prediction
+
+        Args:
+            self: write your description
+            ctx: write your description
+        """
         batch = ctx.data_batch.to(ctx.device)
         pred = ctx.model(batch)[batch['{}_mask'.format(ctx.cur_split)]]
         label = batch.y[batch['{}_mask'.format(ctx.cur_split)]]
@@ -40,6 +47,13 @@ class NodeFullBatchTrainer(GeneralTorchTrainer):
         ctx.y_prob = CtxVar(pred, LIFECYCLE.BATCH)
 
     def _hook_on_batch_forward_flop_count(self, ctx):
+        """
+        Calculates the flops per sample for the batch forward call.
+
+        Args:
+            self: write your description
+            ctx: write your description
+        """
         if not isinstance(self.ctx.monitor, Monitor):
             logger.warning(
                 f"The trainer {type(self)} does contain a valid monitor, "
@@ -122,6 +136,13 @@ class NodeMiniBatchTrainer(GeneralTorchTrainer):
         return init_dict
 
     def _hook_on_epoch_start(self, ctx):
+        """
+        Process a start epoch.
+
+        Args:
+            self: write your description
+            ctx: write your description
+        """
         if not isinstance(ctx.get("{}_loader".format(ctx.cur_split)),
                           ReIterator):
             if isinstance(ctx.get("{}_loader".format(ctx.cur_split)),
@@ -135,6 +156,13 @@ class NodeMiniBatchTrainer(GeneralTorchTrainer):
                     ReIterator(ctx.get("{}_loader".format(ctx.cur_split))))
 
     def _hook_on_batch_forward(self, ctx):
+        """
+        Process a batch forward pass.
+
+        Args:
+            self: write your description
+            ctx: write your description
+        """
         if ctx.cur_split == 'train':
             # For training
             if self.is_NeighborSampler:
@@ -168,6 +196,12 @@ class NodeMiniBatchTrainer(GeneralTorchTrainer):
 
 
 def call_node_level_trainer(trainer_type):
+    """
+    Call a node level trainer based on the trainer_type.
+
+    Args:
+        trainer_type: write your description
+    """
     if trainer_type == 'nodefullbatch_trainer':
         trainer_builder = NodeFullBatchTrainer
     elif trainer_type == 'nodeminibatch_trainer':

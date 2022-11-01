@@ -11,6 +11,15 @@ from federatedscope.organizer.utils import anonymize, args2yaml
 # ---------------------------------------------------------------------- #
 class Lobby(object):
     def __init__(self, host='localhost', port=6379, db=0):
+        """
+        Initialize redis connection
+
+        Args:
+            self: write your description
+            host: write your description
+            port: write your description
+            db: write your description
+        """
         self.r = redis.StrictRedis(host=host, port=port, db=db)
         self.pool = []
         self._set_up()
@@ -139,6 +148,12 @@ lobby = Lobby()
 # ---------------------------------------------------------------------- #
 @organizer.task
 def create_room(args, psw):
+    """
+    Creates a new room
+
+    Args:
+        psw: write your description
+    """
     print('Creating room...')
     room_id = lobby.create_room(args, psw)
     rtn_info = f"The room was created successfully and the id is {room_id}."
@@ -148,6 +163,11 @@ def create_room(args, psw):
 
 @organizer.task
 def display_room():
+    """
+    Displays the current lobby room
+
+    Args:
+    """
     room = lobby.display_room()
     rtn_info = ""
     for key, value in room.items():
@@ -159,11 +179,23 @@ def display_room():
 
 @organizer.task
 def view_room(room_id, psw=None):
+    """
+    View a room
+
+    Args:
+        room_id: write your description
+        psw: write your description
+    """
     rtn_info = lobby.view_room(room_id, psw)
     return rtn_info
 
 
 @organizer.task
 def shut_down():
+    """
+    Shut down the lobby and return the exit code.
+
+    Args:
+    """
     lobby.shut_down()
     return 'Shut down all rooms successfully.'

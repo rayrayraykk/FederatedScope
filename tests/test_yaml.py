@@ -10,6 +10,12 @@ logger = logging.getLogger(__name__)
 
 class YAMLTest(unittest.TestCase):
     def setUp(self):
+        """
+        Sets up the test environment.
+
+        Args:
+            self: write your description
+        """
         self.exclude_all = ['benchmark', 'scripts']
         self.exclude_file = [
             '.pre-commit-config.yaml', 'meta.yaml',
@@ -26,6 +32,12 @@ class YAMLTest(unittest.TestCase):
         print(('Testing %s.%s' % (type(self).__name__, self._testMethodName)))
 
     def test_yaml(self):
+        """
+        Test merge_from_file.
+
+        Args:
+            self: write your description
+        """
         init_cfg = global_cfg.clone()
         sign, cont = False, False
         for dirpath, _, filenames in os.walk(self.root):

@@ -22,6 +22,12 @@ class OrganizerClient(cmd2.Cmd):
     timeout = 10
 
     def __init__(self):
+        """
+        Initialize the instance variables.
+
+        Args:
+            self: write your description
+        """
         super().__init__(
             multiline_commands=['echo'],
             include_ipy=True,
@@ -40,6 +46,13 @@ class OrganizerClient(cmd2.Cmd):
         self.foreground_color = Fg.CYAN.name.lower()
 
     def fancy_output(self, out):
+        """
+        Print a pretty colored output.
+
+        Args:
+            self: write your description
+            out: write your description
+        """
         return self.poutput(style(out, fg=Fg.GREEN, bg=Bg.WHITE))
 
     # ---------------------------------------------------------------------- #
@@ -47,6 +60,13 @@ class OrganizerClient(cmd2.Cmd):
     # ---------------------------------------------------------------------- #
     @cmd2.with_category(ECS_CATEGORY)
     def do_add_ecs(self, line):
+        """
+        Add an ECS key
+
+        Args:
+            self: write your description
+            line: write your description
+        """
         'Usage: add_ecs ip user psw\n\n' \
             'Add ECS to client control list\n\n' \
             'required arguments:\n' \
@@ -67,6 +87,13 @@ class OrganizerClient(cmd2.Cmd):
 
     @cmd2.with_category(ECS_CATEGORY)
     def do_del_ecs(self, line):
+        """
+        Delete ECS tasks
+
+        Args:
+            self: write your description
+            line: write your description
+        """
         'Usage: del_ecs ip\n\n' \
             'Delete ECS from client control list\n\n' \
             'required arguments:\n' \
@@ -83,6 +110,13 @@ class OrganizerClient(cmd2.Cmd):
 
     @cmd2.with_category(ECS_CATEGORY)
     def do_display_ecs(self, line):
+        """
+        Display the ECS information
+
+        Args:
+            self: write your description
+            line: write your description
+        """
         'Usage: display_ecs' \
             'Display saved ECS in client control list\n\n' \
             'Example:\n' \
@@ -97,6 +131,13 @@ class OrganizerClient(cmd2.Cmd):
 
     @cmd2.with_category(ECS_CATEGORY)
     def do_join_room(self, line):
+        """
+        Join a room
+
+        Args:
+            self: write your description
+            line: write your description
+        """
         'Usage: join_room ip room_id other_opts\n\n' \
             'Let an ECS join a specific room\n\n' \
             'required arguments:\n' \
@@ -136,6 +177,13 @@ class OrganizerClient(cmd2.Cmd):
     # ---------------------------------------------------------------------- #
     @cmd2.with_category(TASK_CATEGORY)
     def do_display_task(self, line):
+        """
+        Display the list of tasks for each IP
+
+        Args:
+            self: write your description
+            line: write your description
+        """
         'Usage: display_task' \
             'Display all running tasks in client task list\n\n' \
             'Example:\n' \
@@ -150,6 +198,13 @@ class OrganizerClient(cmd2.Cmd):
     # ---------------------------------------------------------------------- #
     @cmd2.with_category(SEVER_CATEGORY)
     def do_create_room(self, line):
+        """
+        Create a new room
+
+        Args:
+            self: write your description
+            line: write your description
+        """
         'Usage: create_room command psw\n\n' \
             'Create FS room in server with specific command\n\n' \
             'required arguments:\n' \
@@ -175,6 +230,13 @@ class OrganizerClient(cmd2.Cmd):
 
     @cmd2.with_category(SEVER_CATEGORY)
     def do_update_room(self, line):
+        """
+        Update room for organizer
+
+        Args:
+            self: write your description
+            line: write your description
+        """
         'Usage: update_room' \
             'Fetch all FS rooms from Lobby (will forget all saved room)\n\n' \
             'Example:\n' \
@@ -200,6 +262,13 @@ class OrganizerClient(cmd2.Cmd):
 
     @cmd2.with_category(SEVER_CATEGORY)
     def do_view_room(self, line):
+        """
+        View a room
+
+        Args:
+            self: write your description
+            line: write your description
+        """
         'Usage: view_room room_id psw verbose\n\n' \
             'View specific FS room\n\n' \
             'required arguments:\n' \
@@ -237,6 +306,13 @@ class OrganizerClient(cmd2.Cmd):
 
     @cmd2.with_category(SEVER_CATEGORY)
     def do_shut_down(self, line):
+        """
+        Shut down the experiment.
+
+        Args:
+            self: write your description
+            line: write your description
+        """
         'Usage: shut_down' \
             'Shut down all rooms and quit\n\n' \
             'Example:\n' \

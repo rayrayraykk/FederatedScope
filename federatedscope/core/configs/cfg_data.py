@@ -7,6 +7,12 @@ logger = logging.getLogger(__name__)
 
 
 def extend_data_cfg(cfg):
+    """
+    Extend the given data cfg with the Dataset related options.
+
+    Args:
+        cfg: write your description
+    """
     # ---------------------------------------------------------------------- #
     # Dataset related options
     # ---------------------------------------------------------------------- #
@@ -71,6 +77,12 @@ def extend_data_cfg(cfg):
 
 
 def assert_data_cfg(cfg):
+    """
+    Assert that the given data configuration is valid.
+
+    Args:
+        cfg: write your description
+    """
     if cfg.dataloader.type == 'graphsaint-rw':
         assert cfg.model.layer == cfg.dataloader.walk_length, 'Sample ' \
                                                                    'size ' \

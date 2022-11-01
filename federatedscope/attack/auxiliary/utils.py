@@ -10,10 +10,24 @@ logger = logging.getLogger(__name__)
 
 
 def label_to_onehot(target, num_classes=100):
+    """
+    Convert a target label to one - hot encoding
+
+    Args:
+        target: write your description
+        num_classes: write your description
+    """
     return torch.nn.functional.one_hot(target, num_classes)
 
 
 def cross_entropy_for_onehot(pred, target):
+    """
+    Cross entropy for one - hot encoding.
+
+    Args:
+        pred: write your description
+        target: write your description
+    """
     return torch.mean(torch.sum(-target * F.log_softmax(pred, dim=-1), 1))
 
 
@@ -44,6 +58,13 @@ def iDLG_trick(original_gradient, num_class, is_one_hot_label=False):
 
 
 def cos_sim(input_gradient, gt_gradient):
+    """
+    Compute cosine similarity between two gradients
+
+    Args:
+        input_gradient: write your description
+        gt_gradient: write your description
+    """
     total = 1 - torch.nn.functional.cosine_similarity(
         input_gradient.flatten(), gt_gradient.flatten(), 0, 1e-10)
 
@@ -90,6 +111,13 @@ def approximate_func(x, device, C1=20, C2=0.5):
 
 
 def get_classifier(classifier: str, model=None):
+    """
+    Get a sklearn classifier.
+
+    Args:
+        classifier: write your description
+        model: write your description
+    """
     if model is not None:
         return model
 
@@ -133,6 +161,12 @@ def get_data_info(dataset_name):
 
 
 def get_data_sav_fn(dataset_name):
+    """
+    Gets the sav file for a particular dataset
+
+    Args:
+        dataset_name: write your description
+    """
     if dataset_name.lower() == 'femnist':
         return sav_femnist_image
     else:
@@ -142,6 +176,14 @@ def get_data_sav_fn(dataset_name):
 
 
 def sav_femnist_image(data, sav_pth, name):
+    """
+    Creates a femnist image from a data matrix
+
+    Args:
+        data: write your description
+        sav_pth: write your description
+        name: write your description
+    """
 
     _ = plt.figure(figsize=(4, 4))
     # print(data.shape)
@@ -168,6 +210,12 @@ def sav_femnist_image(data, sav_pth, name):
 
 
 def get_info_diff_loss(info_diff_type):
+    """
+    Get info_diff loss based on info_diff_type
+
+    Args:
+        info_diff_type: write your description
+    """
     if info_diff_type.lower() == 'l2':
         info_diff_loss = torch.nn.MSELoss(reduction='sum')
     elif info_diff_type.lower() == 'l1':
@@ -247,6 +295,12 @@ def get_generator(dataset_name):
 
 
 def get_data_property(ctx):
+    """
+    Returns the data property for the current batch of data.
+
+    Args:
+        ctx: write your description
+    """
     # A SHOWCASE for Femnist dataset: Property := whether contains a circle.
     x, label = [_.to(ctx.device) for _ in ctx.data_batch]
 
@@ -326,6 +380,14 @@ def get_passive_PIA_auxiliary_dataset(dataset_name):
 
 
 def plot_mia_loss_compare(loss_in_pth, loss_out_pth, in_round=20):
+    """
+    Plot MIA loss for comparison with a given round.
+
+    Args:
+        loss_in_pth: write your description
+        loss_out_pth: write your description
+        in_round: write your description
+    """
     loss_in = np.loadtxt(loss_in_pth, delimiter=',')
     loss_out = np.loadtxt(loss_out_pth, delimiter=',')
 

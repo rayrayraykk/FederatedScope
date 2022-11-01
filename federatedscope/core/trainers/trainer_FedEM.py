@@ -26,6 +26,19 @@ class FedEMTrainer(GeneralMultiModelTrainer):
                  device=None,
                  config=None,
                  base_trainer: Type[GeneralTorchTrainer] = None):
+        """
+        Initializes the FedEM trainer.
+
+        Args:
+            self: write your description
+            model_nums: write your description
+            models_interact_mode: write your description
+            model: write your description
+            data: write your description
+            device: write your description
+            config: write your description
+            base_trainer: write your description
+        """
         super(FedEMTrainer,
               self).__init__(model_nums, models_interact_mode, model, data,
                              device, config, base_trainer)

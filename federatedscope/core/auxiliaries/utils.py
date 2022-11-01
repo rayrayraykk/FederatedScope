@@ -23,11 +23,32 @@ logger = logging.getLogger(__name__)
 # ****** Worker-related utils ******
 class Timeout(object):
     def __init__(self, seconds, max_failure=5):
+        """
+        Initialize the failure count.
+
+        Args:
+            self: write your description
+            seconds: write your description
+            max_failure: write your description
+        """
         self.seconds = seconds
         self.max_failure = max_failure
 
     def __enter__(self):
+        """
+        Set up the timeout handler.
+
+        Args:
+            self: write your description
+        """
         def signal_handler(signum, frame):
+            """
+            Timeout error handler.
+
+            Args:
+                signum: write your description
+                frame: write your description
+            """
             raise TimeoutError()
 
         if self.seconds > 0:
@@ -36,19 +57,55 @@ class Timeout(object):
         return self
 
     def __exit__(self, exc_type, exc_value, traceback):
+        """
+        Exit the application.
+
+        Args:
+            self: write your description
+            exc_type: write your description
+            exc_value: write your description
+            traceback: write your description
+        """
         signal.alarm(0)
 
     def reset(self):
+        """
+        Reset the alarm to 0.
+
+        Args:
+            self: write your description
+        """
         signal.alarm(self.seconds)
 
     def block(self):
+        """
+        Block the current thread.
+
+        Args:
+            self: write your description
+        """
         signal.alarm(0)
 
     def exceed_max_failure(self, num_failure):
+        """
+        Returns True if the given failure count exceeds the maximum failure count.
+
+        Args:
+            self: write your description
+            num_failure: write your description
+        """
         return num_failure > self.max_failure
 
 
 def batch_iter(data, batch_size=64, shuffled=True):
+    """
+    Generate batches of data from a dataset.
+
+    Args:
+        data: write your description
+        batch_size: write your description
+        shuffled: write your description
+    """
     assert 'x' in data and 'y' in data
     data_x = data['x']
     data_y = data['y']
@@ -92,6 +149,12 @@ def merge_dict_of_results(dict1, dict2):
 
 
 def param2tensor(param):
+    """
+    Convert parameter to tensor.
+
+    Args:
+        param: write your description
+    """
     if isinstance(param, list):
         param = torch.FloatTensor(param)
     elif isinstance(param, int):
@@ -102,6 +165,13 @@ def param2tensor(param):
 
 
 def merge_param_dict(raw_param, filtered_param):
+    """
+    Merges the filtered_param dict into the raw_param dict.
+
+    Args:
+        raw_param: write your description
+        filtered_param: write your description
+    """
     for key in filtered_param.keys():
         raw_param[key] = filtered_param[key]
     return raw_param
@@ -112,6 +182,16 @@ def calculate_time_cost(instance_number,
                         comp_speed=None,
                         comm_bandwidth=None,
                         augmentation_factor=3.0):
+    """
+    Calculates the time cost of a computation.
+
+    Args:
+        instance_number: write your description
+        comm_size: write your description
+        comp_speed: write your description
+        comm_bandwidth: write your description
+        augmentation_factor: write your description
+    """
     # Served as an example, this cost model is adapted from FedScale at
     # https://github.com/SymbioticLab/FedScale/blob/master/fedscale/core/
     # internal/client.py#L35 (Apache License Version 2.0)
@@ -128,6 +208,12 @@ def calculate_time_cost(instance_number,
 
 # ****** Runner-related utils ******
 def setup_seed(seed):
+    """
+    Set random seed for random number generators.
+
+    Args:
+        seed: write your description
+    """
     np.random.seed(seed)
     random.seed(seed)
     if torch is not None:
@@ -139,6 +225,12 @@ def setup_seed(seed):
 
 
 def get_resource_info(filename):
+    """
+    Load a resource_info_file file.
+
+    Args:
+        filename: write your description
+    """
     if filename is None or not os.path.exists(filename):
         logger.info('The device information file is not provided')
         return None

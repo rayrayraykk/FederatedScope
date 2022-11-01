@@ -27,6 +27,12 @@ def get_transform(config, package):
     transforms = getattr(import_module(package), 'transforms')
 
     def convert(trans):
+        """
+        Convert a tuple of transform types to functions.
+
+        Args:
+            trans: write your description
+        """
         # Recursively converting expressions to functions
         if isinstance(trans[0], str):
             if len(trans) == 1:

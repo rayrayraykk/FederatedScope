@@ -19,6 +19,15 @@ class VMFDataset:
     """
     def _split_n_clients_rating(self, ratings: csc_matrix, num_client: int,
                                 test_portion: float):
+        """
+        Splits ratings matrix into train and test clients.
+
+        Args:
+            self: write your description
+            ratings: write your description
+            num_client: write your description
+            test_portion: write your description
+        """
         id_item = np.arange(self.n_item)
         shuffle(id_item)
         items_per_client = np.array_split(id_item, num_client)
@@ -37,6 +46,15 @@ class HMFDataset:
     """
     def _split_n_clients_rating(self, ratings: csc_matrix, num_client: int,
                                 test_portion: float):
+        """
+        Splits the ratings matrix into train and test sets.
+
+        Args:
+            self: write your description
+            ratings: write your description
+            num_client: write your description
+            test_portion: write your description
+        """
         id_user = np.arange(self.n_user)
         shuffle(id_user)
         users_per_client = np.array_split(id_user, num_client)
@@ -59,6 +77,16 @@ class MovieLensData(object):
         download (bool): indicator to download dataset
     """
     def __init__(self, root, num_client, train_portion=0.9, download=True):
+        """
+        Train lens data for a particular root.
+
+        Args:
+            self: write your description
+            root: write your description
+            num_client: write your description
+            train_portion: write your description
+            download: write your description
+        """
         super(MovieLensData, self).__init__()
 
         self.root = root
@@ -79,6 +107,14 @@ class MovieLensData(object):
 
     def _split_train_test_ratings(self, ratings: csc_matrix,
                                   test_portion: float):
+        """
+        Splits the ratings matrix into train and test sets.
+
+        Args:
+            self: write your description
+            ratings: write your description
+            test_portion: write your description
+        """
         n_ratings = ratings.count_nonzero()
         id_test = np.random.choice(n_ratings,
                                    int(n_ratings * test_portion),
@@ -97,6 +133,12 @@ class MovieLensData(object):
         return train_ratings, test_ratings
 
     def _read_raw(self):
+        """
+        Reads the raw data file
+
+        Args:
+            self: write your description
+        """
         fpath = os.path.join(self.root, self.base_folder, self.filename,
                              self.raw_file)
         data = pd.read_csv(fpath,
@@ -112,6 +154,12 @@ class MovieLensData(object):
         return data
 
     def _load_meta(self):
+        """
+        Loads the ratings from the metadata file
+
+        Args:
+            self: write your description
+        """
         meta_path = os.path.join(self.root, self.base_folder, "ratings.pkl")
         if not os.path.exists(meta_path):
             logger.info("Processing data into {} parties.")
@@ -144,11 +192,23 @@ class MovieLensData(object):
         return ratings
 
     def _check_integrity(self):
+        """
+        Check integrity of the file.
+
+        Args:
+            self: write your description
+        """
         fpath = os.path.join(self.root, self.base_folder, self.filename,
                              self.raw_file)
         return check_integrity(fpath, self.raw_file_md5)
 
     def download(self):
+        """
+        Downloads and extracts the archive
+
+        Args:
+            self: write your description
+        """
         if self._check_integrity():
             logger.info("Files already downloaded and verified")
             return

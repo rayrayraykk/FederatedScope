@@ -20,6 +20,16 @@ class MyWorker(Worker):
                  sleep_interval=0,
                  cfg=None,
                  **kwargs):
+        """
+        Initialize the worker.
+
+        Args:
+            self: write your description
+            benchmark: write your description
+            monitor: write your description
+            sleep_interval: write your description
+            cfg: write your description
+        """
         super(MyWorker, self).__init__(**kwargs)
         self.benchmark = benchmark
         self.monitor = monitor
@@ -63,6 +73,12 @@ class MyWorker(Worker):
 
 
 def run_hpbandster(cfg):
+    """
+    Run the Hpbandster Hpbandster optimizer.
+
+    Args:
+        cfg: write your description
+    """
     if cfg.optimizer.type == 'bo_kde':
         cfg.optimizer.min_budget = cfg.optimizer.max_budget
     monitor = Monitor(cfg)

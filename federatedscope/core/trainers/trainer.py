@@ -29,6 +29,18 @@ class Trainer(BaseTrainer):
                  config,
                  only_for_eval=False,
                  monitor=None):
+        """
+        Initialize the trainer.
+
+        Args:
+            self: write your description
+            model: write your description
+            data: write your description
+            device: write your description
+            config: write your description
+            only_for_eval: write your description
+            monitor: write your description
+        """
         self._cfg = config
 
         self.ctx = Context(model, self.cfg, data, device)
@@ -72,10 +84,23 @@ class Trainer(BaseTrainer):
 
     @property
     def cfg(self):
+        """
+        Returns the configuration object for this node.
+
+        Args:
+            self: write your description
+        """
         return self._cfg
 
     @cfg.setter
     def cfg(self, new_cfg):
+        """
+        Set the configuration for this instance.
+
+        Args:
+            self: write your description
+            new_cfg: write your description
+        """
         self._cfg = new_cfg
         self._setup_data_related_var_in_ctx(self.ctx)
 
@@ -103,15 +128,41 @@ class Trainer(BaseTrainer):
         ctx.merge_from_dict(init_dict)
 
     def register_default_hooks_train(self):
+        """
+        Register the default training hooks for the training object.
+
+        Args:
+            self: write your description
+        """
         pass
 
     def register_default_hooks_eval(self):
+        """
+        Register the default evaluation hooks.
+
+        Args:
+            self: write your description
+        """
         pass
 
     def register_default_hooks_ft(self):
+        """
+        Register the default hooks for FT serialization.
+
+        Args:
+            self: write your description
+        """
         pass
 
     def reset_hook_in_train(self, target_trigger, target_hook_name=None):
+        """
+        Resets a hook in the train and triggers.
+
+        Args:
+            self: write your description
+            target_trigger: write your description
+            target_hook_name: write your description
+        """
         hooks_dict = self.hooks_in_train
         del_one_hook_idx = self._reset_hook_in_trigger(hooks_dict,
                                                        target_hook_name,
@@ -119,6 +170,14 @@ class Trainer(BaseTrainer):
         return del_one_hook_idx
 
     def reset_hook_in_eval(self, target_trigger, target_hook_name=None):
+        """
+        Resets a hook in the eval dict.
+
+        Args:
+            self: write your description
+            target_trigger: write your description
+            target_hook_name: write your description
+        """
         hooks_dict = self.hooks_in_eval
         del_one_hook_idx = self._reset_hook_in_trigger(hooks_dict,
                                                        target_hook_name,
@@ -127,6 +186,15 @@ class Trainer(BaseTrainer):
 
     def replace_hook_in_train(self, new_hook, target_trigger,
                               target_hook_name):
+        """
+        Replaces a hook in the training hook list.
+
+        Args:
+            self: write your description
+            new_hook: write your description
+            target_trigger: write your description
+            target_hook_name: write your description
+        """
         del_one_hook_idx = self.reset_hook_in_train(
             target_trigger=target_trigger, target_hook_name=target_hook_name)
         self.register_hook_in_train(new_hook=new_hook,
@@ -134,6 +202,15 @@ class Trainer(BaseTrainer):
                                     insert_pos=del_one_hook_idx)
 
     def replace_hook_in_eval(self, new_hook, target_trigger, target_hook_name):
+        """
+        Replaces a hook in the evaluation of the environment.
+
+        Args:
+            self: write your description
+            new_hook: write your description
+            target_trigger: write your description
+            target_hook_name: write your description
+        """
         del_one_hook_idx = self.reset_hook_in_eval(
             target_trigger=target_trigger, target_hook_name=target_hook_name)
         self.register_hook_in_eval(new_hook=new_hook,
@@ -142,6 +219,15 @@ class Trainer(BaseTrainer):
 
     def _reset_hook_in_trigger(self, hooks_dict, target_hook_name,
                                target_trigger):
+        """
+        Resets the hooks_dict dict to contain only the hooks for the specified target_hook_
+
+        Args:
+            self: write your description
+            hooks_dict: write your description
+            target_hook_name: write your description
+            target_trigger: write your description
+        """
         # clean/delete existing hooks for a specific trigger,
         # if target_hook_name given, will clean only the specific one;
         # otherwise, will clean all hooks for the trigger.
@@ -173,6 +259,17 @@ class Trainer(BaseTrainer):
                                insert_pos=None,
                                base_hook=None,
                                insert_mode="before"):
+        """
+        Register a new hook in the training hook list.
+
+        Args:
+            self: write your description
+            new_hook: write your description
+            trigger: write your description
+            insert_pos: write your description
+            base_hook: write your description
+            insert_mode: write your description
+        """
         hooks_dict = self.hooks_in_train
         self._register_hook(base_hook, hooks_dict, insert_mode, insert_pos,
                             new_hook, trigger)
@@ -183,6 +280,17 @@ class Trainer(BaseTrainer):
                             insert_pos=None,
                             base_hook=None,
                             insert_mode="before"):
+        """
+        Register a new hook in the framebuffer.
+
+        Args:
+            self: write your description
+            new_hook: write your description
+            trigger: write your description
+            insert_pos: write your description
+            base_hook: write your description
+            insert_mode: write your description
+        """
         hooks_dict = self.hooks_in_ft
         self._register_hook(base_hook, hooks_dict, insert_mode, insert_pos,
                             new_hook, trigger)
@@ -193,12 +301,35 @@ class Trainer(BaseTrainer):
                               insert_pos=None,
                               base_hook=None,
                               insert_mode="before"):
+        """
+        Register a new hook in eval mode.
+
+        Args:
+            self: write your description
+            new_hook: write your description
+            trigger: write your description
+            insert_pos: write your description
+            base_hook: write your description
+            insert_mode: write your description
+        """
         hooks_dict = self.hooks_in_eval
         self._register_hook(base_hook, hooks_dict, insert_mode, insert_pos,
                             new_hook, trigger)
 
     def _register_hook(self, base_hook, hooks_dict, insert_mode, insert_pos,
                        new_hook, trigger):
+        """
+        Register a new hook in the dict.
+
+        Args:
+            self: write your description
+            base_hook: write your description
+            hooks_dict: write your description
+            insert_mode: write your description
+            insert_pos: write your description
+            new_hook: write your description
+            trigger: write your description
+        """
         assert trigger in self.HOOK_TRIGGER, \
             f"Got {trigger} as hook trigger, you should specify a string " \
             f"within {self.HOOK_TRIGGER}."
@@ -230,6 +361,14 @@ class Trainer(BaseTrainer):
 
     @use_diff
     def train(self, target_data_split_name="train", hooks_set=None):
+        """
+        Runs the training routine.
+
+        Args:
+            self: write your description
+            target_data_split_name: write your description
+            hooks_set: write your description
+        """
         hooks_set = hooks_set or self.hooks_in_train
 
         self.ctx.check_split(target_data_split_name)
@@ -240,6 +379,14 @@ class Trainer(BaseTrainer):
         return num_samples, self.get_model_para(), self.ctx.eval_metrics
 
     def evaluate(self, target_data_split_name="test", hooks_set=None):
+        """
+        Evaluates the split.
+
+        Args:
+            self: write your description
+            target_data_split_name: write your description
+            hooks_set: write your description
+        """
         hooks_set = hooks_set or self.hooks_in_eval
 
         if self.ctx.check_split(target_data_split_name, skip=True):
@@ -250,6 +397,14 @@ class Trainer(BaseTrainer):
         return self.ctx.eval_metrics
 
     def finetune(self, target_data_split_name="train", hooks_set=None):
+        """
+        Executes the finetune subroutine of the specified split.
+
+        Args:
+            self: write your description
+            target_data_split_name: write your description
+            hooks_set: write your description
+        """
         hooks_set = hooks_set or self.hooks_in_ft
 
         self.ctx.check_split(target_data_split_name)
@@ -279,6 +434,13 @@ class Trainer(BaseTrainer):
 
     @lifecycle(LIFECYCLE.EPOCH)
     def _run_epoch(self, hooks_set):
+        """
+        Runs the hooks for each epoch.
+
+        Args:
+            self: write your description
+            hooks_set: write your description
+        """
         for epoch_i in range(
                 getattr(self.ctx, f"num_{self.ctx.cur_split}_epoch")):
             self.ctx.cur_epoch_i = CtxVar(epoch_i, "epoch")
@@ -293,6 +455,13 @@ class Trainer(BaseTrainer):
 
     @lifecycle(LIFECYCLE.BATCH)
     def _run_batch(self, hooks_set):
+        """
+        Runs the batch hooks for the current epoch.
+
+        Args:
+            self: write your description
+            hooks_set: write your description
+        """
         for batch_i in range(
                 getattr(self.ctx, f"num_{self.ctx.cur_split}_batch")):
             self.ctx.cur_batch_i = CtxVar(batch_i, LIFECYCLE.BATCH)
@@ -395,11 +564,26 @@ class Trainer(BaseTrainer):
                     elem[0], filter_keywords), state_dict.items()))
 
     def save_model(self, path, cur_round=-1):
+        """
+        Saves the model to disk.
+
+        Args:
+            self: write your description
+            path: write your description
+            cur_round: write your description
+        """
         raise NotImplementedError(
             "The function `save_model` should be implemented according to "
             "the ML backend (Pytorch, Tensorflow ...).")
 
     def load_model(self, path):
+        """
+        Loads the model at the specified path.
+
+        Args:
+            self: write your description
+            path: write your description
+        """
         raise NotImplementedError(
             "The function `load_model` should be implemented according to "
             "the ML backend (Pytorch, Tensorflow ...).")

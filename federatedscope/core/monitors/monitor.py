@@ -33,6 +33,14 @@ class Monitor(object):
     SUPPORTED_FORMS = ['weighted_avg', 'avg', 'fairness', 'raw']
 
     def __init__(self, cfg, monitored_object=None):
+        """
+        Initialize the worker.
+
+        Args:
+            self: write your description
+            cfg: write your description
+            monitored_object: write your description
+        """
         self.log_res_best = {}
         self.outdir = cfg.outdir
         self.use_wandb = cfg.wandb.use
@@ -93,20 +101,45 @@ class Monitor(object):
                 exit()
 
     def eval(self, ctx):
+        """
+        Evaluates the metric_calculator for the given context.
+
+        Args:
+            self: write your description
+            ctx: write your description
+        """
         results = self.metric_calculator.eval(ctx)
         return results
 
     def global_converged(self):
+        """
+        Calculate wall time and round when global convergence has been reached.
+
+        Args:
+            self: write your description
+        """
         self.global_convergence_wall_time = datetime.datetime.now(
         ) - self.fl_begin_wall_time
         self.global_convergence_round = self.monitored_object.state
 
     def local_converged(self):
+        """
+        Calculate time to wait until local convergence.
+
+        Args:
+            self: write your description
+        """
         self.local_convergence_wall_time = datetime.datetime.now(
         ) - self.fl_begin_wall_time
         self.local_convergence_round = self.monitored_object.state
 
     def finish_fl(self):
+        """
+        Write system metrics to file.
+
+        Args:
+            self: write your description
+        """
         self.fl_end_wall_time = datetime.datetime.now(
         ) - self.fl_begin_wall_time
 
@@ -116,6 +149,13 @@ class Monitor(object):
             f.write(json.dumps(system_metrics) + "\n")
 
     def get_sys_metrics(self, verbose=True):
+        """
+        Return system metrics.
+
+        Args:
+            self: write your description
+            verbose: write your description
+        """
         system_metrics = {
             "id": self.monitored_object.ID,
             "fl_end_time_minutes": self.fl_end_wall_time.total_seconds() /
@@ -236,6 +276,14 @@ class Monitor(object):
     def save_formatted_results(self,
                                formatted_res,
                                save_file_name="eval_results.log"):
+        """
+        Save formatted results to a file.
+
+        Args:
+            self: write your description
+            formatted_res: write your description
+            save_file_name: write your description
+        """
         line = str(formatted_res) + "\n"
         if save_file_name != "":
             with open(os.path.join(self.outdir, save_file_name),
@@ -254,6 +302,13 @@ class Monitor(object):
                 exit()
 
     def finish_fed_runner(self, fl_mode=None):
+        """
+        Finish the FEW runner.
+
+        Args:
+            self: write your description
+            fl_mode: write your description
+        """
         self.compress_raw_res_file()
         if fl_mode == "standalone":
             self.merge_system_metrics_simulation_mode()
@@ -289,6 +344,12 @@ class Monitor(object):
                                 wandb.summary[k] = v
 
     def compress_raw_res_file(self):
+        """
+        Compress the raw res file to be written to disk.
+
+        Args:
+            self: write your description
+        """
         old_f_name = os.path.join(self.outdir, "eval_results.raw")
         if os.path.exists(old_f_name):
             logger.info(
@@ -481,6 +542,13 @@ class Monitor(object):
         return b_local_dissimilarity
 
     def convert_size(self, size_bytes):
+        """
+        Convert bytes to human readable size
+
+        Args:
+            self: write your description
+            size_bytes: write your description
+        """
         import math
         if size_bytes <= 0:
             return str(size_bytes)
@@ -528,9 +596,23 @@ class Monitor(object):
         self.flop_count += 1
 
     def track_upload_bytes(self, bytes):
+        """
+        Track the number of bytes uploaded to the uploader.
+
+        Args:
+            self: write your description
+            bytes: write your description
+        """
         self.total_upload_bytes += bytes
 
     def track_download_bytes(self, bytes):
+        """
+        Track the number of bytes downloaded.
+
+        Args:
+            self: write your description
+            bytes: write your description
+        """
         self.total_download_bytes += bytes
 
     def update_best_result(self, best_results, new_results, results_type):

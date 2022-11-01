@@ -12,6 +12,12 @@ logger = logging.getLogger(__name__)
 
 def wrap_backdoorTrainer(
         base_trainer: Type[GeneralTorchTrainer]) -> Type[GeneralTorchTrainer]:
+    """
+    Wraps a trainer around a backdoor trainer.
+
+    Args:
+        base_trainer: write your description
+    """
 
     # ---------------- attribute-level plug-in -----------------------
     base_trainer.ctx.target_label_ind \
@@ -84,23 +90,47 @@ def wrap_backdoorTrainer(
 
 
 def hook_on_fit_start_init_local_opt(ctx):
+    """
+    Adjust the current epoch to the local epoch when local fit starts.
+
+    Args:
+        ctx: write your description
+    """
 
     ctx.original_epoch = ctx["num_train_epoch"]
     ctx["num_train_epoch"] = ctx.self_epoch
 
 
 def hook_on_fit_end_reset_opt(ctx):
+    """
+    Reset the optimizer when it is finished.
+
+    Args:
+        ctx: write your description
+    """
 
     ctx["num_train_epoch"] = ctx.original_epoch
 
 
 def hook_on_fit_start_init_local_model(ctx):
+    """
+    This is called when the fit starts training the local model.
+
+    Args:
+        ctx: write your description
+    """
 
     # the original global model
     ctx.original_model = copy.deepcopy(ctx.model)
 
 
 def hook_on_fit_end_scale_poisoning(ctx):
+    """
+    Perform scale poisoning on fit end parameters
+
+    Args:
+        ctx: write your description
+    """
 
     # conduct the scale poisoning
     scale_para = ctx.scale_para
@@ -127,6 +157,12 @@ def hook_on_fit_end_scale_poisoning(ctx):
 
 
 def hook_on_fit_start_init_local_pgd(ctx):
+    """
+    Initializes the optimizer with SGD and its parameters
+
+    Args:
+        ctx: write your description
+    """
 
     ctx.original_optimizer = ctx.optimizer
     ctx.original_epoch = ctx["num_train_epoch"]
@@ -176,5 +212,11 @@ def hook_on_epoch_end_project_grad(ctx):
 
 
 def hook_on_fit_end_reset_pgd(ctx):
+    """
+    Reset the PGD optimizer when fit and end optimizer are reset.
+
+    Args:
+        ctx: write your description
+    """
 
     ctx.optimizer = ctx.original_optimizer

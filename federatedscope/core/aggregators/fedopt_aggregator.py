@@ -11,11 +11,27 @@ class FedOptAggregator(ClientsAvgAggregator):
 
     """
     def __init__(self, config, model, device='cpu'):
+        """
+        Initialize the aggregator.
+
+        Args:
+            self: write your description
+            config: write your description
+            model: write your description
+            device: write your description
+        """
         super(FedOptAggregator, self).__init__(model, device, config)
         self.optimizer = get_optimizer(model=self.model,
                                        **config.fedopt.optimizer)
 
     def aggregate(self, agg_info):
+        """
+        Aggregation function for the model
+
+        Args:
+            self: write your description
+            agg_info: write your description
+        """
         new_model = super().aggregate(agg_info)
 
         model = self.model.cpu().state_dict()

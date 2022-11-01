@@ -17,6 +17,14 @@ logger = logging.getLogger(__name__)
 
 class RegexInverseMap:
     def __init__(self, n_dic, val):
+        """
+        Initializes the list from a dictionary.
+
+        Args:
+            self: write your description
+            n_dic: write your description
+            val: write your description
+        """
         self._items = {}
         for key, values in n_dic.items():
             for value in values:
@@ -24,16 +32,35 @@ class RegexInverseMap:
         self.__val = val
 
     def __getitem__(self, key):
+        """
+        Return the value for the given key.
+
+        Args:
+            self: write your description
+            key: write your description
+        """
         for regex in self._items.keys():
             if re.compile(regex).match(key):
                 return self._items[regex]
         return self.__val
 
     def __repr__(self):
+        """
+        Representation of the collection.
+
+        Args:
+            self: write your description
+        """
         return str(self._items.items())
 
 
 def load_dataset(config):
+    """
+    Loads the dataset for the given config.
+
+    Args:
+        config: write your description
+    """
     if config.data.type.lower() == 'toy':
         from federatedscope.tabular.dataloader.toy import load_toy_data
         dataset, modified_config = load_toy_data(config)
@@ -114,6 +141,14 @@ def load_external_data(config=None):
     from federatedscope.core.auxiliaries.transform_builder import get_transform
 
     def load_torchvision_data(name, splits=None, config=None):
+        """
+        Load torch. data dataset.
+
+        Args:
+            name: write your description
+            splits: write your description
+            config: write your description
+        """
         dataset_func = getattr(import_module('torchvision.datasets'), name)
         transform_funcs = get_transform(config, 'torchvision')
         if config.data.args:
@@ -194,6 +229,14 @@ def load_external_data(config=None):
         return data_split_dict
 
     def load_torchtext_data(name, splits=None, config=None):
+        """
+        Load torchtext dataset.
+
+        Args:
+            name: write your description
+            splits: write your description
+            config: write your description
+        """
         from torch.nn.utils.rnn import pad_sequence
         from federatedscope.nlp.dataset.utils import label_to_index
 
@@ -339,11 +382,27 @@ def load_external_data(config=None):
         return data_split_dict
 
     def load_torchaudio_data(name, splits=None, config=None):
+        """
+        Load torchaudio dataset.
+
+        Args:
+            name: write your description
+            splits: write your description
+            config: write your description
+        """
 
         # dataset_func = getattr(import_module('torchaudio.datasets'), name)
         raise NotImplementedError
 
     def load_huggingface_datasets_data(name, splits=None, config=None):
+        """
+        Loads a hugging face datasets.
+
+        Args:
+            name: write your description
+            splits: write your description
+            config: write your description
+        """
         from datasets import load_dataset, load_from_disk
 
         if config.data.args:
@@ -460,6 +519,14 @@ def load_external_data(config=None):
         return data_split_dict
 
     def load_openml_data(tid, splits=None, config=None):
+        """
+        Load OpenML data.
+
+        Args:
+            tid: write your description
+            splits: write your description
+            config: write your description
+        """
         import openml
         from sklearn.model_selection import train_test_split
 
@@ -506,6 +573,13 @@ def load_external_data(config=None):
 
 
 def convert_data_mode(data, config):
+    """
+    Convert mode to data mode
+
+    Args:
+        data: write your description
+        config: write your description
+    """
     if config.federate.mode.lower() == 'standalone':
         return data
     else:
@@ -524,12 +598,25 @@ def convert_data_mode(data, config):
 
 
 def get_func_args(func):
+    """
+    Get the set of arguments that the function expects.
+
+    Args:
+        func: write your description
+    """
     sign = inspect.signature(func).parameters.values()
     sign = set([val.name for val in sign])
     return sign
 
 
 def filter_dict(func, kwarg):
+    """
+    Filters out the common keys of kwarg that are not in kwarg.
+
+    Args:
+        func: write your description
+        kwarg: write your description
+    """
     sign = get_func_args(func)
     common_args = sign.intersection(kwarg.keys())
     filtered_dict = {key: kwarg[key] for key in common_args}

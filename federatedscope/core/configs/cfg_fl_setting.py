@@ -7,6 +7,12 @@ logger = logging.getLogger(__name__)
 
 
 def extend_fl_setting_cfg(cfg):
+    """
+    Extend the configuration with the required options for training and testing.
+
+    Args:
+        cfg: write your description
+    """
     # ---------------------------------------------------------------------- #
     # Federate learning related options
     # ---------------------------------------------------------------------- #
@@ -78,6 +84,12 @@ def extend_fl_setting_cfg(cfg):
 
 
 def assert_fl_setting_cfg(cfg):
+    """
+    Figure out what the Federate client num is and set the appropriate values.
+
+    Args:
+        cfg: write your description
+    """
     assert cfg.federate.mode in ["standalone", "distributed"], \
         f"Please specify the cfg.federate.mode as the string standalone or " \
         f"distributed. But got {cfg.federate.mode}."

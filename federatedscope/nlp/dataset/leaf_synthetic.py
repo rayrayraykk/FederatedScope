@@ -13,10 +13,22 @@ from federatedscope.cv.dataset.leaf import LEAF
 
 
 def sigmoid(x):
+    """
+    Sigmoid function of the sigmoid function of the distribution.
+
+    Args:
+        x: write your description
+    """
     return 1 / (1 + np.exp(-x))
 
 
 def softmax(x):
+    """
+    Softmax function that computes softmax of the input.
+
+    Args:
+        x: write your description
+    """
     ex = np.exp(x)
     sum_ex = np.sum(np.exp(x))
     return ex / sum_ex
@@ -53,6 +65,23 @@ class LEAF_SYNTHETIC(LEAF):
                  alpha=0.4,
                  box=(-1.0, 1.0),
                  uniform_marginal=True):
+        """
+        Load LEAF - semantic data
+
+        Args:
+            self: write your description
+            root: write your description
+            name: write your description
+            n_components: write your description
+            n_tasks: write your description
+            n_test: write your description
+            n_val: write your description
+            dim: write your description
+            noise_level: write your description
+            alpha: write your description
+            box: write your description
+            uniform_marginal: write your description
+        """
 
         self.root = root
         self.n_components = n_components
@@ -98,9 +127,21 @@ class LEAF_SYNTHETIC(LEAF):
                 'Please delete ‘processed’ folder and try again!')
 
     def download(self):
+        """
+        Downloads the file.
+
+        Args:
+            self: write your description
+        """
         pass
 
     def extract(self):
+        """
+        Extracts the data from the archive.
+
+        Args:
+            self: write your description
+        """
         pass
 
     def __getitem__(self, index):
@@ -126,16 +167,36 @@ class LEAF_SYNTHETIC(LEAF):
         return text_dict
 
     def generate_mixture_weights(self):
+        """
+        Generates the mixture weights for each task.
+
+        Args:
+            self: write your description
+        """
         for task_id in range(self.n_tasks):
             self.mixture_weights[task_id] = np.random.dirichlet(
                 alpha=self.alpha)
 
     def generate_components(self):
+        """
+        Generates the components for the model.
+
+        Args:
+            self: write your description
+        """
         self.theta = np.random.uniform(self.box[0],
                                        self.box[1],
                                        size=(self.n_components, self.dim))
 
     def generate_data(self, task_id, n_samples=10000):
+        """
+        Generates samples of latent variable for the given task.
+
+        Args:
+            self: write your description
+            task_id: write your description
+            n_samples: write your description
+        """
         latent_variable_count = np.random.multinomial(
             n_samples, self.mixture_weights[task_id])
         y = np.zeros(n_samples)
@@ -162,6 +223,13 @@ class LEAF_SYNTHETIC(LEAF):
         return shuffle(x.astype(np.float32), y.astype(np.int64))
 
     def save_metadata(self, path_):
+        """
+        Saves the metadata of the mixture to a pickle file.
+
+        Args:
+            self: write your description
+            path_: write your description
+        """
         metadata = dict()
         metadata["mixture_weights"] = self.mixture_weights
         metadata["theta"] = self.theta
@@ -173,6 +241,15 @@ class LEAF_SYNTHETIC(LEAF):
                         num_tasks,
                         min_num_samples=50,
                         max_num_samples=1000):
+        """
+        Generate num_samples of lognormal random numbers.
+
+        Args:
+            self: write your description
+            num_tasks: write your description
+            min_num_samples: write your description
+            max_num_samples: write your description
+        """
         num_samples = np.random.lognormal(4, 2, num_tasks).astype(int)
         num_samples = [
             min(s + min_num_samples, max_num_samples) for s in num_samples
@@ -180,6 +257,12 @@ class LEAF_SYNTHETIC(LEAF):
         return num_samples
 
     def process(self):
+        """
+        Process the data.
+
+        Args:
+            self: write your description
+        """
         for task_id in range(self.n_tasks):
             save_path = os.path.join(self.processed_dir, f"task_{task_id}")
             os.makedirs(save_path, exist_ok=True)

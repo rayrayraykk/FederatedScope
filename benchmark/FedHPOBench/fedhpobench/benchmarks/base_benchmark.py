@@ -42,15 +42,40 @@ class BaseBenchmark(abc.ABC):
         disable_fs_logger(self.cfg, True)
 
     def __call__(self, configuration, fidelity, seed=1, **kwargs):
+        """
+        Returns the objective function.
+
+        Args:
+            self: write your description
+            configuration: write your description
+            fidelity: write your description
+            seed: write your description
+        """
         return self.objective_function(configuration=configuration,
                                        fidelity=fidelity,
                                        seed=seed,
                                        **kwargs)
 
     def _check(self, configuration, fidelity):
+        """
+        Check fidelity.
+
+        Args:
+            self: write your description
+            configuration: write your description
+            fidelity: write your description
+        """
         pass
 
     def _search(self, configuration, fidelity):
+        """
+        Search for the given configuration and fidelity.
+
+        Args:
+            self: write your description
+            configuration: write your description
+            fidelity: write your description
+        """
         # For configuration
         mask = np.array([True] * self.table.shape[0])
         for col in configuration.keys():
@@ -69,6 +94,14 @@ class BaseBenchmark(abc.ABC):
         return result
 
     def get_lamba_from_df(self, configuration, fidelity):
+        """
+        Get Lamba time from a FHB table or from the Federate configuration.
+
+        Args:
+            self: write your description
+            configuration: write your description
+            fidelity: write your description
+        """
         if self.table is not None:
             client_num = self.cfg.federate.client_num * \
                        self.cfg.federate.sample_client_rate
@@ -83,6 +116,14 @@ class BaseBenchmark(abc.ABC):
             return fhb_cfg.cost.c
 
     def _cost(self, configuration, fidelity, **kwargs):
+        """
+        Calculate the cost.
+
+        Args:
+            self: write your description
+            configuration: write your description
+            fidelity: write your description
+        """
         try:
             kwargs['const'] = self.get_lamba_from_df(configuration, fidelity)
         except:
@@ -93,6 +134,13 @@ class BaseBenchmark(abc.ABC):
         return t
 
     def _init_fidelity(self, fidelity):
+        """
+        Initializes the fidelity of the model.
+
+        Args:
+            self: write your description
+            fidelity: write your description
+        """
         if not fidelity:
             fidelity = {
                 'sample_client': 1.0,
@@ -106,19 +154,52 @@ class BaseBenchmark(abc.ABC):
 
     @abc.abstractmethod
     def objective_function(self, configuration, fidelity, seed):
+        """
+        Returns the objective function for the given configuration fidelity and seed.
+
+        Args:
+            self: write your description
+            configuration: write your description
+            fidelity: write your description
+            seed: write your description
+        """
         raise NotImplementedError()
 
     @abc.abstractmethod
     def get_configuration_space(self):
+        """
+        Returns the configuration space for this instance.
+
+        Args:
+            self: write your description
+        """
         raise NotImplementedError()
 
     @abc.abstractmethod
     def get_fidelity_space(self):
+        """
+        Returns the FIdelity space of the QuantumFlow.
+
+        Args:
+            self: write your description
+        """
         raise NotImplementedError()
 
     @abc.abstractmethod
     def get_meta_info(self):
+        """
+        Return the meta information of the object.
+
+        Args:
+            self: write your description
+        """
         raise NotImplementedError()
 
     def __repr__(self):
+        """
+        Return a string representation of the object.
+
+        Args:
+            self: write your description
+        """
         return f'{self.__class__.__name__}({self.get_meta_info()})'

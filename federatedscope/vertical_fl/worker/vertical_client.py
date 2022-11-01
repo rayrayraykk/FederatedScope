@@ -27,6 +27,20 @@ class vFLClient(Client):
                  strategy=None,
                  *args,
                  **kwargs):
+        """
+        Initialize a vFLClient.
+
+        Args:
+            self: write your description
+            ID: write your description
+            server_id: write your description
+            state: write your description
+            config: write your description
+            data: write your description
+            model: write your description
+            device: write your description
+            strategy: write your description
+        """
 
         super(vFLClient,
               self).__init__(ID, server_id, state, config, data, model, device,
@@ -50,6 +64,13 @@ class vFLClient(Client):
                                self.callback_funcs_for_encryped_gradient_v)
 
     def sample_data(self, index=None):
+        """
+        Sample data by index.
+
+        Args:
+            self: write your description
+            index: write your description
+        """
         if index is None:
             assert self.own_label
             return next(self.dataloader)
@@ -57,9 +78,23 @@ class vFLClient(Client):
             return self.data['train']['x'][index]
 
     def callback_funcs_for_public_keys(self, message: Message):
+        """
+        This method is called when a message is received by the server. It stores the public_key
+
+        Args:
+            self: write your description
+            message: write your description
+        """
         self.public_key = message.content
 
     def callback_funcs_for_model_para(self, message: Message):
+        """
+        Callback functions for model parameter processing.
+
+        Args:
+            self: write your description
+            message: write your description
+        """
         self.theta = message.content
         if self.own_label:
             index, input_x, input_y = self.sample_data()
@@ -79,6 +114,13 @@ class vFLClient(Client):
                         content=(self.batch_index, en_u_A)))
 
     def callback_funcs_for_encryped_gradient_u(self, message: Message):
+        """
+        Callback function for the encryped gradient of U.
+
+        Args:
+            self: write your description
+            message: write your description
+        """
         index, en_u_A = message.content
         self.batch_index = index
         input_x = self.sample_data(index=self.batch_index)
@@ -98,6 +140,13 @@ class vFLClient(Client):
                     content=(en_u, en_v_B)))
 
     def callback_funcs_for_encryped_gradient_v(self, message: Message):
+        """
+        Callback function for the encoders for the gradients of the v - sampled data.
+
+        Args:
+            self: write your description
+            message: write your description
+        """
         en_u, en_v_B = message.content
         input_x = self.sample_data(index=self.batch_index)
         en_v_A = en_u * input_x

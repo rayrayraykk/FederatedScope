@@ -8,6 +8,12 @@ from dtaidistance import dtw
 
 
 def norm(w):
+    """
+    Return the norm of the values in a dictionary
+
+    Args:
+        w: write your description
+    """
     return torch.norm(torch.cat([v.flatten() for v in w.values()])).item()
 
 
@@ -24,6 +30,13 @@ def compute_pairwise_distances(seqs, standardize=False):
 
 
 def min_cut(similarity, cluster):
+    """
+    Compute the minimum cut.
+
+    Args:
+        similarity: write your description
+        cluster: write your description
+    """
     g = nx.Graph()
     for i in range(len(similarity)):
         for j in range(len(similarity)):

@@ -73,6 +73,17 @@ class MFDataLoader(object):
                  shuffle=True,
                  drop_last=False,
                  theta=None):
+        """
+        Loads MF data from the given matrix.
+
+        Args:
+            self: write your description
+            data: write your description
+            batch_size: write your description
+            shuffle: write your description
+            drop_last: write your description
+            theta: write your description
+        """
         super(MFDataLoader, self).__init__()
         self.dataset = self._trim_data(data, theta)
         self.shuffle = shuffle
@@ -118,6 +129,12 @@ class MFDataLoader(object):
             return dataset
 
     def _reset(self):
+        """
+        Reset the internal rating array.
+
+        Args:
+            self: write your description
+        """
         self._idx_cur = 0
         if self._idx_samples is None:
             self._idx_samples = np.arange(self.n_rating)
@@ -125,6 +142,13 @@ class MFDataLoader(object):
             shuffle(self._idx_samples)
 
     def _sample_data(self, sampled_rating_idx):
+        """
+        Samples the data for the given rating.
+
+        Args:
+            self: write your description
+            sampled_rating_idx: write your description
+        """
         dataset = self.dataset.tocoo()
         data = dataset.data[sampled_rating_idx]
         rows = dataset.row[sampled_rating_idx]
@@ -159,5 +183,11 @@ class MFDataLoader(object):
         return self._sample_data(idx_choice_samples)
 
     def __iter__(self):
+        """
+        Iterator over the values
+
+        Args:
+            self: write your description
+        """
         self._reset()
         return self

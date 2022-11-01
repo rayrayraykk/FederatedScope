@@ -7,7 +7,19 @@ from torch_geometric.data.batch import Batch
 
 @contextlib.contextmanager
 def _disable_tracking_bn_stats(model):
+    """
+    Disable tracking BNStats on all models in the model.
+
+    Args:
+        model: write your description
+    """
     def switch_attr(m):
+        """
+        Switches the attribute track_running_stats.
+
+        Args:
+            m: write your description
+        """
         if hasattr(m, 'track_running_stats'):
             m.track_running_stats ^= True
 
@@ -17,6 +29,12 @@ def _disable_tracking_bn_stats(model):
 
 
 def _l2_normalize(d):
+    """
+    Normalize L2 norm of a dim - 2d array
+
+    Args:
+        d: write your description
+    """
     d_reshaped = d.view(d.shape[0], -1, *(1 for _ in range(d.dim() - 2)))
     d /= torch.norm(d_reshaped, dim=1, keepdim=True) + 1e-8
     return d
@@ -42,6 +60,15 @@ class VATLoss(nn.Module):
         self.ip = ip
 
     def forward(self, model, graph, criterion):
+        """
+        Calculate the least - squares distance between the target and the given criterion.
+
+        Args:
+            self: write your description
+            model: write your description
+            graph: write your description
+            criterion: write your description
+        """
         pred = model(graph)
         if criterion._get_name() == 'CrossEntropyLoss':
             pred = torch.max(pred, dim=1).indices.long().view(-1)

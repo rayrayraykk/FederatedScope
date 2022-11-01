@@ -23,6 +23,16 @@ class MPNNs2s(nn.Module):
 
     """
     def __init__(self, in_channels, out_channels, num_nn, hidden=64):
+        """
+        Initialize MPNNs2s class
+
+        Args:
+            self: write your description
+            in_channels: write your description
+            out_channels: write your description
+            num_nn: write your description
+            hidden: write your description
+        """
         super(MPNNs2s, self).__init__()
         self.lin0 = torch.nn.Linear(in_channels, hidden)
 
@@ -36,6 +46,13 @@ class MPNNs2s(nn.Module):
         self.lin2 = torch.nn.Linear(hidden, out_channels)
 
     def forward(self, data):
+        """
+        Forward computation.
+
+        Args:
+            self: write your description
+            data: write your description
+        """
         if isinstance(data, Batch):
             x, edge_index, edge_attr, batch = data.x, data.edge_index, \
                                               data.edge_attr, data.batch

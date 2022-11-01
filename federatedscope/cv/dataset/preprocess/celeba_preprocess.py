@@ -19,6 +19,12 @@ size = (84, 84)
 
 
 def name2json(name):
+    """
+    Convert a JSON file from the NCBI name to a list of integers.
+
+    Args:
+        name: write your description
+    """
     file_path = os.path.join('raw', 'img_align_celeba', name)
     img = Image.open(file_path)
     gray = img.convert('RGB')

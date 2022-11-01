@@ -18,6 +18,19 @@ class FENISTSurrogateFedHPOBench(BaseSurrogateFedHPOBench):
                  data_path: Union[str, Path],
                  model_path: Union[str, Path],
                  rng: Union[np.random.RandomState, int, None] = None):
+        """
+        Surrogate FENIST FENIST FEDHPOBench object
+
+        Args:
+            self: write your description
+            data_path: write your description
+            model_path: write your description
+            rng: write your description
+            np: write your description
+            random: write your description
+            RandomState: write your description
+            int: write your description
+        """
         data_url = "https://federatedscope.oss-cn-beijing.aliyuncs.com" \
                     "/fedhpob_cnn_tabular.zip"
         model_url = "https://federatedscope.oss-cn-beijing.aliyuncs.com" \

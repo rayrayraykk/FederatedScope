@@ -11,9 +11,22 @@ from federatedscope.core.auxiliaries.worker_builder import get_server_cls, get_c
 
 class CRATest(unittest.TestCase):
     def setUp(self):
+        """
+        Runs the test case.
+
+        Args:
+            self: write your description
+        """
         print(('Testing %s.%s' % (type(self).__name__, self._testMethodName)))
 
     def set_config_femnist(self, cfg):
+        """
+        Set configuration for the federate mode
+
+        Args:
+            self: write your description
+            cfg: write your description
+        """
         backup_cfg = cfg.clone()
 
         import torch
@@ -59,6 +72,12 @@ class CRATest(unittest.TestCase):
         return backup_cfg
 
     def test_CRA_GAN_femnist_standalone(self):
+        """
+        Runs the Fed Fabric standalone.
+
+        Args:
+            self: write your description
+        """
         init_cfg = global_cfg.clone()
         backup_cfg = self.set_config_femnist(init_cfg)
         setup_seed(init_cfg.seed)

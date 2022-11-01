@@ -11,9 +11,21 @@ from federatedscope.core.auxiliaries.worker_builder import get_server_cls, get_c
 
 class EfficientSimulationTest(unittest.TestCase):
     def setUp(self):
+        """
+        Runs the test case.
+
+        Args:
+            self: write your description
+        """
         print(('Testing %s.%s' % (type(self).__name__, self._testMethodName)))
 
     def test_toy_example_standalone_cmp_sim_impl(self):
+        """
+        Runs the toy example standalonecmp sim implementation.
+
+        Args:
+            self: write your description
+        """
         case_cfg = global_cfg.clone()
         case_cfg.merge_from_file('scripts/example_configs/single_process.yaml')
 

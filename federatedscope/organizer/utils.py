@@ -16,6 +16,16 @@ logger.setLevel(logging.INFO)
 
 class SSHManager(object):
     def __init__(self, ip, user, psw, ssh_port=22):
+        """
+        Initialize the connection to the remote host.
+
+        Args:
+            self: write your description
+            ip: write your description
+            user: write your description
+            psw: write your description
+            ssh_port: write your description
+        """
         self.ip, self.user, self.psw = ip, user, psw
         self.ssh_port = ssh_port
         self.ssh, self.trans = None, None
@@ -23,6 +33,12 @@ class SSHManager(object):
         self.tasks = set()
 
     def _connect(self):
+        """
+        Connect to the remote host.
+
+        Args:
+            self: write your description
+        """
         self.trans = paramiko.Transport((self.ip, self.ssh_port))
         self.trans.connect(username=self.user, password=self.psw)
         self.ssh = paramiko.SSHClient()
@@ -30,9 +46,22 @@ class SSHManager(object):
         self.ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 
     def _disconnect(self):
+        """
+        Disconnect from the device.
+
+        Args:
+            self: write your description
+        """
         self.trans.close()
 
     def _exec_cmd(self, command):
+        """
+        Execute a command on the remote host.
+
+        Args:
+            self: write your description
+            command: write your description
+        """
         if self.trans is None or self.ssh is None:
             self._connect()
         command = f'source ~/.bashrc; cd ~; {command}'
@@ -42,6 +71,13 @@ class SSHManager(object):
         return stdout, stderr
 
     def _exec_python_cmd(self, command):
+        """
+        Execute a python command on the remote host.
+
+        Args:
+            self: write your description
+            command: write your description
+        """
         if self.trans is None or self.ssh is None:
             self._connect()
         command = f'source ~/.bashrc; conda activate {env_name}; ' \
@@ -97,6 +133,12 @@ class SSHManager(object):
         pass
 
     def setup_fs(self):
+        """
+        Setup filesystem.
+
+        Args:
+            self: write your description
+        """
         logger.info("Checking environment, please wait...")
         if not self._check_conda():
             raise Exception('The environment is not configured properly.')
@@ -104,6 +146,13 @@ class SSHManager(object):
             raise Exception('The FS repo is not configured properly.')
 
     def launch_task(self, command):
+        """
+        Launch a task and store its output in self. tasks.
+
+        Args:
+            self: write your description
+            command: write your description
+        """
         self._check_task_status()
         stdout, _ = self._exec_python_cmd(f'nohup python '
                                           f'federatedscope/main.py {command} '
@@ -113,6 +162,13 @@ class SSHManager(object):
 
 
 def anonymize(info, mask):
+    """
+    Anonymizes all the keys in the info dictionary that match the mask.
+
+    Args:
+        info: write your description
+        mask: write your description
+    """
     for key, value in info.items():
         if key == mask:
             info[key] = "******"
@@ -122,6 +178,11 @@ def anonymize(info, mask):
 
 
 def args2yaml(args):
+    """
+    Parse args and return a ConfigObj instance.
+
+    Args:
+    """
     init_cfg = global_cfg.clone()
     args = parse_args(shlex.split(args))
     init_cfg.merge_from_file(args.cfg_file)
@@ -134,6 +195,14 @@ def args2yaml(args):
 
 
 def flatten_dict(d, parent_key='', sep='.'):
+    """
+    Flatten a nested dictionary.
+
+    Args:
+        d: write your description
+        parent_key: write your description
+        sep: write your description
+    """
     items = []
     for key, value in d.items():
         new_key = parent_key + sep + key if parent_key else key

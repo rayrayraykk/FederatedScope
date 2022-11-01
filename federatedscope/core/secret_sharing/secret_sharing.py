@@ -8,14 +8,34 @@ except ImportError:
 
 class SecretSharing(ABC):
     def __init__(self):
+        """
+        Initialize the class with the default values.
+
+        Args:
+            self: write your description
+        """
         pass
 
     @abstractmethod
     def secret_split(self, secret):
+        """
+        Split secret into parts.
+
+        Args:
+            self: write your description
+            secret: write your description
+        """
         pass
 
     @abstractmethod
     def secret_reconstruct(self, secret_seq):
+        """
+        Reconstruct the secret using the secret sequence.
+
+        Args:
+            self: write your description
+            secret_seq: write your description
+        """
         pass
 
 
@@ -25,6 +45,14 @@ class AdditiveSecretSharing(SecretSharing):
     recover it by summing up
     """
     def __init__(self, shared_party_num, size=60):
+        """
+        Initialize secret sharing parameters.
+
+        Args:
+            self: write your description
+            shared_party_num: write your description
+            size: write your description
+        """
         super(SecretSharing, self).__init__()
         assert shared_party_num > 1, "AdditiveSecretSharing require " \
                                      "shared_party_num > 1"
@@ -86,11 +114,25 @@ class AdditiveSecretSharing(SecretSharing):
         return merge_model
 
     def _float2fixedpoint(self, x):
+        """
+        Convert a float to a fixed point.
+
+        Args:
+            self: write your description
+            x: write your description
+        """
         x = round(x * self.epsilon, 0)
         assert abs(x) < self.maximum
         return x % self.mod_number
 
     def _fixedpoint2float(self, x):
+        """
+        Convert a fixedpoint to a float.
+
+        Args:
+            self: write your description
+            x: write your description
+        """
         x = x % self.mod_number
         if x > self.maximum:
             return -1 * (self.mod_number - x) / self.epsilon

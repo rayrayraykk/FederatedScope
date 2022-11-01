@@ -96,6 +96,14 @@ def create_ardis_poisoned_dataset(data_path,
 
 
 def create_ardis_test_dataset(data_path, base_label=7, target_label=1):
+    """
+    Create the ardis test dataset.
+
+    Args:
+        data_path: write your description
+        base_label: write your description
+        target_label: write your description
+    """
 
     # load the data from csv's
     load_path = data_path + 'ARDIS_test_2828.csv'

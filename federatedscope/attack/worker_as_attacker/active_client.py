@@ -24,6 +24,13 @@ def plot_target_loss(loss_list, outdir):
 
 
 def sav_target_loss(loss_list, outdir):
+    """
+    Save the target loss in a text file
+
+    Args:
+        loss_list: write your description
+        outdir: write your description
+    """
     target_data_loss = np.vstack(loss_list)
     np.savetxt(os.path.join(outdir, 'target_loss.txt'),
                target_data_loss.transpose(),
@@ -31,6 +38,13 @@ def sav_target_loss(loss_list, outdir):
 
 
 def callback_funcs_for_finish(self, message: Message):
+    """
+    Callback functions for finishing the training.
+
+    Args:
+        self: write your description
+        message: write your description
+    """
     logger.info("============== receiving Finish Message ==============")
     if message.content is not None:
         self.trainer.update(message.content)
@@ -45,6 +59,12 @@ def callback_funcs_for_finish(self, message: Message):
 
 
 def add_atk_method_to_Client_GradAscent(client_class):
+    """
+    Add methods to Client class that calls the finish method for each gradient descent iteration.
+
+    Args:
+        client_class: write your description
+    """
 
     setattr(client_class, 'callback_funcs_for_finish',
             callback_funcs_for_finish)

@@ -148,6 +148,12 @@ class GeneralMultiModelTrainer(GeneralTorchTrainer):
         ])
 
     def init_multiple_model_hooks(self):
+        """
+        Initializes the multiple model hooks.
+
+        Args:
+            self: write your description
+        """
         self.register_multiple_model_hooks()
         if self.models_interact_mode == "sequential":
             # hooks_in_xxx is a list of dict, hooks_in_xxx[i] stores
@@ -185,6 +191,18 @@ class GeneralMultiModelTrainer(GeneralTorchTrainer):
                                insert_pos=None,
                                base_hook=None,
                                insert_mode="before"):
+        """
+        Register a new hook in the training model.
+
+        Args:
+            self: write your description
+            new_hook: write your description
+            trigger: write your description
+            model_idx: write your description
+            insert_pos: write your description
+            base_hook: write your description
+            insert_mode: write your description
+        """
         hooks_dict = self.hooks_in_train_multiple_models[model_idx]
         self._register_hook(base_hook, hooks_dict, insert_mode, insert_pos,
                             new_hook, trigger)
@@ -196,11 +214,30 @@ class GeneralMultiModelTrainer(GeneralTorchTrainer):
                               insert_pos=None,
                               base_hook=None,
                               insert_mode="before"):
+        """
+        Register a new hook in the evaluation of a model.
+
+        Args:
+            self: write your description
+            new_hook: write your description
+            trigger: write your description
+            model_idx: write your description
+            insert_pos: write your description
+            base_hook: write your description
+            insert_mode: write your description
+        """
         hooks_dict = self.hooks_in_eval_multiple_models[model_idx]
         self._register_hook(base_hook, hooks_dict, insert_mode, insert_pos,
                             new_hook, trigger)
 
     def _switch_model_ctx(self, next_model_idx=None):
+        """
+        Switches the current model context to the next one.
+
+        Args:
+            self: write your description
+            next_model_idx: write your description
+        """
         if next_model_idx is None:
             next_model_idx = (self.ctx.cur_model_idx + 1) % len(
                 self.ctx.models)
@@ -306,6 +343,13 @@ class GeneralMultiModelTrainer(GeneralTorchTrainer):
                                                            strict=strict)
 
     def train(self, target_data_split_name="train"):
+        """
+        Trains the model on the given data split.
+
+        Args:
+            self: write your description
+            target_data_split_name: write your description
+        """
         # return multiple model paras
         sample_size, _, results = super().train(target_data_split_name)
 

@@ -8,16 +8,38 @@ import numpy as np
 
 class FedAvgAggregator(object):
     def __init__(self, model=None, device='cpu'):
+        """
+        Initialize the device.
+
+        Args:
+            self: write your description
+            model: write your description
+            device: write your description
+        """
         self.model = model
         self.device = device
 
     def aggregate(self, agg_info):
+        """
+        Aggregate the results of the aggregation_info dictionary.
+
+        Args:
+            self: write your description
+            agg_info: write your description
+        """
         models = agg_info["client_feedback"]
         avg_model = self._para_weighted_avg(models)
 
         return avg_model
 
     def _para_weighted_avg(self, models):
+        """
+        Calculates the weighted average of the models.
+
+        Args:
+            self: write your description
+            models: write your description
+        """
 
         training_set_size = 0
         for i in range(len(models)):

@@ -72,6 +72,13 @@ class GNN_Net_Link(torch.nn.Module):
                           batch_norm=True)
 
     def forward(self, data):
+        """
+        Forward pass through the graph.
+
+        Args:
+            self: write your description
+            data: write your description
+        """
         if isinstance(data, Data):
             x, edge_index = data.x, data.edge_index
         elif isinstance(data, tuple):
@@ -83,6 +90,14 @@ class GNN_Net_Link(torch.nn.Module):
         return x
 
     def link_predictor(self, x, edge_index):
+        """
+        Link predictor for x by connecting it with the other edge.
+
+        Args:
+            self: write your description
+            x: write your description
+            edge_index: write your description
+        """
         x = x[edge_index[0]] * x[edge_index[1]]
         x = self.output(x)
         return x

@@ -20,17 +20,42 @@ logging.basicConfig(level=logging.WARNING)
 
 
 def precompute_sh_iters(min_budget, max_budget, eta):
+    """
+    Pre - compute the number of SH iterations to use for the given parameters.
+
+    Args:
+        min_budget: write your description
+        max_budget: write your description
+        eta: write your description
+    """
     max_SH_iter = -int(np.log(min_budget / max_budget) / np.log(eta)) + 1
     return max_SH_iter
 
 
 def precompute_budgets(max_budget, eta, max_SH_iter):
+    """
+    Pre - computes budgets for the given max_budget.
+
+    Args:
+        max_budget: write your description
+        eta: write your description
+        max_SH_iter: write your description
+    """
     s0 = -np.linspace(start=max_SH_iter - 1, stop=0, num=max_SH_iter)
     budgets = max_budget * np.power(eta, s0)
     return budgets
 
 
 def sample_config_from_optuna(trial: Trial, cs: CS.ConfigurationSpace):
+    """
+    Sample config values from optuna.
+
+    Args:
+        trial: write your description
+        cs: write your description
+        CS: write your description
+        ConfigurationSpace: write your description
+    """
     config = {}
     for hp_name in cs:
         hp = cs.get_hyperparameter(hp_name)
@@ -73,7 +98,22 @@ def sample_config_from_optuna(trial: Trial, cs: CS.ConfigurationSpace):
 
 
 def run_optuna(cfg):
+    """
+    Run optuna benchmark.
+
+    Args:
+        cfg: write your description
+    """
     def objective(trial, benchmark, valid_budgets, configspace):
+        """
+        Sample a trial objective with valid budgets.
+
+        Args:
+            trial: write your description
+            benchmark: write your description
+            valid_budgets: write your description
+            configspace: write your description
+        """
         config = sample_config_from_optuna(trial, configspace)
         res = None
         for budget in valid_budgets:

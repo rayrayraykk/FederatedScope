@@ -11,9 +11,22 @@ from federatedscope.core.auxiliaries.worker_builder import get_server_cls, get_c
 
 class ExternalDatasetTest(unittest.TestCase):
     def setUp(self):
+        """
+        Runs the test case.
+
+        Args:
+            self: write your description
+        """
         print(('Testing %s.%s' % (type(self).__name__, self._testMethodName)))
 
     def set_config_torchvision_dataset(self, cfg):
+        """
+        Set configuration for the torchvision dataset.
+
+        Args:
+            self: write your description
+            cfg: write your description
+        """
         backup_cfg = cfg.clone()
 
         import torch
@@ -60,6 +73,13 @@ class ExternalDatasetTest(unittest.TestCase):
         return backup_cfg
 
     def set_config_torchtext_dataset(self, cfg):
+        """
+        Set configuration for the torchtext dataset.
+
+        Args:
+            self: write your description
+            cfg: write your description
+        """
         backup_cfg = cfg.clone()
 
         import torch
@@ -102,6 +122,12 @@ class ExternalDatasetTest(unittest.TestCase):
         return backup_cfg
 
     def test_torchvision_dataset_standalone(self):
+        """
+        Runs the torchvision dataset test suite standalone.
+
+        Args:
+            self: write your description
+        """
         init_cfg = global_cfg.clone()
         backup_cfg = self.set_config_torchvision_dataset(init_cfg)
         setup_seed(init_cfg.seed)
@@ -124,6 +150,12 @@ class ExternalDatasetTest(unittest.TestCase):
             0.9)
 
     def test_torchtext_dataset_standalone(self):
+        """
+        Run a torchtext dataset standalone.
+
+        Args:
+            self: write your description
+        """
         init_cfg = global_cfg.clone()
         backup_cfg = self.set_config_torchtext_dataset(init_cfg)
         setup_seed(init_cfg.seed)

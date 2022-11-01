@@ -3,6 +3,12 @@ from federatedscope.register import register_config
 
 
 def extend_dp_cfg(cfg):
+    """
+    Extend the parameters of the dp configuration with the parameters of the VFL.
+
+    Args:
+        cfg: write your description
+    """
     # ---------------------------------------------------------------------- #
     # nbafl(dp) related options
     # ---------------------------------------------------------------------- #
@@ -31,6 +37,12 @@ def extend_dp_cfg(cfg):
 
 
 def assert_dp_cfg(cfg):
+    """
+    Assert that cfg is a valid dp configuration.
+
+    Args:
+        cfg: write your description
+    """
     pass
 
 

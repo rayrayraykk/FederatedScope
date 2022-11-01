@@ -25,6 +25,21 @@ class GCFLPlusServer(Server):
                  device='cpu',
                  strategy=None,
                  **kwargs):
+        """
+        Initialize a GCFLPlusServer.
+
+        Args:
+            self: write your description
+            ID: write your description
+            state: write your description
+            config: write your description
+            data: write your description
+            model: write your description
+            client_num: write your description
+            total_round_num: write your description
+            device: write your description
+            strategy: write your description
+        """
         super(GCFLPlusServer,
               self).__init__(ID, state, config, data, model, client_num,
                              total_round_num, device, strategy, **kwargs)
@@ -41,6 +56,13 @@ class GCFLPlusServer(Server):
         }
 
     def compute_update_norm(self, cluster):
+        """
+        Computes the maximum update norm and mean norm of the cluster.
+
+        Args:
+            self: write your description
+            cluster: write your description
+        """
         max_norm = -np.inf
         cluster_dWs = []
         for key in cluster:
@@ -59,6 +81,13 @@ class GCFLPlusServer(Server):
         return max_norm, mean_norm
 
     def check_and_move_on(self, check_eval_result=False):
+        """
+        Evaluate the buffer and move the state machine to the next round of training if needed.
+
+        Args:
+            self: write your description
+            check_eval_result: write your description
+        """
 
         if check_eval_result:
             # all clients are participating in evaluation
@@ -179,6 +208,13 @@ class GCFLPlusServer(Server):
 
 class GCFLPlusClient(Client):
     def callback_funcs_for_model_para(self, message: Message):
+        """
+        Callback functions for model parameter evaluation.
+
+        Args:
+            self: write your description
+            message: write your description
+        """
         round, sender, content = message.state, message.sender, message.content
         # Cache old W
         W_old = copy.deepcopy(content)

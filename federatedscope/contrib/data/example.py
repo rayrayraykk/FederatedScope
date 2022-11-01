@@ -22,6 +22,13 @@ def MyData(config, client_cfgs=None):
 
 
 def call_my_data(config, client_cfgs):
+    """
+    Call my data if it s a new type of data.
+
+    Args:
+        config: write your description
+        client_cfgs: write your description
+    """
     if config.data.type == "mydata":
         data, modified_config = MyData(config, client_cfgs)
         return data, modified_config

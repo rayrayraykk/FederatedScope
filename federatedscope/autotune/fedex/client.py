@@ -30,6 +30,13 @@ class FedExClient(Client):
         self.trainer.cfg = self._cfg
 
     def callback_funcs_for_model_para(self, message: Message):
+        """
+        Run the model on the given round.
+
+        Args:
+            self: write your description
+            message: write your description
+        """
         round, sender, content = message.state, message.sender, message.content
         model_params, arms, hyperparams = content["model_param"], content[
             "arms"], content["hyperparam"]
@@ -67,6 +74,13 @@ class FedExClient(Client):
                     content=content))
 
     def callback_funcs_for_evaluate(self, message: Message):
+        """
+        Callback functions for evaluating the model.
+
+        Args:
+            self: write your description
+            message: write your description
+        """
         sender = message.sender
         self.state = message.state
         if message.content is not None:

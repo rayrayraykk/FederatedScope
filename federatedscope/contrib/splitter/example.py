@@ -4,9 +4,23 @@ from federatedscope.core.splitters import BaseSplitter
 
 class MySplitter(BaseSplitter):
     def __init__(self, client_num, **kwargs):
+        """
+        Splitter class initializer.
+
+        Args:
+            self: write your description
+            client_num: write your description
+        """
         super(MySplitter, self).__init__(client_num, **kwargs)
 
     def __call__(self, dataset, *args, **kwargs):
+        """
+        Splits the dataset into chunks of client_num samples.
+
+        Args:
+            self: write your description
+            dataset: write your description
+        """
         # Dummy splitter, only for demonstration
         per_samples = len(dataset) // self.client_num
         data_list, cur_index = [], 0
@@ -18,6 +32,12 @@ class MySplitter(BaseSplitter):
 
 
 def call_my_splitter(client_num, **kwargs):
+    """
+    Call my splitter if type is a space
+
+    Args:
+        client_num: write your description
+    """
     if type == 'mysplitter':
         splitter = MySplitter(client_num, **kwargs)
         return splitter

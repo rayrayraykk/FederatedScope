@@ -47,10 +47,24 @@ class EarlyStopper(object):
         self.improvement_operator = operator.add
 
     def __track_and_check_dummy(self, new_result):
+        """
+        Called when the test is stopped.
+
+        Args:
+            self: write your description
+            new_result: write your description
+        """
         self.early_stopped = False
         return self.early_stopped
 
     def __track_and_check_best(self, history_result):
+        """
+        Tracks the best result and checks whether the patience is exceeded.
+
+        Args:
+            self: write your description
+            history_result: write your description
+        """
         new_result = history_result[-1]
         if self.best_metric is None:
             self.best_metric = new_result
@@ -72,6 +86,13 @@ class EarlyStopper(object):
         return self.early_stopped
 
     def __track_and_check_mean(self, history_result):
+        """
+        Checks the mean of the result and if it improves it returns True.
+
+        Args:
+            self: write your description
+            history_result: write your description
+        """
         new_result = history_result[-1]
         if len(history_result) > self.patience:
             if not self.the_larger_the_better and self.comparator(
@@ -91,6 +112,13 @@ class EarlyStopper(object):
         return self.early_stopped
 
     def track_and_check(self, new_result):
+        """
+        Tracks the result and improves it if necessary.
+
+        Args:
+            self: write your description
+            new_result: write your description
+        """
 
         track_method = self.__track_and_check_dummy  # do nothing
         if self.patience == 0:

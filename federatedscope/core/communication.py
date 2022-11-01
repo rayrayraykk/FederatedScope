@@ -13,19 +13,48 @@ class StandaloneCommManager(object):
     The communicator used for standalone mode
     """
     def __init__(self, comm_queue, monitor=None):
+        """
+        Initialize the internal state of the NeighborsManager.
+
+        Args:
+            self: write your description
+            comm_queue: write your description
+            monitor: write your description
+        """
         self.comm_queue = comm_queue
         self.neighbors = dict()
         self.monitor = monitor  # used to track the communication related
         # metrics
 
     def receive(self):
+        """
+        Receive a message from the socket.
+
+        Args:
+            self: write your description
+        """
         # we don't need receive() in standalone
         pass
 
     def add_neighbors(self, neighbor_id, address=None):
+        """
+        Add a neighbor to the map.
+
+        Args:
+            self: write your description
+            neighbor_id: write your description
+            address: write your description
+        """
         self.neighbors[neighbor_id] = address
 
     def get_neighbors(self, neighbor_id=None):
+        """
+        Get neighbors for a given neighbor id.
+
+        Args:
+            self: write your description
+            neighbor_id: write your description
+        """
         address = dict()
         if neighbor_id:
             if isinstance(neighbor_id, list):
@@ -39,6 +68,13 @@ class StandaloneCommManager(object):
             return self.neighbors
 
     def send(self, message):
+        """
+        Send a message to the server.
+
+        Args:
+            self: write your description
+            message: write your description
+        """
         self.comm_queue.append(message)
         download_bytes, upload_bytes = message.count_bytes()
         self.monitor.track_upload_bytes(upload_bytes)
@@ -50,6 +86,15 @@ class gRPCCommManager(object):
         https://grpc.io/docs/languages/python/
     """
     def __init__(self, host='0.0.0.0', port='50050', client_num=2):
+        """
+        Initializes the grpc server.
+
+        Args:
+            self: write your description
+            host: write your description
+            port: write your description
+            client_num: write your description
+        """
         self.host = host
         self.port = port
         options = [
@@ -84,6 +129,14 @@ class gRPCCommManager(object):
         return server
 
     def add_neighbors(self, neighbor_id, address):
+        """
+        Add a neighbor to the graph.
+
+        Args:
+            self: write your description
+            neighbor_id: write your description
+            address: write your description
+        """
         if isinstance(address, dict):
             self.neighbors[neighbor_id] = '{}:{}'.format(
                 address['host'], address['port'])
@@ -94,6 +147,13 @@ class gRPCCommManager(object):
                             "supported yet")
 
     def get_neighbors(self, neighbor_id=None):
+        """
+        Get neighbors for a given neighbor id.
+
+        Args:
+            self: write your description
+            neighbor_id: write your description
+        """
         address = dict()
         if neighbor_id:
             if isinstance(neighbor_id, list):
@@ -107,6 +167,14 @@ class gRPCCommManager(object):
             return self.neighbors
 
     def _send(self, receiver_address, message):
+        """
+        Send a message to a remote gRPC server.
+
+        Args:
+            self: write your description
+            receiver_address: write your description
+            message: write your description
+        """
         def _create_stub(receiver_address):
             """
             This part is referred to
@@ -127,6 +195,13 @@ class gRPCCommManager(object):
         channel.close()
 
     def send(self, message):
+        """
+        Sends a message to all connected receivers.
+
+        Args:
+            self: write your description
+            message: write your description
+        """
         receiver = message.receiver
         if receiver is not None:
             if not isinstance(receiver, list):
@@ -141,6 +216,12 @@ class gRPCCommManager(object):
                 self._send(receiver_address, message)
 
     def receive(self):
+        """
+        Receive a message from the server.
+
+        Args:
+            self: write your description
+        """
         received_msg = self.server_funcs.receive()
         message = Message()
         message.parse(received_msg.msg)

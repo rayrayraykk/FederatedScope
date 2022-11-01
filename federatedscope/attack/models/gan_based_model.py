@@ -8,6 +8,13 @@ class GeneratorFemnist(nn.Module):
     The generator for Femnist dataset
     '''
     def __init__(self, noise_dim=100):
+        """
+        Generate the generator femnist model.
+
+        Args:
+            self: write your description
+            noise_dim: write your description
+        """
         super(GeneratorFemnist, self).__init__()
 
         module_list = []
@@ -56,6 +63,13 @@ class GeneratorFemnist(nn.Module):
         self.body4 = nn.Sequential(*module_list)
 
     def forward(self, x):
+        """
+        Forward Rosenblatt transformation.
+
+        Args:
+            self: write your description
+            x: write your description
+        """
 
         tmp1 = self.body1(x).view(-1, 256, 4, 4)
 

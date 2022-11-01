@@ -10,6 +10,15 @@ class ClientsAvgAggregator(Aggregator):
         (http://proceedings.mlr.press/v54/mcmahan17a.html)
     """
     def __init__(self, model=None, device='cpu', config=None):
+        """
+        Initialize the aggregator.
+
+        Args:
+            self: write your description
+            model: write your description
+            device: write your description
+            config: write your description
+        """
         super(Aggregator, self).__init__()
         self.model = model
         self.device = device
@@ -40,12 +49,27 @@ class ClientsAvgAggregator(Aggregator):
         self.model.load_state_dict(model_parameters, strict=False)
 
     def save_model(self, path, cur_round=-1):
+        """
+        Save the current model state to a file.
+
+        Args:
+            self: write your description
+            path: write your description
+            cur_round: write your description
+        """
         assert self.model is not None
 
         ckpt = {'cur_round': cur_round, 'model': self.model.state_dict()}
         torch.save(ckpt, path)
 
     def load_model(self, path):
+        """
+        Load a model from disk.
+
+        Args:
+            self: write your description
+            path: write your description
+        """
         assert self.model is not None
 
         if os.path.exists(path):
@@ -56,6 +80,14 @@ class ClientsAvgAggregator(Aggregator):
             raise ValueError("The file {} does NOT exist".format(path))
 
     def _para_weighted_avg(self, models, recover_fun=None):
+        """
+        Calculates the weighted average of the models.
+
+        Args:
+            self: write your description
+            models: write your description
+            recover_fun: write your description
+        """
         training_set_size = 0
         for i in range(len(models)):
             sample_size, _ = models[i]
@@ -98,10 +130,26 @@ class OnlineClientsAvgAggregator(ClientsAvgAggregator):
                  device='cpu',
                  src_device='cpu',
                  config=None):
+        """
+        Initializes the aggregator.
+
+        Args:
+            self: write your description
+            model: write your description
+            device: write your description
+            src_device: write your description
+            config: write your description
+        """
         super(OnlineClientsAvgAggregator, self).__init__(model, device, config)
         self.src_device = src_device
 
     def reset(self):
+        """
+        Reset the state of the model to its initial state
+
+        Args:
+            self: write your description
+        """
         self.maintained = self.model.state_dict()
         for key in self.maintained:
             self.maintained[key].data = torch.zeros_like(
@@ -109,6 +157,13 @@ class OnlineClientsAvgAggregator(ClientsAvgAggregator):
         self.cnt = 0
 
     def inc(self, content):
+        """
+        Increment the internal counter by the given content.
+
+        Args:
+            self: write your description
+            content: write your description
+        """
         if isinstance(content, tuple):
             sample_size, model_params = content
             for key in self.maintained:
@@ -123,4 +178,11 @@ class OnlineClientsAvgAggregator(ClientsAvgAggregator):
                 "{} is not a tuple (sample_size, model_para)".format(content))
 
     def aggregate(self, agg_info):
+        """
+        Returns the aggregated value
+
+        Args:
+            self: write your description
+            agg_info: write your description
+        """
         return self.maintained

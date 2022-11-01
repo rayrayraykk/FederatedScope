@@ -11,9 +11,22 @@ from federatedscope.core.auxiliaries.runner_builder import get_runner
 
 class vFLTest(unittest.TestCase):
     def setUp(self):
+        """
+        Runs the test case.
+
+        Args:
+            self: write your description
+        """
         print(('Testing %s.%s' % (type(self).__name__, self._testMethodName)))
 
     def set_config(self, cfg):
+        """
+        Set config for backup mode
+
+        Args:
+            self: write your description
+            cfg: write your description
+        """
         backup_cfg = cfg.clone()
 
         import torch
@@ -43,6 +56,12 @@ class vFLTest(unittest.TestCase):
         return backup_cfg
 
     def test_vFL(self):
+        """
+        Runs a single Fed runner with vFL.
+
+        Args:
+            self: write your description
+        """
         init_cfg = global_cfg.clone()
         backup_cfg = self.set_config(init_cfg)
         setup_seed(init_cfg.seed)

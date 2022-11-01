@@ -17,6 +17,14 @@ EMD_DIM = 200
 
 class AtomEncoder(torch.nn.Module):
     def __init__(self, in_channels, hidden):
+        """
+        Initialise encoder for in_channels.
+
+        Args:
+            self: write your description
+            in_channels: write your description
+            hidden: write your description
+        """
         super(AtomEncoder, self).__init__()
         self.atom_embedding_list = torch.nn.ModuleList()
         for i in range(in_channels):
@@ -25,6 +33,13 @@ class AtomEncoder(torch.nn.Module):
             self.atom_embedding_list.append(emb)
 
     def forward(self, x):
+        """
+        Forward pass of the embedding.
+
+        Args:
+            self: write your description
+            x: write your description
+        """
         x_embedding = 0
         for i in range(x.shape[1]):
             x_embedding += self.atom_embedding_list[i](x[:, i])
@@ -52,6 +67,19 @@ class GNN_Net_Graph(torch.nn.Module):
                  dropout=.0,
                  gnn='gcn',
                  pooling='add'):
+        """
+        Initialize the graph.
+
+        Args:
+            self: write your description
+            in_channels: write your description
+            out_channels: write your description
+            hidden: write your description
+            max_depth: write your description
+            dropout: write your description
+            gnn: write your description
+            pooling: write your description
+        """
         super(GNN_Net_Graph, self).__init__()
         self.dropout = dropout
         # Embedding (pre) layer
@@ -105,6 +133,13 @@ class GNN_Net_Graph(torch.nn.Module):
         self.clf = Linear(hidden, out_channels)
 
     def forward(self, data):
+        """
+        Forward pass through the network.
+
+        Args:
+            self: write your description
+            data: write your description
+        """
         if isinstance(data, Batch):
             x, edge_index, batch = data.x, data.edge_index, data.batch
         elif isinstance(data, tuple):

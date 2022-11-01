@@ -16,12 +16,32 @@ class TabularBenchmark(BaseBenchmark):
                  rng=None,
                  cost_mode='estimated',
                  **kwargs):
+        """
+        Load data and perform tabular benchmark.
+
+        Args:
+            self: write your description
+            model: write your description
+            dname: write your description
+            algo: write your description
+            datadir: write your description
+            rng: write your description
+            cost_mode: write your description
+        """
         self.table, self.meta_info = load_data(datadir, model, dname, algo)
         self.eval_freq = self.meta_info['eval_freq']
         super(TabularBenchmark, self).__init__(model, dname, algo, cost_mode,
                                                rng, **kwargs)
 
     def _check(self, configuration, fidelity):
+        """
+        Check that the configuration and fidelity are valid.
+
+        Args:
+            self: write your description
+            configuration: write your description
+            fidelity: write your description
+        """
         for key, value in configuration.items():
             assert value in self.configuration_space[
                 key], 'configuration invalid, check `configuration_space` ' \
@@ -38,6 +58,18 @@ class TabularBenchmark(BaseBenchmark):
                            fairness_reg_func=None,
                            fairness_reg_coef=0.0,
                            **kwargs):
+        """
+        Find the objective function for a given configuration and fidelity.
+
+        Args:
+            self: write your description
+            configuration: write your description
+            fidelity: write your description
+            key: write your description
+            seed: write your description
+            fairness_reg_func: write your description
+            fairness_reg_coef: write your description
+        """
         fidelity = self._init_fidelity(fidelity)
         self._check(configuration, fidelity)
         result = self._search(
@@ -77,6 +109,13 @@ class TabularBenchmark(BaseBenchmark):
         return {'function_value': function_value, 'cost': cost}
 
     def get_configuration_space(self, CS=False):
+        """
+        Get the configuration space
+
+        Args:
+            self: write your description
+            CS: write your description
+        """
         if not CS:
             return self.meta_info['configuration_space']
         tmp_dict = {}
@@ -85,6 +124,13 @@ class TabularBenchmark(BaseBenchmark):
         return dict2cfg(tmp_dict)
 
     def get_fidelity_space(self, CS=False):
+        """
+        Get the FIdelity Space
+
+        Args:
+            self: write your description
+            CS: write your description
+        """
         if not CS:
             return self.meta_info['fidelity_space']
         tmp_dict = {}
@@ -93,6 +139,12 @@ class TabularBenchmark(BaseBenchmark):
         return dict2cfg(tmp_dict)
 
     def get_meta_info(self):
+        """
+        Return meta information about the dataset
+
+        Args:
+            self: write your description
+        """
         return {
             'model': self.model,
             'dname': self.dname,

@@ -26,6 +26,17 @@ class SAGE_Net(torch.nn.Module):
                  hidden=64,
                  max_depth=2,
                  dropout=.0):
+        """
+        SAGE_Net object initialization
+
+        Args:
+            self: write your description
+            in_channels: write your description
+            out_channels: write your description
+            hidden: write your description
+            max_depth: write your description
+            dropout: write your description
+        """
         super(SAGE_Net, self).__init__()
 
         self.num_layers = max_depth
@@ -38,10 +49,23 @@ class SAGE_Net(torch.nn.Module):
         self.convs.append(SAGEConv(hidden, out_channels))
 
     def reset_parameters(self):
+        """
+        Resets the parameters of all the convolutions.
+
+        Args:
+            self: write your description
+        """
         for conv in self.convs:
             conv.reset_parameters()
 
     def forward_full(self, data):
+        """
+        Forward full computation.
+
+        Args:
+            self: write your description
+            data: write your description
+        """
         if isinstance(data, Data):
             x, edge_index = data.x, data.edge_index
         elif isinstance(data, tuple):

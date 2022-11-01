@@ -6,6 +6,13 @@ from federatedscope.cv.model.cnn import ConvNet2, ConvNet5, VGG11
 
 
 def get_cnn(model_config, input_shape):
+    """
+    Get the convnet object.
+
+    Args:
+        model_config: write your description
+        input_shape: write your description
+    """
     # check the task
     # input_shape: (batch_size, in_channels, h, w) or (in_channels, h, w)
     if model_config.type == 'convnet2':

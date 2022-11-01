@@ -33,6 +33,22 @@ class BackdoorServer(Server):
                  strategy=None,
                  unseen_clients_id=None,
                  **kwargs):
+        """
+        Initialize a BackdoorServer.
+
+        Args:
+            self: write your description
+            ID: write your description
+            state: write your description
+            config: write your description
+            data: write your description
+            model: write your description
+            client_num: write your description
+            total_round_num: write your description
+            device: write your description
+            strategy: write your description
+            unseen_clients_id: write your description
+        """
         super(BackdoorServer, self).__init__(ID=ID,
                                              state=state,
                                              data=data,
@@ -181,6 +197,22 @@ class PassiveServer(Server):
                  state_to_reconstruct=None,
                  client_to_reconstruct=None,
                  **kwargs):
+        """
+        Initialize a passive server.
+
+        Args:
+            self: write your description
+            ID: write your description
+            state: write your description
+            data: write your description
+            model: write your description
+            client_num: write your description
+            total_round_num: write your description
+            device: write your description
+            strategy: write your description
+            state_to_reconstruct: write your description
+            client_to_reconstruct: write your description
+        """
         super(PassiveServer, self).__init__(ID=ID,
                                             state=state,
                                             data=data,
@@ -213,6 +245,12 @@ class PassiveServer(Server):
         self.reconstruct_data_summary = dict()
 
     def _get_reconstructor(self):
+        """
+        Returns the reconstruct constructor.
+
+        Args:
+            self: write your description
+        """
 
         return get_reconstructor(
             self.atk_method,
@@ -227,6 +265,16 @@ class PassiveServer(Server):
             alpha_TV=self._cfg.attack.alpha_TV)
 
     def _reconstruct(self, model_para, batch_size, state, sender):
+        """
+        Reconstructs a single state for a single model.
+
+        Args:
+            self: write your description
+            model_para: write your description
+            batch_size: write your description
+            state: write your description
+            sender: write your description
+        """
         logger.info('-------- reconstruct round:{}, client:{}---------'.format(
             state, sender))
         dummy_data, dummy_label = self.reconstructor.reconstruct(
@@ -242,6 +290,14 @@ class PassiveServer(Server):
         ]
 
     def run_reconstruct(self, state_list=None, sender_list=None):
+        """
+        Run gradient based reconstruction method.
+
+        Args:
+            self: write your description
+            state_list: write your description
+            sender_list: write your description
+        """
 
         if state_list is None:
             state_list = self.msg_buffer['train'].keys()
@@ -259,6 +315,13 @@ class PassiveServer(Server):
                                   sender=sender)
 
     def callback_funcs_model_para(self, message: Message):
+        """
+        Run reconstruction after model message
+
+        Args:
+            self: write your description
+            message: write your description
+        """
         if self.is_finish:
             return 'finish'
 
@@ -308,6 +371,20 @@ class PassivePIAServer(Server):
                  device='cpu',
                  strategy=None,
                  **kwargs):
+        """
+        Initialize a passive PIA Server.
+
+        Args:
+            self: write your description
+            ID: write your description
+            state: write your description
+            data: write your description
+            model: write your description
+            client_num: write your description
+            total_round_num: write your description
+            device: write your description
+            strategy: write your description
+        """
         super(PassivePIAServer, self).__init__(ID=ID,
                                                state=state,
                                                data=data,
@@ -337,6 +414,13 @@ class PassivePIAServer(Server):
         # lr=self._cfg.fedopt.optimizer.lr)
         # print(self.optimizer)
     def callback_funcs_model_para(self, message: Message):
+        """
+        Callback function for model_para.
+
+        Args:
+            self: write your description
+            message: write your description
+        """
         if self.is_finish:
             return 'finish'
 

@@ -20,6 +20,19 @@ class ConvNet2(Module):
                  class_num=10,
                  use_bn=True,
                  dropout=.0):
+        """
+        ConvNet2 class initialization.
+
+        Args:
+            self: write your description
+            in_channels: write your description
+            h: write your description
+            w: write your description
+            hidden: write your description
+            class_num: write your description
+            use_bn: write your description
+            dropout: write your description
+        """
         super(ConvNet2, self).__init__()
 
         self.conv1 = Conv2d(in_channels, 32, 5, padding=2)
@@ -37,6 +50,13 @@ class ConvNet2(Module):
         self.dropout = dropout
 
     def forward(self, x):
+        """
+        Forward pass through the network.
+
+        Args:
+            self: write your description
+            x: write your description
+        """
         x = self.bn1(self.conv1(x)) if self.use_bn else self.conv1(x)
         x = self.maxpool(self.relu(x))
         x = self.bn2(self.conv2(x)) if self.use_bn else self.conv2(x)
@@ -58,6 +78,18 @@ class ConvNet5(Module):
                  hidden=2048,
                  class_num=10,
                  dropout=.0):
+        """
+        ConvNet5 class constructor.
+
+        Args:
+            self: write your description
+            in_channels: write your description
+            h: write your description
+            w: write your description
+            hidden: write your description
+            class_num: write your description
+            dropout: write your description
+        """
         super(ConvNet5, self).__init__()
 
         self.conv1 = Conv2d(in_channels, 32, 5, padding=2)
@@ -86,6 +118,13 @@ class ConvNet5(Module):
         self.dropout = dropout
 
     def forward(self, x):
+        """
+        Forward pass of the RMRM module.
+
+        Args:
+            self: write your description
+            x: write your description
+        """
         x = self.relu(self.bn1(self.conv1(x)))
         x = self.maxpool(x)
 
@@ -118,6 +157,18 @@ class VGG11(Module):
                  hidden=128,
                  class_num=10,
                  dropout=.0):
+        """
+        Initialize VGG11 class.
+
+        Args:
+            self: write your description
+            in_channels: write your description
+            h: write your description
+            w: write your description
+            hidden: write your description
+            class_num: write your description
+            dropout: write your description
+        """
         super(VGG11, self).__init__()
 
         self.conv1 = Conv2d(in_channels, 64, 3, padding=1)
@@ -156,6 +207,13 @@ class VGG11(Module):
         self.dropout = dropout
 
     def forward(self, x):
+        """
+        Forward pass of the convolutional layer
+
+        Args:
+            self: write your description
+            x: write your description
+        """
         x = self.relu(self.bn1(self.conv1(x)))
         x = self.maxpool(x)
 

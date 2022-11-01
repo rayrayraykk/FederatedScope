@@ -20,11 +20,27 @@ class RelTypeSplitter(BaseTransform, BaseSplitter):
 
     """
     def __init__(self, client_num, alpha=0.5, realloc_mask=False):
+        """
+        Initialization of the splitter.
+
+        Args:
+            self: write your description
+            client_num: write your description
+            alpha: write your description
+            realloc_mask: write your description
+        """
         BaseSplitter.__init__(self, client_num)
         self.alpha = alpha
         self.realloc_mask = realloc_mask
 
     def __call__(self, data, **kwargs):
+        """
+        Subsets the graph according to the Dirichlet distribution.
+
+        Args:
+            self: write your description
+            data: write your description
+        """
         data_list = []
         label = data.edge_type.numpy()
         idx_slice = dirichlet_distribution_noniid_slice(

@@ -63,6 +63,11 @@ args = parser.parse_args()
 
 
 def extract_considered():
+    """
+    Extracts elements from a vasprun - filtered json file.
+
+    Args:
+    """
     keywords = [val.lower() for val in KEYWORDS]
     pat = re.compile(r'|'.join(keywords))
 
@@ -137,6 +142,11 @@ def extract_considered():
 
 
 def be_canonical():
+    """
+    Output the canonical configuration file.
+
+    Args:
+    """
     keywords = [val.lower() for val in KEYWORDS]
     conf_cnts = dict()
     org_cnts = dict()
@@ -176,6 +186,11 @@ def be_canonical():
 
 
 def be_fourclass_data():
+    """
+    Be the data for four - class networks.
+
+    Args:
+    """
     labels = [val.lower() for val in LABELS]
     cnt = 0
     vset = dict()
@@ -231,6 +246,11 @@ def be_fourclass_data():
 
 
 def stats():
+    """
+    Print the statistics of the network.
+
+    Args:
+    """
     p2c = dict()
     p2o = dict()
     with open(args.input_path, 'r') as ips:
@@ -281,6 +301,11 @@ def stats():
 
 
 def main():
+    """
+    Main entry point for the script.
+
+    Args:
+    """
     if args.choice == 0:
         extract_considered()
     elif args.choice == 1:

@@ -26,6 +26,21 @@ class PassivePropertyInference():
                  fl_type_optimizer,
                  fl_lr,
                  batch_size=100):
+        """
+        Initialize the class with the given parameters.
+
+        Args:
+            self: write your description
+            classier: write your description
+            fl_model_criterion: write your description
+            device: write your description
+            grad_clip: write your description
+            dataset_name: write your description
+            fl_local_update_num: write your description
+            fl_type_optimizer: write your description
+            fl_lr: write your description
+            batch_size: write your description
+        """
         # self.auxiliary_dataset['x']: n * d_feature; x is the parameter
         # updates
         # self.auxiliary_dataset['y']: n * 1; y is the
@@ -56,6 +71,13 @@ class PassivePropertyInference():
     #     return train_data_batch, test_data_batch
 
     def _get_batch(self, data):
+        """
+        Get a batch of properties and nproperties from the data.
+
+        Args:
+            self: write your description
+            data: write your description
+        """
         prop_ind = np.random.choice(np.where(data['prop'] == 1)[0],
                                     self.batch_size,
                                     replace=True)
@@ -71,6 +93,14 @@ class PassivePropertyInference():
         return [x_batch_prop, y_batch_prop, x_batch_nprop, y_batch_nprop]
 
     def get_data_for_dataset_prop_classifier(self, model, local_runs=10):
+        """
+        Runs the auxiliary dataset propagation algorithm for the specified model.
+
+        Args:
+            self: write your description
+            model: write your description
+            local_runs: write your description
+        """
 
         previous_para = model.state_dict()
         self.current_model_para = previous_para
@@ -88,6 +118,16 @@ class PassivePropertyInference():
             self.add_parameter_updates(para_update_nprop, prop)
 
     def _get_parameter_updates(self, model, previous_para, x_batch, y_batch):
+        """
+        Get parameter updates from the model
+
+        Args:
+            self: write your description
+            model: write your description
+            previous_para: write your description
+            x_batch: write your description
+            y_batch: write your description
+        """
 
         model = copy.deepcopy(model)
         # get last phase model parameters
@@ -119,6 +159,16 @@ class PassivePropertyInference():
 
     def collect_updates(self, previous_para, updated_parameter, round,
                         client_id):
+        """
+        Collect updates from previous parameter and update the parameter values for a given round.
+
+        Args:
+            self: write your description
+            previous_para: write your description
+            updated_parameter: write your description
+            round: write your description
+            client_id: write your description
+        """
 
         updates_prop = torch.hstack([
             (previous_para[name] - updated_parameter[name]).flatten().cpu()
@@ -148,6 +198,12 @@ class PassivePropertyInference():
                 (self.dataset_prop_classifier['y'], prop.cpu()))
 
     def train_property_classifier(self):
+        """
+        Train the property classifier.
+
+        Args:
+            self: write your description
+        """
         from sklearn.model_selection import train_test_split
         x_train, x_test, y_train, y_test = train_test_split(
             self.dataset_prop_classifier['x'],
@@ -164,9 +220,22 @@ class PassivePropertyInference():
             format(accuracy))
 
     def property_inference(self, parameter_updates):
+        """
+        Infers the property - update for the given parameter updates.
+
+        Args:
+            self: write your description
+            parameter_updates: write your description
+        """
         return self.classifier.predict(parameter_updates)
 
     def infer_collected(self):
+        """
+        Returns a dictionary of property - > value inference for each collected update.
+
+        Args:
+            self: write your description
+        """
         pia_results = dict()
 
         for round in self.collect_updates_summary.keys():

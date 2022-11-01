@@ -11,15 +11,35 @@ from sklearn.feature_extraction._stop_words import ENGLISH_STOP_WORDS as \
 
 class LemmaTokenizer(object):
     def __init__(self):
+        """
+        Initialize the WordNet stemmer.
+
+        Args:
+            self: write your description
+        """
         from nltk.stem import WordNetLemmatizer
         self.wnl = WordNetLemmatizer()
 
     def __call__(self, doc):
+        """
+        Return a list of lemmatized words in the document doc.
+
+        Args:
+            self: write your description
+            doc: write your description
+        """
         from nltk import word_tokenize
         return [self.wnl.lemmatize(t) for t in word_tokenize(doc)]
 
 
 def build_feature(words, threshold):
+    """
+    Builds a feature matrix for the paper.
+
+    Args:
+        words: write your description
+        threshold: write your description
+    """
     from nltk.corpus import stopwords as nltk_stopwords
     # use bag-of-words representation of paper titles as the features of papers
     stopwords = sklearn_stopwords.union(set(nltk_stopwords.words('english')))
@@ -32,6 +52,15 @@ def build_feature(words, threshold):
 
 
 def build_graph(path, filename, FL=0, threshold=15):
+    """
+    Build a graph from a paper.
+
+    Args:
+        path: write your description
+        filename: write your description
+        FL: write your description
+        threshold: write your description
+    """
     with open(osp.join(path, filename), 'r') as f:
         node_cnt = sum([1 for line in f])
 
@@ -117,6 +146,17 @@ class DBLPNew(InMemoryDataset):
                  splits=[0.5, 0.2, 0.3],
                  transform=None,
                  pre_transform=None):
+        """
+        Initialize DBLP instance
+
+        Args:
+            self: write your description
+            root: write your description
+            FL: write your description
+            splits: write your description
+            transform: write your description
+            pre_transform: write your description
+        """
         self.FL = FL
         if self.FL == 0:
             self.name = 'DBLPNew'
@@ -130,28 +170,64 @@ class DBLPNew(InMemoryDataset):
 
     @property
     def raw_file_names(self):
+        """
+        Return a list of file names.
+
+        Args:
+            self: write your description
+        """
         names = ['dblp_new.tsv']
         return names
 
     @property
     def processed_file_names(self):
+        """
+        Return the processed file names.
+
+        Args:
+            self: write your description
+        """
         return ['data.pt']
 
     @property
     def raw_dir(self):
+        """
+        Return raw directory
+
+        Args:
+            self: write your description
+        """
         return osp.join(self.root, self.name, 'raw')
 
     @property
     def processed_dir(self):
+        """
+        Return processed directory
+
+        Args:
+            self: write your description
+        """
         return osp.join(self.root, self.name, 'processed')
 
     def download(self):
+        """
+        Download the raw files to the raw_dir.
+
+        Args:
+            self: write your description
+        """
         # Download to `self.raw_dir`.
         url = 'https://federatedscope.oss-cn-beijing.aliyuncs.com'
         for name in self.raw_file_names:
             download_url(f'{url}/{name}', self.raw_dir)
 
     def process(self):
+        """
+        Process the graph and save it as a single torch. save instance.
+
+        Args:
+            self: write your description
+        """
         # Read data into huge `Data` list.
         data_list = build_graph(self.raw_dir, self.raw_file_names[0], self.FL)
 

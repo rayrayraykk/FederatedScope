@@ -19,10 +19,25 @@ class LouvainSplitter(BaseTransform, BaseSplitter):
 
     """
     def __init__(self, client_num, delta=20):
+        """
+        Extends base class method to set delta.
+
+        Args:
+            self: write your description
+            client_num: write your description
+            delta: write your description
+        """
         self.delta = delta
         BaseSplitter.__init__(self, client_num)
 
     def __call__(self, data, **kwargs):
+        """
+        Return graphs of community Louvain connected to data.
+
+        Args:
+            self: write your description
+            data: write your description
+        """
         data.index_orig = torch.arange(data.num_nodes)
         G = to_networkx(
             data,

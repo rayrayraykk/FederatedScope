@@ -4,6 +4,13 @@ from __future__ import division
 
 
 def get_rnn(model_config, input_shape):
+    """
+    Create a LSTM model based on the model configuration.
+
+    Args:
+        model_config: write your description
+        input_shape: write your description
+    """
     from federatedscope.nlp.model.rnn import LSTM
     # check the task
     # input_shape: (batch_size, seq_len, hidden) or (seq_len, hidden)
@@ -22,6 +29,13 @@ def get_rnn(model_config, input_shape):
 
 
 def get_transformer(model_config, input_shape):
+    """
+    Get a Transformer for the given model configuration.
+
+    Args:
+        model_config: write your description
+        input_shape: write your description
+    """
     from transformers import AutoModelForPreTraining, \
         AutoModelForQuestionAnswering, AutoModelForSequenceClassification, \
         AutoModelForTokenClassification, AutoModelWithLMHead, AutoModel

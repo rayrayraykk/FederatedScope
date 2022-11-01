@@ -15,6 +15,13 @@ class CustomFormatter(logging.Formatter):
     """Logging colored formatter, adapted from
     https://stackoverflow.com/a/56944256/3638629"""
     def __init__(self, fmt):
+        """
+        Initialize the logger format dictionary.
+
+        Args:
+            self: write your description
+            fmt: write your description
+        """
         super().__init__()
         grey = '\x1b[38;21m'
         blue = '\x1b[38;5;39m'
@@ -32,6 +39,13 @@ class CustomFormatter(logging.Formatter):
         }
 
     def format(self, record):
+        """
+        Format the log record.
+
+        Args:
+            self: write your description
+            record: write your description
+        """
         log_fmt = self.FORMATS.get(record.levelno)
         formatter = logging.Formatter(log_fmt)
         return formatter.format(record)
@@ -39,13 +53,34 @@ class CustomFormatter(logging.Formatter):
 
 class LoggerPrecisionFilter(logging.Filter):
     def __init__(self, precision):
+        """
+        Set print precision.
+
+        Args:
+            self: write your description
+            precision: write your description
+        """
         super().__init__()
         self.print_precision = precision
 
     def str_round(self, match_res):
+        """
+        Round the result of a regex match.
+
+        Args:
+            self: write your description
+            match_res: write your description
+        """
         return str(round(eval(match_res.group()), self.print_precision))
 
     def filter(self, record):
+        """
+        Round float numbers to specified precision.
+
+        Args:
+            self: write your description
+            record: write your description
+        """
         # use regex to find float numbers and round them to specified precision
         if not isinstance(record.msg, str):
             record.msg = str(record.msg)
@@ -57,6 +92,13 @@ class LoggerPrecisionFilter(logging.Filter):
 
 
 def update_logger(cfg, clear_before_add=False):
+    """
+    Create root logger and add logging handlers.
+
+    Args:
+        cfg: write your description
+        clear_before_add: write your description
+    """
     root_logger = logging.getLogger("federatedscope")
 
     # clear all existing handlers and add the default stream
@@ -133,6 +175,12 @@ def update_logger(cfg, clear_before_add=False):
 
 
 def init_wandb(cfg):
+    """
+    Initialize wandb with the given configuration
+
+    Args:
+        cfg: write your description
+    """
     try:
         import wandb
         # on some linux machines, we may need "thread" init to avoid memory
@@ -191,6 +239,15 @@ def logfile_2_wandb_dict(exp_log_f, raw_out=True):
 
 
 def logline_2_wandb_dict(exp_stop_normal, line, log_res_best, raw_out):
+    """
+    Convert log line to a dict for use in wallow. db.
+
+    Args:
+        exp_stop_normal: write your description
+        line: write your description
+        log_res_best: write your description
+        raw_out: write your description
+    """
     log_res = {}
     if "INFO:" in line and "Find new best result for" in line:
         # Logger type 1, each line for each metric, e.g.,

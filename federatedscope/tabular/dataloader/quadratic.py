@@ -2,6 +2,12 @@ import numpy as np
 
 
 def load_quadratic_dataset(config):
+    """
+    Load the quadratic data.
+
+    Args:
+        config: write your description
+    """
     data_dict = dict()
     d = config.data.quadratic.dim
     base = np.exp(

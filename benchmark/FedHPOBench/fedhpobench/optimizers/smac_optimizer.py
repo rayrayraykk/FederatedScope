@@ -14,6 +14,12 @@ logging.basicConfig(level=logging.WARNING)
 
 
 def run_smac(cfg):
+    """
+    Run SMAC optimizer.
+
+    Args:
+        cfg: write your description
+    """
     def optimization_function_wrapper(config):
         """ Helper-function: simple wrapper to use the benchmark with smac"""
         budget = int(cfg.optimizer.max_budget)

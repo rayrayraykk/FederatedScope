@@ -2,6 +2,14 @@ import numpy as np
 
 
 def _split_according_to_prior(label, client_num, prior):
+    """
+    Splits a prior into multiple random connections based on the number of client connections.
+
+    Args:
+        label: write your description
+        client_num: write your description
+        prior: write your description
+    """
     assert client_num == len(prior)
     classes = len(np.unique(label))
     assert classes == len(np.unique(np.concatenate(prior, 0)))

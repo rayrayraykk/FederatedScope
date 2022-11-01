@@ -4,6 +4,15 @@ import numpy as np
 
 class LogisticRegression(object):
     def __init__(self, in_channels, class_num, use_bias=True):
+        """
+        Initialize the layer.
+
+        Args:
+            self: write your description
+            in_channels: write your description
+            class_num: write your description
+            use_bias: write your description
+        """
 
         self.input_x = tf.placeholder(tf.float32, [None, in_channels],
                                       name='input_x')
@@ -31,6 +40,16 @@ class LogisticRegression(object):
                 tf.global_variables_initializer().run()
 
     def fc_layer(self, input_x, in_channels, class_num, use_bias=True):
+        """
+        Create the layer for the FFW layer.
+
+        Args:
+            self: write your description
+            input_x: write your description
+            in_channels: write your description
+            class_num: write your description
+            use_bias: write your description
+        """
         with tf.name_scope('fc'):
             fc_w = tf.Variable(tf.truncated_normal([in_channels, class_num],
                                                    stddev=0.1),
@@ -47,12 +66,31 @@ class LogisticRegression(object):
         return fc_out
 
     def to(self, device):
+        """
+        Send the message to the given device.
+
+        Args:
+            self: write your description
+            device: write your description
+        """
         pass
 
     def trainable_variables(self):
+        """
+        Returns a list of variables that can be trainable.
+
+        Args:
+            self: write your description
+        """
         return tf.trainable_variables()
 
     def state_dict(self):
+        """
+        Returns a dictionary of the current state of the network.
+
+        Args:
+            self: write your description
+        """
         with self.graph.as_default():
             with self.sess.as_default():
                 model_param = list()
@@ -69,6 +107,14 @@ class LogisticRegression(object):
         return model_dict
 
     def load_state_dict(self, model_para, strict=False):
+        """
+        Loads the state of the model from the given dictionary.
+
+        Args:
+            self: write your description
+            model_para: write your description
+            strict: write your description
+        """
         with self.graph.as_default():
             with self.sess.as_default():
                 for name in model_para.keys():

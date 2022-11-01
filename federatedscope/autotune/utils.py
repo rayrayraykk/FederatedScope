@@ -70,6 +70,15 @@ def config2str(config):
 
 
 def summarize_hpo_results(configs, perfs, white_list=None, desc=False):
+    """
+    Summarize the results of HPO trials.
+
+    Args:
+        configs: write your description
+        perfs: write your description
+        white_list: write your description
+        desc: write your description
+    """
     cols = [k for k in configs[0] if (white_list is None or k in white_list)
             ] + ['performance']
     d = [[
@@ -84,6 +93,12 @@ def summarize_hpo_results(configs, perfs, white_list=None, desc=False):
 
 
 def parse_logs(file_list):
+    """
+    Parses a list of log files and plots the results.
+
+    Args:
+        file_list: write your description
+    """
     import numpy as np
     import matplotlib.pyplot as plt
 
@@ -91,6 +106,12 @@ def parse_logs(file_list):
     MARKSIZE = 25
 
     def process(file):
+        """
+        Process a file of configurations and return a two - dimensional array of the budget and the
+
+        Args:
+            file: write your description
+        """
         history = []
         with open(file, 'r') as F:
             for line in F:
@@ -134,6 +155,14 @@ def parse_logs(file_list):
 
 
 def eval_in_fs(cfg, config, budget):
+    """
+    Runs the autotune engine in the given Fedora configuration.
+
+    Args:
+        cfg: write your description
+        config: write your description
+        budget: write your description
+    """
     import ConfigSpace as CS
     from federatedscope.core.auxiliaries.utils import setup_seed
     from federatedscope.core.auxiliaries.data_builder import get_data

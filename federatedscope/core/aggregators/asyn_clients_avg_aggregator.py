@@ -8,6 +8,15 @@ class AsynClientsAvgAggregator(ClientsAvgAggregator):
         staled model updates
     """
     def __init__(self, model=None, device='cpu', config=None):
+        """
+        Initialize the aggregator.
+
+        Args:
+            self: write your description
+            model: write your description
+            device: write your description
+            config: write your description
+        """
         super(AsynClientsAvgAggregator, self).__init__(model, device, config)
 
     def aggregate(self, agg_info):
@@ -49,6 +58,15 @@ class AsynClientsAvgAggregator(ClientsAvgAggregator):
                 ((1.0 + staleness)**self.cfg.asyn.staleness_discount_factor))
 
     def _para_weighted_avg(self, models, recover_fun=None, staleness=None):
+        """
+        Calculates the weighted average of models.
+
+        Args:
+            self: write your description
+            models: write your description
+            recover_fun: write your description
+            staleness: write your description
+        """
         training_set_size = 0
         for i in range(len(models)):
             sample_size, _ = models[i]

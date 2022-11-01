@@ -60,6 +60,17 @@ class GIN_Net(torch.nn.Module):
                  hidden=64,
                  max_depth=2,
                  dropout=.0):
+        """
+        Depth - first search of the network.
+
+        Args:
+            self: write your description
+            in_channels: write your description
+            out_channels: write your description
+            hidden: write your description
+            max_depth: write your description
+            dropout: write your description
+        """
         super(GIN_Net, self).__init__()
         self.convs = ModuleList()
         for i in range(max_depth):
@@ -77,6 +88,13 @@ class GIN_Net(torch.nn.Module):
         self.dropout = dropout
 
     def forward(self, data):
+        """
+        Forward propagate the data
+
+        Args:
+            self: write your description
+            data: write your description
+        """
         if isinstance(data, Data):
             x, edge_index = data.x, data.edge_index
         elif isinstance(data, tuple):

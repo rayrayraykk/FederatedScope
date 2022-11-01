@@ -11,10 +11,23 @@ logger = logging.getLogger(__name__)
 
 
 def run_smac(cfg, scheduler):
+    """
+    Run the SMAC4BB or HPO scheduler.
+
+    Args:
+        cfg: write your description
+        scheduler: write your description
+    """
     init_configs = []
     perfs = []
 
     def optimization_function_wrapper(config):
+        """
+        Wrapper function for optimization function evaluation.
+
+        Args:
+            config: write your description
+        """
         budget = cfg.hpo.sha.budgets[-1]
         res = eval_in_fs(cfg, config, budget)
         config = dict(config)
@@ -26,6 +39,11 @@ def run_smac(cfg, scheduler):
         return res
 
     def summarize():
+        """
+        Summarize the results of HPO queries.
+
+        Args:
+        """
         from federatedscope.autotune.utils import summarize_hpo_results
         results = summarize_hpo_results(init_configs,
                                         perfs,

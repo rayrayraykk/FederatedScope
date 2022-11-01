@@ -179,4 +179,10 @@ def get_model(model_config, local_data=None, backend='torch'):
 
 
 def get_trainable_para_names(model):
+    """
+    Get the names of all parameters that can be trainable.
+
+    Args:
+        model: write your description
+    """
     return set(dict(list(model.named_parameters())).keys())

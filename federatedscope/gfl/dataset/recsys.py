@@ -27,6 +27,13 @@ from torch_geometric.utils import from_networkx
 
 # RecSys
 def read_mapping(path, filename):
+    """
+    Read a mapping file.
+
+    Args:
+        path: write your description
+        filename: write your description
+    """
     mapping = {}
     with open(os.path.join(path, filename)) as f:
         for line in f:
@@ -37,6 +44,13 @@ def read_mapping(path, filename):
 
 
 def partition_by_category(graph, mapping_item2category):
+    """
+    Partition a graph into a mapping_item2category dictionary.
+
+    Args:
+        graph: write your description
+        mapping_item2category: write your description
+    """
     partition = {}
     for key in mapping_item2category:
         partition[key] = [mapping_item2category[key]]
@@ -48,6 +62,14 @@ def partition_by_category(graph, mapping_item2category):
 
 
 def subgraphing(g, partion, mapping_item2category):
+    """
+    Generate subgraphs of g using the mapping_item2category.
+
+    Args:
+        g: write your description
+        partion: write your description
+        mapping_item2category: write your description
+    """
     nodelist = [[] for i in set(mapping_item2category.keys())]
     for k, v in partion.items():
         for category in v:
@@ -63,6 +85,13 @@ def subgraphing(g, partion, mapping_item2category):
 
 
 def read_RecSys(path, FL=False):
+    """
+    Read a RecSys file and return a list of graphs
+
+    Args:
+        path: write your description
+        FL: write your description
+    """
     mapping_user = read_mapping(path, 'user.dict')
     mapping_item = read_mapping(path, 'item.dict')
 
@@ -112,6 +141,18 @@ class RecSys(InMemoryDataset):
                  splits=[0.8, 0.1, 0.1],
                  transform=None,
                  pre_transform=None):
+        """
+        Loads the data from the root path.
+
+        Args:
+            self: write your description
+            root: write your description
+            name: write your description
+            FL: write your description
+            splits: write your description
+            transform: write your description
+            pre_transform: write your description
+        """
         self.FL = FL
         if self.FL:
             self.name = 'FL' + name
@@ -123,19 +164,43 @@ class RecSys(InMemoryDataset):
 
     @property
     def raw_file_names(self):
+        """
+        Return a list of file names.
+
+        Args:
+            self: write your description
+        """
         names = ['user.dict', 'item.dict', 'category.dict', 'graph.txt']
         return names
 
     @property
     def processed_file_names(self):
+        """
+        Return the processed file names.
+
+        Args:
+            self: write your description
+        """
         return ['data.pt']
 
     @property
     def raw_dir(self):
+        """
+        Return raw directory
+
+        Args:
+            self: write your description
+        """
         return osp.join(self.root, self.name, 'raw')
 
     @property
     def processed_dir(self):
+        """
+        Return processed directory
+
+        Args:
+            self: write your description
+        """
         return osp.join(self.root, self.name, 'processed')
 
     def download(self):
@@ -156,6 +221,12 @@ class RecSys(InMemoryDataset):
             download_url(f'{url}/{name}', self.raw_dir)
 
     def process(self):
+        """
+        Process the data files.
+
+        Args:
+            self: write your description
+        """
         # Read data into huge `Data` list.
         data_list = read_RecSys(self.raw_dir, self.FL)
 

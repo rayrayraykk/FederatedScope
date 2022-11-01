@@ -11,9 +11,22 @@ from federatedscope.core.auxiliaries.worker_builder import get_server_cls, get_c
 
 class FedSagePlusTest(unittest.TestCase):
     def setUp(self):
+        """
+        Runs the test case.
+
+        Args:
+            self: write your description
+        """
         print(('Testing %s.%s' % (type(self).__name__, self._testMethodName)))
 
     def set_config_fedsageplus(self, cfg):
+        """
+        Set configuration for fedsageplus
+
+        Args:
+            self: write your description
+            cfg: write your description
+        """
         backup_cfg = cfg.clone()
 
         import torch
@@ -54,6 +67,12 @@ class FedSagePlusTest(unittest.TestCase):
         return backup_cfg
 
     def test_fedsageplus_standalone(self):
+        """
+        Run FedsagePlus standalone.
+
+        Args:
+            self: write your description
+        """
         init_cfg = global_cfg.clone()
         backup_cfg = self.set_config_fedsageplus(init_cfg)
         setup_seed(init_cfg.seed)

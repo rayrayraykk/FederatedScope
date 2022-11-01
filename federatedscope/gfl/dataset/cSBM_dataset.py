@@ -225,6 +225,24 @@ class dataset_ContextualSBM(InMemoryDataset):
                  train_percent=0.01,
                  transform=None,
                  pre_transform=None):
+        """
+        Initialize a contextual SSM dataset.
+
+        Args:
+            self: write your description
+            root: write your description
+            name: write your description
+            n: write your description
+            d: write your description
+            p: write your description
+            Lambda: write your description
+            mu: write your description
+            epsilon: write your description
+            theta: write your description
+            train_percent: write your description
+            transform: write your description
+            pre_transform: write your description
+        """
 
         now = datetime.now()
         surfix = now.strftime('%b_%d_%Y-%H:%M').lower()
@@ -271,14 +289,32 @@ class dataset_ContextualSBM(InMemoryDataset):
 
     @property
     def raw_file_names(self):
+        """
+        Returns the file names for this file.
+
+        Args:
+            self: write your description
+        """
         file_names = [self.name]
         return file_names
 
     @property
     def processed_file_names(self):
+        """
+        Return the processed file names.
+
+        Args:
+            self: write your description
+        """
         return ['data.pt']
 
     def download(self):
+        """
+        Download the SBGM data and save it to disk.
+
+        Args:
+            self: write your description
+        """
         for name in self.raw_file_names:
             p2f = osp.join(self.raw_dir, name)
             if not osp.isfile(p2f):
@@ -320,6 +356,12 @@ class dataset_ContextualSBM(InMemoryDataset):
                 pass
 
     def process(self):
+        """
+        Process the data and save it to disk.
+
+        Args:
+            self: write your description
+        """
         if isinstance(self._Lambda, list):
             all_data = []
             for i, Lambda in enumerate(self._Lambda):
@@ -344,6 +386,12 @@ class dataset_ContextualSBM(InMemoryDataset):
             torch.save(self.collate([data]), self.processed_paths[0])
 
     def __repr__(self):
+        """
+        Represent the module name as a string.
+
+        Args:
+            self: write your description
+        """
         return '{}()'.format(self.name)
 
 

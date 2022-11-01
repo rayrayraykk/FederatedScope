@@ -34,7 +34,20 @@ logging.basicConfig(level=logging.WARNING)
 
 
 def run_dehb(cfg):
+    """
+    Run the DEHB or DEHB optimizer.
+
+    Args:
+        cfg: write your description
+    """
     def objective(config, budget=None):
+        """
+        Run the FHB objective.
+
+        Args:
+            config: write your description
+            budget: write your description
+        """
         if cfg.optimizer.type == 'de':
             budget = cfg.optimizer.max_budget
         main_fidelity = {

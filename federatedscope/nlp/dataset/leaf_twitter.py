@@ -41,6 +41,21 @@ class LEAF_TWITTER(LEAF):
                  seed=123,
                  transform=None,
                  target_transform=None):
+        """
+        Load LEAF - TWITTER dataset
+
+        Args:
+            self: write your description
+            root: write your description
+            name: write your description
+            max_len: write your description
+            s_frac: write your description
+            tr_frac: write your description
+            val_frac: write your description
+            seed: write your description
+            transform: write your description
+            target_transform: write your description
+        """
         self.root = root
         self.name = name
         self.s_frac = s_frac
@@ -91,10 +106,22 @@ class LEAF_TWITTER(LEAF):
 
     @property
     def raw_file_names(self):
+        """
+        Return a list of file names for this file.
+
+        Args:
+            self: write your description
+        """
         names = [f'{self.name}_all_data.zip']
         return names
 
     def download(self):
+        """
+        Download the raw files.
+
+        Args:
+            self: write your description
+        """
         # Download to `self.raw_dir`.
         url = 'https://federatedscope.oss-cn-beijing.aliyuncs.com'
         os.makedirs(self.raw_dir, exist_ok=True)
@@ -102,6 +129,13 @@ class LEAF_TWITTER(LEAF):
             download_url(f'{url}/{name}', self.raw_dir)
 
     def _to_bag_of_word(self, text):
+        """
+        Convert text to bag of words.
+
+        Args:
+            self: write your description
+            text: write your description
+        """
         bag = np.zeros(len(self.word2id))
         for i in text:
             if i != -1:
@@ -140,6 +174,14 @@ class LEAF_TWITTER(LEAF):
         return text_dict
 
     def tokenizer(self, data, targets):
+        """
+        Tokenizes the input data.
+
+        Args:
+            self: write your description
+            data: write your description
+            targets: write your description
+        """
         # [ID, Date, Query, User, Content]
         processed_data = []
         for raw_text in data:
@@ -157,6 +199,12 @@ class LEAF_TWITTER(LEAF):
         return processed_data, targets
 
     def process(self):
+        """
+        Process data and save to local files
+
+        Args:
+            self: write your description
+        """
         raw_path = osp.join(self.raw_dir, "all_data")
         files = os.listdir(raw_path)
         files = [f for f in files if f.endswith('.json')]

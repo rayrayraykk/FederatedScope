@@ -5,6 +5,12 @@ from federatedscope.register import register_config
 
 
 def extend_asyn_cfg(cfg):
+    """
+    Extend the global configuration with Asyn related options.
+
+    Args:
+        cfg: write your description
+    """
     # ---------------------------------------------------------------------- #
     # Asynchronous related options
     # ---------------------------------------------------------------------- #
@@ -32,6 +38,12 @@ def extend_asyn_cfg(cfg):
 
 
 def assert_asyn_cfg(cfg):
+    """
+    Assert that the configuration is valid.
+
+    Args:
+        cfg: write your description
+    """
     if not cfg.asyn.use:
         return True
     # to ensure a valid time budget

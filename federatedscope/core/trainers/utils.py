@@ -4,7 +4,19 @@ import math
 
 
 def format_log_hooks(hooks_set):
+    """
+    Formats the hooks set into a JSON string.
+
+    Args:
+        hooks_set: write your description
+    """
     def format_dict(target_dict):
+        """
+        Formats a dictionary of objects for printing.
+
+        Args:
+            target_dict: write your description
+        """
         print_dict = collections.defaultdict(list)
         for k, v in target_dict.items():
             for element in v:
@@ -34,6 +46,13 @@ def filter_by_specified_keywords(param_name, filter_keywords):
 
 
 def move_to(obj, device):
+    """
+    Moves a tensor or list of tensors to a different device.
+
+    Args:
+        obj: write your description
+        device: write your description
+    """
     import torch
     if torch.is_tensor(obj):
         return obj.to(device)
@@ -52,6 +71,15 @@ def move_to(obj, device):
 
 
 def get_random(dis_type, sample_shape, params, device):
+    """
+    Get random data from the distributions module.
+
+    Args:
+        dis_type: write your description
+        sample_shape: write your description
+        params: write your description
+        device: write your description
+    """
     import torch.distributions as distributions
     if not hasattr(distributions, dis_type):
         raise NotImplementedError("Distribution {} is not implemented, "
@@ -64,6 +92,16 @@ def get_random(dis_type, sample_shape, params, device):
 
 def calculate_batch_epoch_num(steps, batch_or_epoch, num_data, batch_size,
                               drop_last):
+    """
+    Calculates the number of epochs to use for the given number of data.
+
+    Args:
+        steps: write your description
+        batch_or_epoch: write your description
+        num_data: write your description
+        batch_size: write your description
+        drop_last: write your description
+    """
     num_batch_per_epoch = num_data // batch_size + int(
         not drop_last and bool(num_data % batch_size))
     if num_batch_per_epoch == 0:

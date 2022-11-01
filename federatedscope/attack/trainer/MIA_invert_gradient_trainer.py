@@ -66,12 +66,24 @@ def wrap_GradientAscentTrainer(
 
 
 def hook_on_fit_start_count_round(ctx):
+    """
+    Hook on the start of the count round.
+
+    Args:
+        ctx: write your description
+    """
     ctx.round += 1
     logger.info("============== round: {} ====================".format(
         ctx.round))
 
 
 def hook_on_batch_start_replace_data_batch(ctx):
+    """
+    Hook when a batch is started to replace the current batch with the target data batch.
+
+    Args:
+        ctx: write your description
+    """
     # replace the data batch to the target data
     # check whether need to replace the data; if yes, replace the current
     # batch to target batch
@@ -93,6 +105,12 @@ def hook_on_batch_start_replace_data_batch(ctx):
 
 
 def hook_on_batch_backward_invert_gradient(ctx):
+    """
+    Hook on batch backward step to invert gradient
+
+    Args:
+        ctx: write your description
+    """
     if ctx.is_target_batch:
         # if the current data batch is the target data, perform gradient ascent
         ctx.optimizer.zero_grad()
@@ -122,6 +140,12 @@ def hook_on_batch_backward_invert_gradient(ctx):
 
 
 def hook_on_fit_start_loss_on_target_data(ctx):
+    """
+    Start the loss on the target data after fitting.
+
+    Args:
+        ctx: write your description
+    """
     # monitor the loss on the target data after performing gradient ascent
     # action.
     if ctx.finish_injected:

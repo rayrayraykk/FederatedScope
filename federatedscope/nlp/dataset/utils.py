@@ -25,6 +25,12 @@ def _one_hot(index, size):
 
 
 def letter_to_vec(letter):
+    """
+    Return the vector corresponding to the letter.
+
+    Args:
+        letter: write your description
+    """
     index = ALL_LETTERS.find(letter)
     return index
 
@@ -75,15 +81,34 @@ def bag_of_words(line, vocab):
 
 
 def target_to_binary(label):
+    """
+    Convert a target label to binary.
+
+    Args:
+        label: write your description
+    """
     return int(label == 1)
 
 
 def token_to_ids(texts, vocab):
+    """
+    Convert a list of tokens to their corresponding ids.
+
+    Args:
+        texts: write your description
+        vocab: write your description
+    """
     to_ret = [[vocab[word] for word in line] for line in texts]
     return np.array(to_ret)
 
 
 def label_to_index(labels):
+    """
+    Convert a list of labels to a list of index.
+
+    Args:
+        labels: write your description
+    """
     counter = Counter(labels)
     sorted_tuples = sorted(counter.items(), key=lambda x: x[1], reverse=True)
     label_list = [x[0] for x in sorted_tuples]

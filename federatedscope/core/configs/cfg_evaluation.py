@@ -3,6 +3,12 @@ from federatedscope.register import register_config
 
 
 def extend_evaluation_cfg(cfg):
+    """
+    Extend evaluation cfg with additional options.
+
+    Args:
+        cfg: write your description
+    """
 
     # ---------------------------------------------------------------------- #
     # Evaluation related options
@@ -37,6 +43,12 @@ def extend_evaluation_cfg(cfg):
 
 
 def assert_evaluation_cfg(cfg):
+    """
+    Assert that the given evaluation cfg is valid.
+
+    Args:
+        cfg: write your description
+    """
     pass
 
 

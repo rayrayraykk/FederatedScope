@@ -7,6 +7,13 @@ from datetime import datetime
 
 
 def merge_dict(dict1, dict2):
+    """
+    Recursively merges dict2 into dict1.
+
+    Args:
+        dict1: write your description
+        dict2: write your description
+    """
     for key, value in dict2.items():
         if key not in dict1:
             if isinstance(value, dict):
@@ -22,6 +29,13 @@ def merge_dict(dict1, dict2):
 
 
 def disable_fs_logger(cfg, clear_before_add=False):
+    """
+    Disables the FS logger.
+
+    Args:
+        cfg: write your description
+        clear_before_add: write your description
+    """
     # Disable FS logger
     root_logger = logging.getLogger("federatedscope")
     # clear all existing handlers and add the default stream
@@ -64,6 +78,12 @@ def disable_fs_logger(cfg, clear_before_add=False):
 
 
 def cfg2name(cfg):
+    """
+    Return a name for the optimizer directory based on the given configuration.
+
+    Args:
+        cfg: write your description
+    """
     repeat = 0
     dir = os.path.join(
         cfg.benchmark.out_dir,
@@ -77,6 +97,12 @@ def cfg2name(cfg):
 
 
 def dict2cfg(space):
+    """
+    Convert a dictionary of hyperparameters to a ConfigurationSpace object.
+
+    Args:
+        space: write your description
+    """
     configuration_space = CS.ConfigurationSpace()
     for key, value in space.items():
         hyperparameter = CS.CategoricalHyperparameter(key, choices=value)

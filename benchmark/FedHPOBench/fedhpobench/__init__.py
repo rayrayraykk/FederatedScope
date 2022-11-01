@@ -6,6 +6,11 @@ __version__ = '0.0.1'
 
 
 def _setup_logger():
+    """
+    Setup the logger for the library.
+
+    Args:
+    """
     import logging
 
     logging_fmt = "%(asctime)s (%(module)s:%(lineno)d) %(levelname)s: %(" \

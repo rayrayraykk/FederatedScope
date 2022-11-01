@@ -14,6 +14,13 @@ class BaseSplitter(abc.ABC):
 
     @abc.abstractmethod
     def __call__(self, dataset, *args, **kwargs):
+        """
+        Call the method.
+
+        Args:
+            self: write your description
+            dataset: write your description
+        """
         raise NotImplementedError
 
     def __repr__(self):

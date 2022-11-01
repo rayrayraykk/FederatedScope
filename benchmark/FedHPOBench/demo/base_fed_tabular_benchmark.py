@@ -92,6 +92,12 @@ class BaseTabularFedHPOBench(AbstractBenchmark):
         return root_path
 
     def _setup(self):
+        """
+        Download extract and parse the data.
+
+        Args:
+            self: write your description
+        """
         file_list = ['tabular.csv.gz', 'info.pkl']
         root_path = self.download_and_extract(self.url, self.data_path,
                                               file_list)
@@ -99,6 +105,14 @@ class BaseTabularFedHPOBench(AbstractBenchmark):
         self.table = pd.read_csv(datafile)
 
     def _get_lambda_from_df(self, configuration, fidelity):
+        """
+        Get lambda from df.
+
+        Args:
+            self: write your description
+            configuration: write your description
+            fidelity: write your description
+        """
         lambdas = []
         for seed in [0, 1, 2]:
             result = self._search({'seed': seed, **configuration}, fidelity)
@@ -110,6 +124,14 @@ class BaseTabularFedHPOBench(AbstractBenchmark):
         return np.mean(lambdas) / float(self.client_num)
 
     def _cost(self, configuration, fidelity):
+        """
+        Compute the cost of the RTMP.
+
+        Args:
+            self: write your description
+            configuration: write your description
+            fidelity: write your description
+        """
         try:
             const = self._get_lambda_from_df(configuration, fidelity)
         except:
@@ -127,6 +149,14 @@ class BaseTabularFedHPOBench(AbstractBenchmark):
         return cmp_cost + cmm_cost
 
     def _search(self, configuration, fidelity):
+        """
+        Search for the given configuration and fidelity.
+
+        Args:
+            self: write your description
+            configuration: write your description
+            fidelity: write your description
+        """
         # For configuration
         mask = np.array([True] * self.table.shape[0])
         for col in configuration.keys():
@@ -145,6 +175,15 @@ class BaseTabularFedHPOBench(AbstractBenchmark):
         return result
 
     def get_results(self, configuration, fidelity, seed_id):
+        """
+        Search for results based on configuration and fidelity.
+
+        Args:
+            self: write your description
+            configuration: write your description
+            fidelity: write your description
+            seed_id: write your description
+        """
         return self._search({'seed': seed_id, **configuration}, fidelity)
 
     def objective_function(self,
@@ -296,13 +335,30 @@ class BaseTabularFedHPOBench(AbstractBenchmark):
     @staticmethod
     def get_configuration_space(
             seed: Union[int, None] = None) -> CS.ConfigurationSpace:
+        """
+        Returns the configuration space for the given seed.
+
+        Args:
+            seed: write your description
+        """
         raise NotImplementedError
 
     @staticmethod
     def get_fidelity_space(
             seed: Union[int, None] = None) -> CS.ConfigurationSpace:
+        """
+        Returns the FIdelity space for the given seed.
+
+        Args:
+            seed: write your description
+        """
         raise NotImplementedError
 
     @staticmethod
     def get_meta_information() -> Dict:
+        """
+        Returns the meta information of the system.
+
+        Args:
+        """
         raise NotImplementedError

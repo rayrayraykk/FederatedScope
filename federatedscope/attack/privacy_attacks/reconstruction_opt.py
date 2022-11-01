@@ -44,6 +44,21 @@ class DLG(object):
                  optim='Adam',
                  info_diff_type='l2',
                  is_one_hot_label=False):
+        """
+        Initialize the attack information.
+
+        Args:
+            self: write your description
+            max_ite: write your description
+            lr: write your description
+            federate_loss_fn: write your description
+            device: write your description
+            federate_method: write your description
+            federate_lr: write your description
+            optim: write your description
+            info_diff_type: write your description
+            is_one_hot_label: write your description
+        """
 
         if federate_method.lower() == "fedavg":
             # check whether the received info is parameter. If yes,
@@ -64,9 +79,22 @@ class DLG(object):
         self.is_one_hot_label = is_one_hot_label
 
     def eval(self):
+        """
+        Evaluate the expression.
+
+        Args:
+            self: write your description
+        """
         pass
 
     def _setup_optimizer(self, parameters):
+        """
+        Setup the optimizer
+
+        Args:
+            self: write your description
+            parameters: write your description
+        """
         if self.optim.lower() == 'adam':
             optimizer = torch.optim.Adam(parameters, lr=self.lr)
         elif self.optim.lower() == 'sgd':  # actually gd
@@ -82,7 +110,23 @@ class DLG(object):
 
     def _gradient_closure(self, model, optimizer, dummy_data, dummy_label,
                           original_info):
+        """
+        Returns a closure function that computes the gradient of the model on the given data and label.
+
+        Args:
+            self: write your description
+            model: write your description
+            optimizer: write your description
+            dummy_data: write your description
+            dummy_label: write your description
+            original_info: write your description
+        """
         def closure():
+            """
+            Calculate the info - diff loss for the closure of the model
+
+            Args:
+            """
             optimizer.zero_grad()
             model.zero_grad()
 
@@ -104,6 +148,18 @@ class DLG(object):
 
     def _run_simple_reconstruct(self, model, optimizer, dummy_data, label,
                                 original_gradient, closure_fn):
+        """
+        Run a simple reconstruction.
+
+        Args:
+            self: write your description
+            model: write your description
+            optimizer: write your description
+            dummy_data: write your description
+            label: write your description
+            original_gradient: write your description
+            closure_fn: write your description
+        """
 
         for ite in range(self.max_ite):
             closure = closure_fn(model, optimizer, dummy_data, label,
@@ -256,6 +312,22 @@ class InvertGradient(DLG):
                  info_diff_type='sim',
                  optim='Adam',
                  is_one_hot_label=False):
+        """
+        InvertGradient class constructor.
+
+        Args:
+            self: write your description
+            max_ite: write your description
+            lr: write your description
+            federate_loss_fn: write your description
+            device: write your description
+            federate_method: write your description
+            federate_lr: write your description
+            alpha_TV: write your description
+            info_diff_type: write your description
+            optim: write your description
+            is_one_hot_label: write your description
+        """
         super(InvertGradient, self).__init__(max_ite,
                                              lr,
                                              federate_loss_fn,
@@ -275,7 +347,23 @@ class InvertGradient(DLG):
 
     def _gradient_closure(self, model, optimizer, dummy_data, dummy_label,
                           original_gradient):
+        """
+        Returns a closure function for the gradient of the optimizer.
+
+        Args:
+            self: write your description
+            model: write your description
+            optimizer: write your description
+            dummy_data: write your description
+            dummy_label: write your description
+            original_gradient: write your description
+        """
         def closure():
+            """
+            Calculates the closure of the model.
+
+            Args:
+            """
             optimizer.zero_grad()
             model.zero_grad()
             loss = self.federate_loss_fn(

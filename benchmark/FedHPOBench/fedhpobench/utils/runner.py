@@ -5,6 +5,12 @@ from fedhpob.optimizers import run_dehb, run_hpbandster, run_optuna, \
 
 
 def run(cfg):
+    """
+    Run the optimizer.
+
+    Args:
+        cfg: write your description
+    """
     if cfg.optimizer.type in ['de', 'dehb']:
         results = run_dehb(cfg)
     elif cfg.optimizer.type in ['rs', 'bo_kde', 'hb', 'bohb']:
@@ -21,6 +27,11 @@ def run(cfg):
 
 
 def main():
+    """
+    Entry point for the script.
+
+    Args:
+    """
     init_cfg = fhb_cfg.clone()
     args = parse_args()
     init_cfg.merge_from_file(args.cfg_file)

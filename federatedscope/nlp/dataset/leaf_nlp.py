@@ -42,6 +42,20 @@ class LEAF_NLP(LEAF):
                  seed=123,
                  transform=None,
                  target_transform=None):
+        """
+        Load LEAF - NLP data from a directory.
+
+        Args:
+            self: write your description
+            root: write your description
+            name: write your description
+            s_frac: write your description
+            tr_frac: write your description
+            val_frac: write your description
+            seed: write your description
+            transform: write your description
+            target_transform: write your description
+        """
         # TODO: remove twitter
         self.s_frac = s_frac
         self.tr_frac = tr_frac
@@ -74,10 +88,22 @@ class LEAF_NLP(LEAF):
 
     @property
     def raw_file_names(self):
+        """
+        Return a list of file names for this file.
+
+        Args:
+            self: write your description
+        """
         names = [f'{self.name}_all_data.zip']
         return names
 
     def download(self):
+        """
+        Download the raw files.
+
+        Args:
+            self: write your description
+        """
         # Download to `self.raw_dir`.
         url = 'https://federatedscope.oss-cn-beijing.aliyuncs.com'
         os.makedirs(self.raw_dir, exist_ok=True)
@@ -171,6 +197,12 @@ class LEAF_NLP(LEAF):
         return data, targets
 
     def process(self):
+        """
+        Process the files and save them to local files.
+
+        Args:
+            self: write your description
+        """
         raw_path = osp.join(self.raw_dir, "all_data")
         files = os.listdir(raw_path)
         files = [f for f in files if f.endswith('.json')]

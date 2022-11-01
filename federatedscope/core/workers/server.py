@@ -71,6 +71,22 @@ class Server(BaseServer):
                  strategy=None,
                  unseen_clients_id=None,
                  **kwargs):
+        """
+        Initialize the Server object.
+
+        Args:
+            self: write your description
+            ID: write your description
+            state: write your description
+            config: write your description
+            data: write your description
+            model: write your description
+            client_num: write your description
+            total_round_num: write your description
+            device: write your description
+            strategy: write your description
+            unseen_clients_id: write your description
+        """
 
         super(Server, self).__init__(ID, state, config, model, strategy)
 
@@ -209,21 +225,54 @@ class Server(BaseServer):
 
     @property
     def client_num(self):
+        """
+        Return the client number.
+
+        Args:
+            self: write your description
+        """
         return self._client_num
 
     @client_num.setter
     def client_num(self, value):
+        """
+        Set client number.
+
+        Args:
+            self: write your description
+            value: write your description
+        """
         self._client_num = value
 
     @property
     def total_round_num(self):
+        """
+        Returns the total number of rounds the game was played.
+
+        Args:
+            self: write your description
+        """
         return self._total_round_num
 
     @total_round_num.setter
     def total_round_num(self, value):
+        """
+        Set total number of round.
+
+        Args:
+            self: write your description
+            value: write your description
+        """
         self._total_round_num = value
 
     def register_noise_injector(self, func):
+        """
+        Register a function to inject noise into the container.
+
+        Args:
+            self: write your description
+            func: write your description
+        """
         self._noise_injector = func
 
     def run(self):

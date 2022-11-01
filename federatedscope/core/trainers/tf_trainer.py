@@ -13,6 +13,14 @@ from federatedscope.core.trainers.enums import LIFECYCLE
 
 class GeneralTFTrainer(Trainer):
     def train(self, target_data_split_name="train", hooks_set=None):
+        """
+        Runs the training routine.
+
+        Args:
+            self: write your description
+            target_data_split_name: write your description
+            hooks_set: write your description
+        """
         hooks_set = self.hooks_in_train if hooks_set is None else hooks_set
 
         self.ctx.check_split(target_data_split_name)
@@ -43,6 +51,12 @@ class GeneralTFTrainer(Trainer):
         return init_dict
 
     def register_default_hooks_train(self):
+        """
+        Registers default hooks for training.
+
+        Args:
+            self: write your description
+        """
         self.register_hook_in_train(self._hook_on_fit_start_init,
                                     "on_fit_start")
         self.register_hook_in_train(self._hook_on_epoch_start,
@@ -59,6 +73,12 @@ class GeneralTFTrainer(Trainer):
         self.register_hook_in_train(self._hook_on_fit_end, "on_fit_end")
 
     def register_default_hooks_eval(self):
+        """
+        Register default hooks for evaluation.
+
+        Args:
+            self: write your description
+        """
         # test/val
         self.register_hook_in_eval(self._hook_on_fit_start_init,
                                    "on_fit_start")
@@ -162,9 +182,23 @@ class GeneralTFTrainer(Trainer):
                 ctx.y_prob = CtxVar(y_prob, LIFECYCLE.BATCH)
 
     def _hook_on_batch_forward_regularizer(self, ctx):
+        """
+        Hook for the batch forward regularizer event.
+
+        Args:
+            self: write your description
+            ctx: write your description
+        """
         pass
 
     def _hook_on_batch_backward(self, ctx):
+        """
+        Hook for _batch_backward.
+
+        Args:
+            self: write your description
+            ctx: write your description
+        """
         pass
 
     def _hook_on_batch_end(self, ctx):
@@ -213,13 +247,42 @@ class GeneralTFTrainer(Trainer):
         setattr(ctx, 'eval_metrics', results)
 
     def update(self, model_parameters, strict=False):
+        """
+        Update the state of the model.
+
+        Args:
+            self: write your description
+            model_parameters: write your description
+            strict: write your description
+        """
         self.ctx.model.load_state_dict(model_parameters, strict=strict)
 
     def save_model(self, path, cur_round=-1):
+        """
+        Save the model to a file.
+
+        Args:
+            self: write your description
+            path: write your description
+            cur_round: write your description
+        """
         pass
 
     def load_model(self, path):
+        """
+        Loads the model from the specified path.
+
+        Args:
+            self: write your description
+            path: write your description
+        """
         pass
 
     def discharge_model(self):
+        """
+        Discharge model of the robot.
+
+        Args:
+            self: write your description
+        """
         pass

@@ -3,6 +3,12 @@ from federatedscope.register import register_config
 
 
 def extend_model_cfg(cfg):
+    """
+    Extend the given model CFG with additional model options.
+
+    Args:
+        cfg: write your description
+    """
     # ---------------------------------------------------------------------- #
     # Model related options
     # ---------------------------------------------------------------------- #
@@ -44,6 +50,12 @@ def extend_model_cfg(cfg):
 
 
 def assert_model_cfg(cfg):
+    """
+    Assert that the given model cfg is valid.
+
+    Args:
+        cfg: write your description
+    """
     pass
 
 

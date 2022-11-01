@@ -67,6 +67,16 @@ class Argument:
                  description='',
                  required_type=None,
                  required=False):
+        """
+        Initializes the field with the default value and description.
+
+        Args:
+            self: write your description
+            default_value: write your description
+            description: write your description
+            required_type: write your description
+            required: write your description
+        """
         self.value = default_value
         self.description = description
         self.required = required
@@ -78,10 +88,22 @@ class Argument:
             self.type = type(default_value)
 
     def __str__(self):
+        """
+        Return a string representation of the field.
+
+        Args:
+            self: write your description
+        """
         return 'Required({})'.format(self.type.__name__) \
             if self.required else str(self.value)
 
     def __repr__(self):
+        """
+        Return a string representation of the field.
+
+        Args:
+            self: write your description
+        """
         return 'Required({})'.format(self.type.__name__) \
             if self.required else str(self.value)
 
@@ -177,12 +199,27 @@ class CfgNode(dict):
         return dic
 
     def __getattr__(self, name):
+        """
+        Get attribute value.
+
+        Args:
+            self: write your description
+            name: write your description
+        """
         if name in self:
             return self[name]
         else:
             raise AttributeError(name)
 
     def __setattr__(self, name, value):
+        """
+        Set the attribute name to value.
+
+        Args:
+            self: write your description
+            name: write your description
+            value: write your description
+        """
         if self.is_frozen():
             raise AttributeError(
                 "Attempted to set {} to {}, but CfgNode is immutable".format(
@@ -202,7 +239,20 @@ class CfgNode(dict):
         self[name] = value
 
     def __str__(self):
+        """
+        Returns a string representation of the configuration.
+
+        Args:
+            self: write your description
+        """
         def _indent(s_, num_spaces):
+            """
+            Indent a string by num_spaces spaces.
+
+            Args:
+                s_: write your description
+                num_spaces: write your description
+            """
             s = s_.split("\n")
             if len(s) == 1:
                 return s_
@@ -223,12 +273,25 @@ class CfgNode(dict):
         return r
 
     def __repr__(self):
+        """
+        Representation of the node.
+
+        Args:
+            self: write your description
+        """
         return "{}({})".format(self.__class__.__name__,
                                super(CfgNode, self).__repr__())
 
     def dump(self, **kwargs):
         """Dump to a string."""
         def convert_to_dict(cfg_node, key_list):
+            """
+            Convert a CfgNode to a dict.
+
+            Args:
+                cfg_node: write your description
+                key_list: write your description
+            """
             if not isinstance(cfg_node, CfgNode):
                 _assert_with_logging(
                     _valid_type(cfg_node),
@@ -352,6 +415,13 @@ class CfgNode(dict):
         return full_key in self.__dict__[CfgNode.RENAMED_KEYS]
 
     def raise_key_rename_error(self, full_key):
+        """
+        Raise KeyError and raise the appropriate error message for the given key.
+
+        Args:
+            self: write your description
+            full_key: write your description
+        """
         new_key = self.__dict__[CfgNode.RENAMED_KEYS][full_key]
         if isinstance(new_key, tuple):
             msg = " Note: " + new_key[1]
@@ -363,6 +433,12 @@ class CfgNode(dict):
                 full_key, new_key, msg))
 
     def is_new_allowed(self):
+        """
+        True if new node is allowed.
+
+        Args:
+            self: write your description
+        """
         return self.__dict__[CfgNode.NEW_ALLOWED]
 
     def set_new_allowed(self, is_new_allowed):
@@ -485,6 +561,13 @@ load_cfg = (CfgNode.load_cfg
 
 
 def _valid_type(value, allow_cfg_node=False):
+    """
+    Check if the given value is a valid type.
+
+    Args:
+        value: write your description
+        allow_cfg_node: write your description
+    """
     return (type(value) in _VALID_TYPES) or (allow_cfg_node
                                              and isinstance(value, CfgNode))
 
@@ -565,6 +648,13 @@ def _check_and_coerce_cfg_value_type(replacement, original, key, full_key):
     # Cast replacement from from_type to to_type
     # if the replacement and original types match from_type and to_type
     def conditional_cast(from_type, to_type):
+        """
+        Conditionally cast replacement to to_type.
+
+        Args:
+            from_type: write your description
+            to_type: write your description
+        """
         if replacement_type == from_type and original_type == to_type:
             return True, to_type(replacement)
         else:
@@ -590,12 +680,26 @@ def _check_and_coerce_cfg_value_type(replacement, original, key, full_key):
 
 
 def _assert_with_logging(cond, msg):
+    """
+    Assert cond with logging msg if cond.
+
+    Args:
+        cond: write your description
+        msg: write your description
+    """
     if not cond:
         logger.debug(msg)
     assert cond, msg
 
 
 def _load_module_from_file(name, filename):
+    """
+    Load a module from a file.
+
+    Args:
+        name: write your description
+        filename: write your description
+    """
     if _PY2:
         module = imp.load_source(name, filename)
     else:

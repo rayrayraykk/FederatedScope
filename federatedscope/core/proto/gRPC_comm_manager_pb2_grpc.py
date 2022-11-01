@@ -33,6 +33,13 @@ class gRPCComServeFuncServicer(object):
 
 
 def add_gRPCComServeFuncServicer_to_server(servicer, server):
+    """
+    Adds a gRPC servicer to the server.
+
+    Args:
+        servicer: write your description
+        server: write your description
+    """
     rpc_method_handlers = {
         'sendMessage': grpc.unary_unary_rpc_method_handler(
             servicer.sendMessage,
@@ -61,6 +68,21 @@ class gRPCComServeFunc(object):
                     wait_for_ready=None,
                     timeout=None,
                     metadata=None):
+        """
+        Sends a message request to a target.
+
+        Args:
+            request: write your description
+            target: write your description
+            options: write your description
+            channel_credentials: write your description
+            call_credentials: write your description
+            insecure: write your description
+            compression: write your description
+            wait_for_ready: write your description
+            timeout: write your description
+            metadata: write your description
+        """
         return grpc.experimental.unary_unary(
             request, target, '/gRPCComServeFunc/sendMessage',
             gRPC__comm__manager__pb2.MessageRequest.SerializeToString,

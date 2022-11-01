@@ -50,6 +50,22 @@ class GANCRA():
                  lr=0.001,
                  sav_pth='data/',
                  round_num=-1):
+        """
+        Initialize the generator and the discriminator
+
+        Args:
+            self: write your description
+            target_label_ind: write your description
+            fl_model: write your description
+            device: write your description
+            dataset_name: write your description
+            noise_dim: write your description
+            batch_size: write your description
+            generator_train_epoch: write your description
+            lr: write your description
+            sav_pth: write your description
+            round_num: write your description
+        """
 
         # get dataset's corresponding generator
         self.generator = get_generator(dataset_name=dataset_name)().to(device)
@@ -88,6 +104,12 @@ class GANCRA():
         self.discriminator = deepcopy(model)
 
     def discriminator_loss(self):
+        """
+        Discriminator loss function.
+
+        Args:
+            self: write your description
+        """
         pass
 
     def generator_loss(self, discriminator_output):
@@ -112,7 +134,19 @@ class GANCRA():
                                        ideal_results.to(self.device))
 
     def _gradient_closure(self, noise):
+        """
+        Returns the closure function for the gradient descent algorithm.
+
+        Args:
+            self: write your description
+            noise: write your description
+        """
         def closure():
+            """
+            Generate the closure of the discriminator and generator.
+
+            Args:
+            """
             generated_images = self.generator(noise)
             discriminator_output = self.discriminator(generated_images)
             generator_loss = self.generator_loss(discriminator_output)
@@ -123,6 +157,12 @@ class GANCRA():
         return closure
 
     def generator_train(self):
+        """
+        Run the generator training
+
+        Args:
+            self: write your description
+        """
 
         for _ in range(self.generator_train_epoch):
 
@@ -136,6 +176,13 @@ class GANCRA():
                 tmp_loss.detach().to('cpu').numpy())
 
     def generate_fake_data(self, data_num=None):
+        """
+        Generate fake data.
+
+        Args:
+            self: write your description
+            data_num: write your description
+        """
         if data_num is None:
             data_num = self.batch_size
         noise = torch.randn(size=(data_num, self.noise_dim)).to(
@@ -152,6 +199,13 @@ class GANCRA():
         return generated_images.detach(), generated_label.detach()
 
     def sav_image(self, generated_data):
+        """
+        Plots the SAV image of the generated data.
+
+        Args:
+            self: write your description
+            generated_data: write your description
+        """
         ind = min(generated_data.shape[0], 16)
 
         for i in range(ind):
@@ -167,6 +221,12 @@ class GANCRA():
         plt.close()
 
     def sav_plot_gan_loss(self):
+        """
+        Plot summary of SAV and GAN loss
+
+        Args:
+            self: write your description
+        """
         plt.plot(self.generator_loss_summary)
         plt.savefig(self.sav_pth + '/' +
                     'generator_loss_round_{}.png'.format(self.round_num))

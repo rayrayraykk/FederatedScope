@@ -28,6 +28,12 @@ class GenFeatures:
 
     """
     def __init__(self):
+        """
+        Initializes the instance variables of the class
+
+        Args:
+            self: write your description
+        """
         self.symbols = [
             'C', 'N', 'O', 'S', 'F', 'Si', 'P', 'Cl', 'Br', 'Mg', 'Na', 'Ca',
             'Fe', 'As', 'Al', 'I', 'B', 'V', 'K', 'Tl', 'Yb', 'Sb', 'Sn', 'Ag',
@@ -54,6 +60,13 @@ class GenFeatures:
         ]
 
     def __call__(self, data, **kwargs):
+        """
+        Create the features for the edge.
+
+        Args:
+            self: write your description
+            data: write your description
+        """
         mol = Chem.MolFromSmiles(data.smiles)
 
         xs = []
@@ -164,10 +177,25 @@ class ScaffoldLdaSplitter(BaseSplitter):
 
     """
     def __init__(self, client_num, alpha):
+        """
+        Splitter class initialization.
+
+        Args:
+            self: write your description
+            client_num: write your description
+            alpha: write your description
+        """
         super(ScaffoldLdaSplitter, self).__init__(client_num)
         self.alpha = alpha
 
     def __call__(self, dataset):
+        """
+        Split dataset into chunks using scikit - learn LDA features.
+
+        Args:
+            self: write your description
+            dataset: write your description
+        """
         featurizer = GenFeatures()
         data = []
         for ds in dataset:

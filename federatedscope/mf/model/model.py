@@ -14,6 +14,15 @@ class BasicMFNet(Module):
         num_hidden (int): the dimension of embedding vector
     """
     def __init__(self, num_user, num_item, num_hidden):
+        """
+        Initialize the parameter embeddings
+
+        Args:
+            self: write your description
+            num_user: write your description
+            num_item: write your description
+            num_hidden: write your description
+        """
         super(BasicMFNet, self).__init__()
 
         self.embed_user = Parameter(
@@ -32,6 +41,14 @@ class BasicMFNet(Module):
         self.register_parameter('embed_item', self.embed_item)
 
     def forward(self, indices, ratings):
+        """
+        Compute the prediction label and rating for the given indices and ratings.
+
+        Args:
+            self: write your description
+            indices: write your description
+            ratings: write your description
+        """
         # TODO: do not use all embedding
         pred = torch.matmul(self.embed_user, self.embed_item.T)
         label = torch.sparse_coo_tensor(indices,
@@ -48,11 +65,28 @@ class BasicMFNet(Module):
         return mask * pred, label, float(np.prod(pred.size())) / len(ratings)
 
     def load_state_dict(self, state_dict, strict: bool = True):
+        """
+        Load the reserve state of the service into the state_dict.
+
+        Args:
+            self: write your description
+            state_dict: write your description
+            strict: write your description
+        """
 
         state_dict[self.name_reserve] = getattr(self, self.name_reserve)
         super().load_state_dict(state_dict, strict)
 
     def state_dict(self, destination=None, prefix='', keep_vars=False):
+        """
+        Returns a dictionary of the current state of the embed item.
+
+        Args:
+            self: write your description
+            destination: write your description
+            prefix: write your description
+            keep_vars: write your description
+        """
         state_dict = super().state_dict(destination, prefix, keep_vars)
         # Mask embed_item
         del state_dict[self.name_reserve]

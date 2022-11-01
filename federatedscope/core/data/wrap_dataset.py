@@ -11,10 +11,24 @@ class WrapDataset(Dataset):
 
     """
     def __init__(self, dataset):
+        """
+        Initializes the wrapper dataset
+
+        Args:
+            self: write your description
+            dataset: write your description
+        """
         super(WrapDataset, self).__init__()
         self.dataset = dataset
 
     def __getitem__(self, idx):
+        """
+        Returns the specified element of the dataset.
+
+        Args:
+            self: write your description
+            idx: write your description
+        """
         if isinstance(self.dataset["x"][idx], torch.Tensor):
             return self.dataset["x"][idx], self.dataset["y"][idx]
         elif isinstance(self.dataset["x"][idx], np.ndarray):
@@ -28,4 +42,10 @@ class WrapDataset(Dataset):
             raise TypeError
 
     def __len__(self):
+        """
+        Returns the number of samples in the dataset.
+
+        Args:
+            self: write your description
+        """
         return len(self.dataset["y"])

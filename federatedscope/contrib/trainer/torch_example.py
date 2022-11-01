@@ -13,6 +13,15 @@ from federatedscope.core.trainers import BaseTrainer
 
 class MyTorchTrainer(BaseTrainer):
     def __init__(self, model, data, device, **kwargs):
+        """
+        Initialize the SGD Optimizer and Criterion
+
+        Args:
+            self: write your description
+            model: write your description
+            data: write your description
+            device: write your description
+        """
         import torch
         # NN modules
         self.model = model
@@ -30,6 +39,12 @@ class MyTorchTrainer(BaseTrainer):
                                          weight_decay=1e-4)
 
     def train(self):
+        """
+        Train the model on the device.
+
+        Args:
+            self: write your description
+        """
         # _hook_on_fit_start_init
         self.model.to(self.device)
         self.model.train()
@@ -57,6 +72,13 @@ class MyTorchTrainer(BaseTrainer):
                 num_samples)}
 
     def evaluate(self, target_data_split_name='test'):
+        """
+        Evaluate the model on the data.
+
+        Args:
+            self: write your description
+            target_data_split_name: write your description
+        """
         import torch
         with torch.no_grad():
             self.model.to(self.device)
@@ -82,14 +104,34 @@ class MyTorchTrainer(BaseTrainer):
             }
 
     def update(self, model_parameters, strict=False):
+        """
+        Updates the model parameters and returns the model para.
+
+        Args:
+            self: write your description
+            model_parameters: write your description
+            strict: write your description
+        """
         self.model.load_state_dict(model_parameters, strict)
         return self.get_model_para()
 
     def get_model_para(self):
+        """
+        Returns the model s parameters as a dictionary.
+
+        Args:
+            self: write your description
+        """
         return self.model.cpu().state_dict()
 
 
 def call_my_torch_trainer(trainer_type):
+    """
+    Call MyTorchTrainer if trainer_type is a string.
+
+    Args:
+        trainer_type: write your description
+    """
     if trainer_type == 'mytorchtrainer':
         return MyTorchTrainer
 

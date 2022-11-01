@@ -2,6 +2,11 @@ import os
 
 
 def check_gpus():
+    """
+    Check if GPUs are available.
+
+    Args:
+    """
     if not 'NVIDIA System Management' in os.popen('nvidia-smi -h').read():
         print("'nvidia-smi' tool not found.")
         return False
@@ -17,6 +22,14 @@ class GPUManager():
     https://github.com/QuantumLiu/tf_gpu_manager
     """
     def __init__(self, gpu_available=False, specified_device=-1):
+        """
+        Initialize GPUs.
+
+        Args:
+            self: write your description
+            gpu_available: write your description
+            specified_device: write your description
+        """
         self.gpu_avaiable = gpu_available and check_gpus()
         self.specified_device = specified_device
         if self.gpu_avaiable:
@@ -27,6 +40,14 @@ class GPUManager():
             self.gpus = None
 
     def _sort_by_memory(self, gpus, by_size=False):
+        """
+        Sorts a list of GPS measurements by memory.
+
+        Args:
+            self: write your description
+            gpus: write your description
+            by_size: write your description
+        """
         if by_size:
             return sorted(gpus, key=lambda d: d['memory.free'], reverse=True)
         else:
@@ -37,6 +58,12 @@ class GPUManager():
                 reverse=True)
 
     def _query_gpus(self):
+        """
+        Query the GPUs for information.
+
+        Args:
+            self: write your description
+        """
         args = ['index', 'gpu_name', 'memory.free', 'memory.total']
         cmd = 'nvidia-smi --query-gpu={} --format=csv,noheader'.format(
             ','.join(args))
@@ -44,6 +71,13 @@ class GPUManager():
         return [self._parse(line, args) for line in results]
 
     def _parse(self, line, args):
+        """
+        Parse the line into a dictionary.
+
+        Args:
+            self: write your description
+            line: write your description
+        """
         numberic_args = ['memory.free', 'memory.total']
         to_numberic = lambda v: float(v.upper().strip().replace('MIB', '').
                                       replace('W', ''))

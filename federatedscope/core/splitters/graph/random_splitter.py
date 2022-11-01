@@ -30,6 +30,16 @@ class RandomSplitter(BaseTransform, BaseSplitter):
                  sampling_rate=None,
                  overlapping_rate=0,
                  drop_edge=0):
+        """
+        Splitter class initialization.
+
+        Args:
+            self: write your description
+            client_num: write your description
+            sampling_rate: write your description
+            overlapping_rate: write your description
+            drop_edge: write your description
+        """
         BaseSplitter.__init__(self, client_num)
         self.ovlap = overlapping_rate
         if sampling_rate is not None:
@@ -53,6 +63,13 @@ class RandomSplitter(BaseTransform, BaseSplitter):
         self.drop_edge = drop_edge
 
     def __call__(self, data, **kwargs):
+        """
+        Generate graphs from data.
+
+        Args:
+            self: write your description
+            data: write your description
+        """
         data.index_orig = torch.arange(data.num_nodes)
         G = to_networkx(
             data,

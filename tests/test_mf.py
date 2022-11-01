@@ -11,9 +11,22 @@ from federatedscope.core.auxiliaries.worker_builder import get_server_cls, get_c
 
 class MFTest(unittest.TestCase):
     def setUp(self):
+        """
+        Runs the test case.
+
+        Args:
+            self: write your description
+        """
         print(('Testing %s.%s' % (type(self).__name__, self._testMethodName)))
 
     def set_config_movielens1m(self, cfg):
+        """
+        Set configuration for movielens1m.
+
+        Args:
+            self: write your description
+            cfg: write your description
+        """
         backup_cfg = cfg.clone()
 
         import torch
@@ -47,6 +60,12 @@ class MFTest(unittest.TestCase):
         return backup_cfg
 
     def test_mf_standalone(self):
+        """
+        Runs a Distributed MF test using standalone mode.
+
+        Args:
+            self: write your description
+        """
         init_cfg = global_cfg.clone()
         backup_cfg = self.set_config_movielens1m(init_cfg)
         setup_seed(init_cfg.seed)

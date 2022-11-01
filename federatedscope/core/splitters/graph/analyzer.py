@@ -14,6 +14,14 @@ class Analyzer(object):
 
     """
     def __init__(self, raw_data: Data, split_data: List[Data]):
+        """
+        Construct a NetworkX graph from raw_data and split_data.
+
+        Args:
+            self: write your description
+            raw_data: write your description
+            split_data: write your description
+        """
 
         self.raw_data = raw_data
         self.split_data = split_data

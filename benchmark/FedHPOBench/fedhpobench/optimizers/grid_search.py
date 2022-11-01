@@ -13,6 +13,12 @@ logging.basicConfig(level=logging.WARNING)
 
 
 def run_grid_search(cfg):
+    """
+    Run grid search.
+
+    Args:
+        cfg: write your description
+    """
     monitor = Monitor(cfg)
     cfg = cfg.clone()
     benchmark = cfg.benchmark.cls[0][cfg.benchmark.type](

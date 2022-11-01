@@ -11,12 +11,26 @@ class Sampler(ABC):
         client_state: a dict to manager the state of clients (idle or busy)
     """
     def __init__(self, client_num):
+        """
+        Initialize the state of the client.
+
+        Args:
+            self: write your description
+            client_num: write your description
+        """
         self.client_state = np.asarray([1] * (client_num + 1))
         # Set the state of server (index=0) to 'working'
         self.client_state[0] = 0
 
     @abstractmethod
     def sample(self, size):
+        """
+        Samples from the reservoir.
+
+        Args:
+            self: write your description
+            size: write your description
+        """
         raise NotImplementedError
 
     def change_state(self, indices, state):
@@ -43,6 +57,13 @@ class UniformSampler(Sampler):
     To uniformly sample the clients from all the idle clients
     """
     def __init__(self, client_num):
+        """
+        Initialize the sampler with the given client number.
+
+        Args:
+            self: write your description
+            client_num: write your description
+        """
         super(UniformSampler, self).__init__(client_num)
 
     def sample(self, size):
@@ -63,6 +84,15 @@ class GroupSampler(Sampler):
     client information of the clients)
     """
     def __init__(self, client_num, client_info, bins=10):
+        """
+        Initialize the sampler by partitioning the data into groups of the same size.
+
+        Args:
+            self: write your description
+            client_num: write your description
+            client_info: write your description
+            bins: write your description
+        """
         super(GroupSampler, self).__init__(client_num)
         self.bins = bins
         self.update_client_info(client_info)
@@ -97,6 +127,12 @@ class GroupSampler(Sampler):
         return self.permutation()
 
     def permutation(self):
+        """
+        Return an iterator over the permutation of the client indices.
+
+        Args:
+            self: write your description
+        """
         candidates = list()
         permutation = np.random.permutation(np.arange(self.bins))
         for i in permutation:

@@ -3,6 +3,12 @@ from federatedscope.register import register_config
 
 
 def extend_training_cfg(cfg):
+    """
+    Extend the given training cfg with the relevant options.
+
+    Args:
+        cfg: write your description
+    """
     # ---------------------------------------------------------------------- #
     # Trainer related options
     # ---------------------------------------------------------------------- #
@@ -70,6 +76,12 @@ def extend_training_cfg(cfg):
 
 
 def assert_training_cfg(cfg):
+    """
+    Asserts that the given training configuration is valid.
+
+    Args:
+        cfg: write your description
+    """
     if cfg.train.batch_or_epoch not in ['batch', 'epoch']:
         raise ValueError(
             "Value of 'cfg.train.batch_or_epoch' must be chosen from ["

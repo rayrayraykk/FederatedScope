@@ -4,6 +4,12 @@ from federatedscope.register import register_config
 
 
 def extend_fl_algo_cfg(cfg):
+    """
+    Extend the configuration with general FFL algorithms.
+
+    Args:
+        cfg: write your description
+    """
     # ---------------------------------------------------------------------- #
     # fedopt related options, a general fl algorithm
     # ---------------------------------------------------------------------- #
@@ -103,6 +109,12 @@ def extend_fl_algo_cfg(cfg):
 
 
 def assert_fl_algo_cfg(cfg):
+    """
+    Assert that the given configuration is a valid forward optimizer configuration.
+
+    Args:
+        cfg: write your description
+    """
     if cfg.personalization.local_update_steps == -1:
         # By default, use the same step to normal mode
         cfg.personalization.local_update_steps = \

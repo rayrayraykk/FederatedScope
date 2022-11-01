@@ -12,9 +12,23 @@ from federatedscope.core.auxiliaries.worker_builder import get_server_cls, \
 
 class ToyLRTest(unittest.TestCase):
     def setUp(self):
+        """
+        Runs the test case.
+
+        Args:
+            self: write your description
+        """
         print(('Testing %s.%s' % (type(self).__name__, self._testMethodName)))
 
     def set_config_standalone(self, cfg, make_global_eval=False):
+        """
+        Set config for standalone mode
+
+        Args:
+            self: write your description
+            cfg: write your description
+            make_global_eval: write your description
+        """
         import torch
         cfg.use_gpu = torch.cuda.is_available()
         cfg.federate.mode = 'standalone'
@@ -30,6 +44,12 @@ class ToyLRTest(unittest.TestCase):
         cfg.federate.method = "local"
 
     def test_toy_example_standalone(self):
+        """
+        Run a toy example standalone server.
+
+        Args:
+            self: write your description
+        """
         init_cfg = global_cfg.clone()
         self.set_config_standalone(init_cfg)
 

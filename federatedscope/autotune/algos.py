@@ -21,6 +21,12 @@ logger = logging.getLogger(__name__)
 
 
 def make_trial(trial_cfg):
+    """
+    Runs the trial with the given trial_cfg.
+
+    Args:
+        trial_cfg: write your description
+    """
     setup_seed(trial_cfg.seed)
     data, modified_config = get_data(config=trial_cfg.clone())
     trial_cfg.merge_from_other_cfg(modified_config)
@@ -40,6 +46,16 @@ class TrialExecutor(threading.Thread):
     a given trial configuration in another thread.
     """
     def __init__(self, cfg_idx, signal, returns, trial_config):
+        """
+        Initializes the thread.
+
+        Args:
+            self: write your description
+            cfg_idx: write your description
+            signal: write your description
+            returns: write your description
+            trial_config: write your description
+        """
         threading.Thread.__init__(self)
 
         self._idx = cfg_idx
@@ -48,6 +64,12 @@ class TrialExecutor(threading.Thread):
         self._trial_cfg = trial_config
 
     def run(self):
+        """
+        Run trial.
+
+        Args:
+            self: write your description
+        """
         setup_seed(self._trial_cfg.seed)
         data, modified_config = get_data(config=self._trial_cfg.clone())
         self._trial_cfg.merge_from_other_cfg(modified_config)
@@ -123,6 +145,12 @@ class ModelFreeBase(Scheduler):
     """To attempt a collection of configurations exhaustively.
     """
     def _setup(self):
+        """
+        Sample configurations from the search space.
+
+        Args:
+            self: write your description
+        """
         self._search_space.seed(self._cfg.seed + 19)
         return [
             cfg.get_dictionary()
@@ -131,6 +159,13 @@ class ModelFreeBase(Scheduler):
         ]
 
     def _evaluate(self, configs):
+        """
+        Evaluate the trial using the given configurations.
+
+        Args:
+            self: write your description
+            configs: write your description
+        """
         if self._cfg.hpo.num_workers:
             # execute FL in parallel by multi-threading
             flags = [
@@ -190,6 +225,12 @@ class ModelFreeBase(Scheduler):
         return perfs
 
     def optimize(self):
+        """
+        Run HPO on the entire configuration.
+
+        Args:
+            self: write your description
+        """
         perfs = self._evaluate(self._init_configs)
 
         results = summarize_hpo_results(self._init_configs,
@@ -210,6 +251,12 @@ class IterativeScheduler(ModelFreeBase):
     procedure into iterations.
     """
     def _setup(self):
+        """
+        Setup for the iteration.
+
+        Args:
+            self: write your description
+        """
         self._stage = 0
         return super(IterativeScheduler, self)._setup()
 
@@ -250,6 +297,12 @@ class IterativeScheduler(ModelFreeBase):
         raise NotImplementedError
 
     def optimize(self):
+        """
+        Runs the optimization loop.
+
+        Args:
+            self: write your description
+        """
         current_configs = deepcopy(self._init_configs)
         last_results = None
         while not self._stop_criterion(current_configs, last_results):
@@ -277,6 +330,12 @@ class SuccessiveHalvingAlgo(IterativeScheduler):
     allowed for each trial.
     """
     def _setup(self):
+        """
+        Setup the trial configurations.
+
+        Args:
+            self: write your description
+        """
         init_configs = super(SuccessiveHalvingAlgo, self)._setup()
 
         for trial_cfg in init_configs:
@@ -294,9 +353,25 @@ class SuccessiveHalvingAlgo(IterativeScheduler):
         return init_configs
 
     def _stop_criterion(self, configs, last_results):
+        """
+        Stops a single iteration of the configuration list.
+
+        Args:
+            self: write your description
+            configs: write your description
+            last_results: write your description
+        """
         return len(configs) <= 1
 
     def _generate_next_population(self, configs, perfs):
+        """
+        Generate next population trial.
+
+        Args:
+            self: write your description
+            configs: write your description
+            perfs: write your description
+        """
         indices = [(i, val) for i, val in enumerate(perfs)]
         indices.sort(key=lambda x: x[1], reverse=self._cfg.hpo.larger_better)
         next_population = [
@@ -322,6 +397,13 @@ class SuccessiveHalvingAlgo(IterativeScheduler):
 class SHAWrapFedex(SuccessiveHalvingAlgo):
     """This SHA is customized as a wrapper for FedEx algorithm."""
     def _make_local_perturbation(self, config):
+        """
+        Make a local perturbation for a given configuration.
+
+        Args:
+            self: write your description
+            config: write your description
+        """
         neighbor = dict()
         for k in config:
             if 'fedex' in k or 'fedopt' in k or k in [
@@ -365,6 +447,12 @@ class SHAWrapFedex(SuccessiveHalvingAlgo):
         return neighbor
 
     def _setup(self):
+        """
+        Create initial configurations for the experiment.
+
+        Args:
+            self: write your description
+        """
         # self._cache_yaml()
         init_configs = super(SHAWrapFedex, self)._setup()
         new_init_configs = []

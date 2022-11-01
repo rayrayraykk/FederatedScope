@@ -12,6 +12,12 @@ class MyServer(Server):
 
 
 def call_my_worker(method):
+    """
+    Call MyClient and MyServer in a multiprocessing worker.
+
+    Args:
+        method: write your description
+    """
     if method == 'mymethod':
         worker_builder = {'client': MyClient, 'server': MyServer}
         return worker_builder

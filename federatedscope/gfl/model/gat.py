@@ -22,6 +22,17 @@ class GAT_Net(torch.nn.Module):
                  hidden=64,
                  max_depth=2,
                  dropout=.0):
+        """
+        Creates a GAT_Net object with a convolutional layer
+
+        Args:
+            self: write your description
+            in_channels: write your description
+            out_channels: write your description
+            hidden: write your description
+            max_depth: write your description
+            dropout: write your description
+        """
         super(GAT_Net, self).__init__()
         self.convs = ModuleList()
         for i in range(max_depth):
@@ -34,10 +45,23 @@ class GAT_Net(torch.nn.Module):
         self.dropout = dropout
 
     def reset_parameters(self):
+        """
+        Resets the parameters of all convolutions.
+
+        Args:
+            self: write your description
+        """
         for m in self.convs:
             m.reset_parameters()
 
     def forward(self, data):
+        """
+        Forward propagate the data
+
+        Args:
+            self: write your description
+            data: write your description
+        """
         if isinstance(data, Data):
             x, edge_index = data.x, data.edge_index
         elif isinstance(data, tuple):

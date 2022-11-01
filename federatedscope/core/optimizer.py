@@ -12,6 +12,14 @@ def wrap_regularized_optimizer(base_optimizer, regular_weight):
         Regularization-based optimizer wrapper
         """
         def __init__(self, base_optimizer, regular_weight):
+            """
+            Initializes the optimizer with the given optimizer and regular weight.
+
+            Args:
+                self: write your description
+                base_optimizer: write your description
+                regular_weight: write your description
+            """
             # inherit all the attributes of base optimizer
             self.__dict__.update(base_optimizer.__dict__)
 
@@ -23,6 +31,13 @@ def wrap_regularized_optimizer(base_optimizer, regular_weight):
             self.compared_para_groups = None
 
         def set_compared_para_group(self, compared_para_dict: List[Dict]):
+            """
+            Set the compared_para_groups attribute.
+
+            Args:
+                self: write your description
+                compared_para_dict: write your description
+            """
             if not (isinstance(compared_para_dict, list)
                     and isinstance(compared_para_dict[0], dict)
                     and 'params' in compared_para_dict[0]):
@@ -33,6 +48,13 @@ def wrap_regularized_optimizer(base_optimizer, regular_weight):
             self.compared_para_groups = copy.deepcopy(compared_para_dict)
 
         def reset_compared_para_group(self, target=None):
+            """
+            Resets the compared_para_group attribute to the given value or to the given value
+
+            Args:
+                self: write your description
+                target: write your description
+            """
             # by default, del stale compared_para to free memory
             self.compared_para_groups = target
 
@@ -53,6 +75,12 @@ def wrap_regularized_optimizer(base_optimizer, regular_weight):
                             p.data - compared_weight.data)
 
         def step(self):
+            """
+            Run the optimizer and step the optimizer.
+
+            Args:
+                self: write your description
+            """
             self.regularize_by_para_diff()  # key action
             self.optimizer.step()
 

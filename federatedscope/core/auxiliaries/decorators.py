@@ -1,5 +1,17 @@
 def use_diff(func):
+    """
+    Decorate a function to use the diff metric when federate is used.
+
+    Args:
+        func: write your description
+    """
     def wrapper(self, *args, **kwargs):
+        """
+        Wrap the evaluation function to add diff information if needed.
+
+        Args:
+            self: write your description
+        """
         if self.cfg.federate.use_diff:
             # TODO: any issue for subclasses?
             before_metric = self.evaluate(target_data_split_name='val')

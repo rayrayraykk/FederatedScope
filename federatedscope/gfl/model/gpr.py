@@ -15,6 +15,17 @@ class GPR_prop(MessagePassing):
     source: https://github.com/jianhao2016/GPRGNN/blob/master/src/GNN_models.py
     '''
     def __init__(self, K, alpha, Init, Gamma=None, bias=True, **kwargs):
+        """
+        Initialize GPR prop.
+
+        Args:
+            self: write your description
+            K: write your description
+            alpha: write your description
+            Init: write your description
+            Gamma: write your description
+            bias: write your description
+        """
         super(GPR_prop, self).__init__(aggr='add', **kwargs)
         self.K = K
         self.Init = Init
@@ -46,12 +57,27 @@ class GPR_prop(MessagePassing):
         self.temp = Parameter(torch.tensor(TEMP))
 
     def reset_parameters(self):
+        """
+        Reset the parameters of the model to the initial state
+
+        Args:
+            self: write your description
+        """
         torch.nn.init.zeros_(self.temp)
         for k in range(self.K + 1):
             self.temp.data[k] = self.alpha * (1 - self.alpha)**k
         self.temp.data[-1] = (1 - self.alpha)**self.K
 
     def forward(self, x, edge_index, edge_weight=None):
+        """
+        Forward propagate the GCN chain and return the hidden state.
+
+        Args:
+            self: write your description
+            x: write your description
+            edge_index: write your description
+            edge_weight: write your description
+        """
         edge_index, norm = gcn_norm(edge_index,
                                     edge_weight,
                                     num_nodes=x.size(0),
@@ -65,9 +91,23 @@ class GPR_prop(MessagePassing):
         return hidden
 
     def message(self, x_j, norm):
+        """
+        Calculates the message of the given state vector.
+
+        Args:
+            self: write your description
+            x_j: write your description
+            norm: write your description
+        """
         return norm.view(-1, 1) * x_j
 
     def __repr__(self):
+        """
+        Return a string representation of the filter.
+
+        Args:
+            self: write your description
+        """
         return '{}(K={}, temp={})'.format(self.__class__.__name__, self.K,
                                           self.temp)
 
@@ -96,6 +136,21 @@ class GPR_Net(torch.nn.Module):
                  alpha=0.1,
                  Init='PPR',
                  Gamma=None):
+        """
+        Initialize GPR - Net.
+
+        Args:
+            self: write your description
+            in_channels: write your description
+            out_channels: write your description
+            hidden: write your description
+            K: write your description
+            dropout: write your description
+            ppnp: write your description
+            alpha: write your description
+            Init: write your description
+            Gamma: write your description
+        """
         super(GPR_Net, self).__init__()
         self.lin1 = Linear(in_channels, hidden)
         self.lin2 = Linear(hidden, out_channels)
@@ -110,9 +165,22 @@ class GPR_Net(torch.nn.Module):
         self.dropout = dropout
 
     def reset_parameters(self):
+        """
+        Reset the parameters of the Gaussian process
+
+        Args:
+            self: write your description
+        """
         self.prop1.reset_parameters()
 
     def forward(self, data):
+        """
+        Propagate forward through the network.
+
+        Args:
+            self: write your description
+            data: write your description
+        """
         if isinstance(data, Data):
             x, edge_index = data.x, data.edge_index
         elif isinstance(data, tuple):

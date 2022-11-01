@@ -2,6 +2,13 @@ from federatedscope.register import register_scheduler
 
 
 def call_my_scheduler(optimizer, reg_type):
+    """
+    Call my scheduler for the optimizer if it is available.
+
+    Args:
+        optimizer: write your description
+        reg_type: write your description
+    """
     try:
         import torch.optim as optim
     except ImportError:

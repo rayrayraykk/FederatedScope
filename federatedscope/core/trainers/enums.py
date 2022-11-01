@@ -23,6 +23,13 @@ class TRIGGER:
 
     @classmethod
     def contains(cls, item):
+        """
+        Returns True if the list contains the item.
+
+        Args:
+            cls: write your description
+            item: write your description
+        """
         return item in [
             "on_fit_start", "on_epoch_start", "on_batch_start",
             "on_batch_forward", "on_batch_backward", "on_batch_end",

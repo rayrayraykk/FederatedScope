@@ -8,6 +8,13 @@ class DummyDataTranslator(BaseDataTranslator):
     Do not perform FL split.
     """
     def split(self, dataset):
+        """
+        Split dataset into train val and test sets.
+
+        Args:
+            self: write your description
+            dataset: write your description
+        """
         if not isinstance(dataset, dict):
             raise TypeError(f'Not support data type {type(dataset)}')
         datadict = {}

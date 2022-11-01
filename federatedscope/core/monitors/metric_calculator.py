@@ -18,6 +18,19 @@ logger = logging.getLogger(__name__)
 
 class MetricCalculator(object):
     def __init__(self, eval_metric: Union[Set[str], List[str], str]):
+        """
+        Initializes the metrics for the optimizer.
+
+        Args:
+            self: write your description
+            eval_metric: write your description
+            Union: write your description
+            Set: write your description
+            str: write your description
+            List: write your description
+            str: write your description
+            str: write your description
+        """
 
         # Add personalized metrics
         if isinstance(eval_metric, str):
@@ -29,6 +42,13 @@ class MetricCalculator(object):
         self.eval_metric = self.get_metric_funcs(eval_metric)
 
     def get_metric_funcs(self, eval_metric):
+        """
+        Build metrics for evaluation.
+
+        Args:
+            self: write your description
+            eval_metric: write your description
+        """
         metric_buildin = {
             metric: SUPPORT_METRICS[metric]
             for metric in {'loss', 'avg_loss', 'total'} | eval_metric
@@ -38,6 +58,13 @@ class MetricCalculator(object):
         return {**metric_buildin, **metric_register}
 
     def eval(self, ctx):
+        """
+        Evaluate the model on the given context.
+
+        Args:
+            self: write your description
+            ctx: write your description
+        """
         results = {}
         y_true, y_pred, y_prob = self._check_and_parse(ctx)
         for metric, (func, _) in self.eval_metric.items():
@@ -100,6 +127,13 @@ class MetricCalculator(object):
 
 
 def eval_correct(y_true, y_pred, **kwargs):
+    """
+    Correctness metric.
+
+    Args:
+        y_true: write your description
+        y_pred: write your description
+    """
     correct_list = []
 
     for i in range(y_true.shape[1]):
@@ -110,6 +144,13 @@ def eval_correct(y_true, y_pred, **kwargs):
 
 
 def eval_acc(y_true, y_pred, **kwargs):
+    """
+    Evaluate accuracy.
+
+    Args:
+        y_true: write your description
+        y_pred: write your description
+    """
     acc_list = []
 
     for i in range(y_true.shape[1]):
@@ -120,6 +161,13 @@ def eval_acc(y_true, y_pred, **kwargs):
 
 
 def eval_ap(y_true, y_pred, **kwargs):
+    """
+    Average precision score.
+
+    Args:
+        y_true: write your description
+        y_pred: write your description
+    """
     ap_list = []
 
     for i in range(y_true.shape[1]):
@@ -140,10 +188,25 @@ def eval_ap(y_true, y_pred, **kwargs):
 
 
 def eval_f1_score(y_true, y_pred, **kwargs):
+    """
+    Evaluate the F1 score.
+
+    Args:
+        y_true: write your description
+        y_pred: write your description
+    """
     return f1_score(y_true, y_pred, average='macro')
 
 
 def eval_hits(y_true, y_prob, metric, **kwargs):
+    """
+    Computes the evaluation score of the hits for the labeling.
+
+    Args:
+        y_true: write your description
+        y_prob: write your description
+        metric: write your description
+    """
     n = int(metric.split('@')[1])
     hits_list = []
     for i in range(y_true.shape[1]):
@@ -159,6 +222,13 @@ def eval_hits(y_true, y_prob, metric, **kwargs):
 
 
 def eval_roc_auc(y_true, y_prob, **kwargs):
+    """
+    ROC AUC evaluation.
+
+    Args:
+        y_true: write your description
+        y_prob: write your description
+    """
     rocauc_list = []
 
     for i in range(y_true.shape[1]):
@@ -178,30 +248,77 @@ def eval_roc_auc(y_true, y_prob, **kwargs):
 
 
 def eval_rmse(y_true, y_prob, **kwargs):
+    """
+    Root Mean Square Error.
+
+    Args:
+        y_true: write your description
+        y_prob: write your description
+    """
     return np.sqrt(np.mean(np.power(y_true - y_prob, 2)))
 
 
 def eval_mse(y_true, y_prob, **kwargs):
+    """
+    Mean squared error.
+
+    Args:
+        y_true: write your description
+        y_prob: write your description
+    """
     return np.mean(np.power(y_true - y_prob, 2))
 
 
 def eval_loss(ctx, **kwargs):
+    """
+    Evaluates the total loss for the given model and context.
+
+    Args:
+        ctx: write your description
+    """
     return ctx.loss_batch_total
 
 
 def eval_avg_loss(ctx, **kwargs):
+    """
+    Evaluates the evaluation average loss.
+
+    Args:
+        ctx: write your description
+    """
     return ctx.loss_batch_total / ctx.num_samples
 
 
 def eval_total(ctx, **kwargs):
+    """
+    Returns the total number of samples in the dataset
+
+    Args:
+        ctx: write your description
+    """
     return ctx.num_samples
 
 
 def eval_regular(ctx, **kwargs):
+    """
+    Evaluates the regularized loss function.
+
+    Args:
+        ctx: write your description
+    """
     return ctx.loss_regular_total
 
 
 def eval_imp_ratio(ctx, y_true, y_prob, y_pred, **kwargs):
+    """
+    Evaluates the Imp ratio of the model.
+
+    Args:
+        ctx: write your description
+        y_true: write your description
+        y_prob: write your description
+        y_pred: write your description
+    """
     if not hasattr(ctx.cfg.eval, 'base') or ctx.cfg.eval.base <= 0:
         logger.info(
             "To use the metric `imp_rato`, please set `eval.base` as the "

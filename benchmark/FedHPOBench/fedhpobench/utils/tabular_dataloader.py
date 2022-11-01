@@ -10,6 +10,15 @@ from tqdm import tqdm
 
 
 def load_data(root, model, dname, algo):
+    """
+    Load data from a file.
+
+    Args:
+        root: write your description
+        model: write your description
+        dname: write your description
+        algo: write your description
+    """
     path = os.path.join(root, model, dname, algo)
     datafile = os.path.join(path, 'tabular.csv.gz')
     infofile = os.path.join(path, 'info.pkl')
@@ -31,6 +40,14 @@ def load_data(root, model, dname, algo):
 
 
 def logs2info(dname, root, sample_client_rate=[0.2, 0.4, 0.6, 0.8, 1.0]):
+    """
+    Convert log files into a dictionary of information.
+
+    Args:
+        dname: write your description
+        root: write your description
+        sample_client_rate: write your description
+    """
     sample_client_rate = set(sample_client_rate)
     dir_names = [f'out_{dname}_' + str(x) for x in sample_client_rate]
     trail_names = [x for x in os.listdir(os.path.join(root, dir_names[0]))]
@@ -69,6 +86,12 @@ def logs2info(dname, root, sample_client_rate=[0.2, 0.4, 0.6, 0.8, 1.0]):
 
 
 def read_fairness(lines):
+    """
+    Reads a list of lines and returns a dictionary of fairness values.
+
+    Args:
+        lines: write your description
+    """
     fairness_list = []
     for line in lines:
         tmp_line = str(line)
@@ -89,6 +112,15 @@ def logs2df(dname,
                 'val_acc', 'test_acc', 'train_f1', 'val_f1', 'test_f1',
                 'fairness'
             ]):
+    """
+    Loads the data from the log files of a given client rate.
+
+    Args:
+        dname: write your description
+        root: write your description
+        sample_client_rate: write your description
+        metrics: write your description
+    """
     sample_client_rate = [str(round(x, 1)) for x in sample_client_rate]
     dir_names = [f'out_{dname}_' + str(x) for x in sample_client_rate]
 

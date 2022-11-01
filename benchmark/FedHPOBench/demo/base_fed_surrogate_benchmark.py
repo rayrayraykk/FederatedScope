@@ -56,6 +56,12 @@ class BaseSurrogateFedHPOBench(BaseTabularFedHPOBench):
                              num_param, rng)
 
     def _setup(self):
+        """
+        Downloads the model and extracts the surrogate models.
+
+        Args:
+            self: write your description
+        """
         super(BaseSurrogateFedHPOBench, self)._setup()
         # Download and extract the model.
         file_list = [f'surrogate_model_{x}.pkl' for x in range(10)]
@@ -73,6 +79,15 @@ class BaseSurrogateFedHPOBench(BaseTabularFedHPOBench):
         self.surrogate_models = model_list
 
     def get_results(self, configuration, fidelity, seed_id):
+        """
+        Run the inference and return the results.
+
+        Args:
+            self: write your description
+            configuration: write your description
+            fidelity: write your description
+            seed_id: write your description
+        """
         return self._make_prediction(configuration, fidelity, seed_id)
 
     def objective_function(self,
@@ -83,6 +98,26 @@ class BaseSurrogateFedHPOBench(BaseTabularFedHPOBench):
                            rng: Union[np.random.RandomState, int, None] = None,
                            key: str = 'val_avg_loss',
                            **kwargs) -> Dict:
+        """
+        Returns objective function for the surrogate - fed HPO benchmark.
+
+        Args:
+            self: write your description
+            configuration: write your description
+            CS: write your description
+            Configuration: write your description
+            Dict: write your description
+            fidelity: write your description
+            CS: write your description
+            Configuration: write your description
+            Dict: write your description
+            seed_index: write your description
+            rng: write your description
+            np: write your description
+            random: write your description
+            RandomState: write your description
+            key: write your description
+        """
         assert key == self.target_key, f'The key should be' \
                                        f' {self.target_key}, ' \
                                        f'but get {key}.'
@@ -91,6 +126,15 @@ class BaseSurrogateFedHPOBench(BaseTabularFedHPOBench):
                                               seed_index, rng, key, **kwargs)
 
     def _make_prediction(self, configuration, fidelity, seed_id):
+        """
+        Makes a prediction for the given seed.
+
+        Args:
+            self: write your description
+            configuration: write your description
+            fidelity: write your description
+            seed_id: write your description
+        """
         model = self.surrogate_models[seed_id % len(self.surrogate_models)]
         x_in = []
         cfg_keys = sorted(self.configuration_space)
@@ -104,13 +148,30 @@ class BaseSurrogateFedHPOBench(BaseTabularFedHPOBench):
     @staticmethod
     def get_configuration_space(
             seed: Union[int, None] = None) -> CS.ConfigurationSpace:
+        """
+        Returns the configuration space for the given seed.
+
+        Args:
+            seed: write your description
+        """
         raise NotImplementedError
 
     @staticmethod
     def get_fidelity_space(
             seed: Union[int, None] = None) -> CS.ConfigurationSpace:
+        """
+        Returns the FIdelity space for the given seed.
+
+        Args:
+            seed: write your description
+        """
         raise NotImplementedError
 
     @staticmethod
     def get_meta_information() -> Dict:
+        """
+        Returns the meta information of the system.
+
+        Args:
+        """
         raise NotImplementedError

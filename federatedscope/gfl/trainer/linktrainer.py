@@ -22,6 +22,12 @@ MODE2MASK = {
 
 class LinkFullBatchTrainer(GeneralTorchTrainer):
     def register_default_hooks_eval(self):
+        """
+        Register default hooks for eval.
+
+        Args:
+            self: write your description
+        """
         super().register_default_hooks_eval()
         self.register_hook_in_eval(
             new_hook=self._hook_on_epoch_start_data2device,
@@ -29,6 +35,12 @@ class LinkFullBatchTrainer(GeneralTorchTrainer):
             insert_pos=-1)
 
     def register_default_hooks_train(self):
+        """
+        Register default training hooks for training data.
+
+        Args:
+            self: write your description
+        """
         super().register_default_hooks_train()
         self.register_hook_in_train(
             new_hook=self._hook_on_epoch_start_data2device,
@@ -60,6 +72,13 @@ class LinkFullBatchTrainer(GeneralTorchTrainer):
         return init_dict
 
     def _hook_on_epoch_start_data2device(self, ctx):
+        """
+        Process on epoch start data2device event.
+
+        Args:
+            self: write your description
+            ctx: write your description
+        """
         if isinstance(ctx.data, dict):
             ctx.data = ctx.data['data']
         ctx.data = ctx.data.to(ctx.device)
@@ -71,6 +90,13 @@ class LinkFullBatchTrainer(GeneralTorchTrainer):
                 ctx.data.train_edge_mask].T
 
     def _hook_on_batch_forward(self, ctx):
+        """
+        Prediction and loss on batch forward.
+
+        Args:
+            self: write your description
+            ctx: write your description
+        """
         data = ctx.data
         perm = ctx.data_batch
         mask = ctx.data[MODE2MASK[ctx.cur_split]]
@@ -89,6 +115,13 @@ class LinkFullBatchTrainer(GeneralTorchTrainer):
         ctx.y_prob = CtxVar(pred, LIFECYCLE.BATCH)
 
     def _hook_on_batch_forward_flop_count(self, ctx):
+        """
+        Adjusts the flops per sample for the batch forward call
+
+        Args:
+            self: write your description
+            ctx: write your description
+        """
         if not isinstance(self.ctx.monitor, Monitor):
             logger.warning(
                 f"The trainer {type(self)} does contain a valid monitor, "
@@ -169,6 +202,13 @@ class LinkMiniBatchTrainer(GeneralTorchTrainer):
         return init_dict
 
     def _hook_on_batch_forward(self, ctx):
+        """
+        Inference hook for batch forward
+
+        Args:
+            self: write your description
+            ctx: write your description
+        """
         if ctx.cur_split == 'train':
             batch = ctx.data_batch.to(ctx.device)
             mask = batch[MODE2MASK[ctx.cur_split]]
@@ -202,6 +242,12 @@ class LinkMiniBatchTrainer(GeneralTorchTrainer):
 
 
 def call_link_level_trainer(trainer_type):
+    """
+    Call the appropriate trainer based on the trainer_type.
+
+    Args:
+        trainer_type: write your description
+    """
     if trainer_type == 'linkfullbatch_trainer':
         trainer_builder = LinkFullBatchTrainer
     elif trainer_type == 'linkminibatch_trainer':

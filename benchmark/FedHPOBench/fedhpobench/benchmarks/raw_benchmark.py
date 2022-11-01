@@ -18,11 +18,32 @@ class RawBenchmark(BaseBenchmark):
                  rng=None,
                  cost_mode='estimated',
                  **kwargs):
+        """
+        Initialize a benchmark object.
+
+        Args:
+            self: write your description
+            model: write your description
+            dname: write your description
+            algo: write your description
+            rng: write your description
+            cost_mode: write your description
+        """
         super(RawBenchmark, self).__init__(model, dname, algo, cost_mode, rng,
                                            **kwargs)
         self.device = kwargs['device']
 
     def _run_fl(self, configuration, fidelity, key='val_avg_loss', seed=1):
+        """
+        Run Fed.
+
+        Args:
+            self: write your description
+            configuration: write your description
+            fidelity: write your description
+            key: write your description
+            seed: write your description
+        """
         init_cfg = self.cfg.clone()
         disable_fs_logger(init_cfg, True)
         setup_seed(seed)
@@ -54,6 +75,16 @@ class RawBenchmark(BaseBenchmark):
                            key='val_avg_loss',
                            seed=1,
                            **kwargs):
+        """
+        Computes the objective function for the given configuration.
+
+        Args:
+            self: write your description
+            configuration: write your description
+            fidelity: write your description
+            key: write your description
+            seed: write your description
+        """
         fidelity = self._init_fidelity(fidelity)
         self._check(configuration, fidelity)
         start_time = datetime.datetime.now()
@@ -68,12 +99,30 @@ class RawBenchmark(BaseBenchmark):
         return {'function_value': function_value, 'cost': cost}
 
     def get_configuration_space(self):
+        """
+        Returns the configuration space for the current user.
+
+        Args:
+            self: write your description
+        """
         return []
 
     def get_fidelity_space(self):
+        """
+        Returns the FIdelity space for the QuantFigure
+
+        Args:
+            self: write your description
+        """
         return []
 
     def get_meta_info(self):
+        """
+        Return meta information about the dataset
+
+        Args:
+            self: write your description
+        """
         return {
             'model': self.model,
             'dname': self.dname,

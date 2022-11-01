@@ -15,6 +15,14 @@ logger = logging.getLogger(__name__)
 
 
 def load_poisoned_dataset_edgeset(data, ctx, mode):
+    """
+    Loads poisoned datasets.
+
+    Args:
+        data: write your description
+        ctx: write your description
+        mode: write your description
+    """
 
     transforms_funcs = get_transform(ctx, 'torchvision')['transform']
     load_path = ctx.attack.edge_path
@@ -109,6 +117,22 @@ def addTrigger(dataset,
                label_type,
                surrogate_model=None,
                load_path=None):
+    """
+    Adds a trigger to the given dataset.
+
+    Args:
+        dataset: write your description
+        target_label: write your description
+        inject_portion: write your description
+        mode: write your description
+        distance: write your description
+        trig_h: write your description
+        trig_w: write your description
+        trigger_type: write your description
+        label_type: write your description
+        surrogate_model: write your description
+        load_path: write your description
+    """
 
     height = dataset[0][0].shape[-2]
     width = dataset[0][0].shape[-1]
@@ -176,6 +200,14 @@ def addTrigger(dataset,
 
 
 def load_poisoned_dataset_pixel(data, ctx, mode):
+    """
+    Loads the poisoned dataset pixel - wise.
+
+    Args:
+        data: write your description
+        ctx: write your description
+        mode: write your description
+    """
 
     trigger_type = ctx.attack.trigger_type
     label_type = ctx.attack.label_type
@@ -270,6 +302,14 @@ def add_trans_normalize(data, ctx):
 
 
 def select_poisoning(data, ctx, mode):
+    """
+    Selects the correct merging strategy for the attack trigger.
+
+    Args:
+        data: write your description
+        ctx: write your description
+        mode: write your description
+    """
 
     if 'edge' in ctx.attack.trigger_type:
         data = load_poisoned_dataset_edgeset(data, ctx, mode)
@@ -281,6 +321,13 @@ def select_poisoning(data, ctx, mode):
 
 
 def poisoning(data, ctx):
+    """
+    Pings a single item.
+
+    Args:
+        data: write your description
+        ctx: write your description
+    """
     for i in range(1, len(data) + 1):
         if i == ctx.attack.attacker_id:
             logger.info(50 * '-')

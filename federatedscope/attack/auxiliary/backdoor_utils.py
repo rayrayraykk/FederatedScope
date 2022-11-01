@@ -17,6 +17,15 @@ from matplotlib import image as mlt
 
 
 def normalize(X, mean, std, device=None):
+    """
+    Normalize X by the mean and standard deviation.
+
+    Args:
+        X: write your description
+        mean: write your description
+        std: write your description
+        device: write your description
+    """
     channel = X.shape[0]
     mean = torch.tensor(mean).view(channel, 1, 1)
     std = torch.tensor(std).view(channel, 1, 1)
@@ -76,6 +85,17 @@ def selectTrigger(img, height, width, distance, trig_h, trig_w, triggerType,
 
 
 def _squareTrigger(img, height, width, distance, trig_h, trig_w):
+    """
+    Generates a white square trigger image with black pixels.
+
+    Args:
+        img: write your description
+        height: write your description
+        width: write your description
+        distance: write your description
+        trig_h: write your description
+        trig_w: write your description
+    """
     # white squares
     for j in range(width - distance - trig_w, width - distance):
         for k in range(height - distance - trig_h, height - distance):
@@ -85,6 +105,17 @@ def _squareTrigger(img, height, width, distance, trig_h, trig_w):
 
 
 def _gridTriger(img, height, width, distance, trig_h, trig_w):
+    """
+    Fills the image with the triger
+
+    Args:
+        img: write your description
+        height: write your description
+        width: write your description
+        distance: write your description
+        trig_h: write your description
+        trig_w: write your description
+    """
     # right bottom
     img[height - 1][width - 1] = 255
     img[height - 1][width - 2] = 0
@@ -102,6 +133,17 @@ def _gridTriger(img, height, width, distance, trig_h, trig_w):
 
 
 def _fourCornerTrigger(img, height, width, distance, trig_h, trig_w):
+    """
+    4 corner trigger
+
+    Args:
+        img: write your description
+        height: write your description
+        width: write your description
+        distance: write your description
+        trig_h: write your description
+        trig_w: write your description
+    """
     # right bottom
     img[height - 1][width - 1] = 255
     img[height - 1][width - 2] = 0
@@ -158,6 +200,17 @@ def _fourCornerTrigger(img, height, width, distance, trig_h, trig_w):
 
 
 def _fourCorner_w_Trigger(img, height, width, distance, trig_h, trig_w):
+    """
+    4 corner trigger
+
+    Args:
+        img: write your description
+        height: write your description
+        width: write your description
+        distance: write your description
+        trig_h: write your description
+        trig_w: write your description
+    """
     # right bottom
     img[height - 1][width - 1] = 255
     img[height - 1][width - 2] = 255
@@ -214,6 +267,17 @@ def _fourCorner_w_Trigger(img, height, width, distance, trig_h, trig_w):
 
 
 def _randomPixelTrigger(img, height, width, distance, trig_h, trig_w):
+    """
+    Generates a trigger image that triggers a random pixel.
+
+    Args:
+        img: write your description
+        height: write your description
+        width: write your description
+        distance: write your description
+        trig_h: write your description
+        trig_w: write your description
+    """
     alpha = 0.2
     mask = np.random.randint(low=0,
                              high=256,
@@ -226,6 +290,18 @@ def _randomPixelTrigger(img, height, width, distance, trig_h, trig_w):
 
 
 def _signalTrigger(img, height, width, distance, trig_h, trig_w, load_path):
+    """
+    Blend signal triggers into one image
+
+    Args:
+        img: write your description
+        height: write your description
+        width: write your description
+        distance: write your description
+        trig_h: write your description
+        trig_w: write your description
+        load_path: write your description
+    """
     #  vertical stripe pattern different from sig
     alpha = 0.2
     # load signal mask
@@ -239,6 +315,18 @@ def _signalTrigger(img, height, width, distance, trig_h, trig_w, load_path):
 
 
 def _hkTrigger(img, height, width, distance, trig_h, trig_w, load_path):
+    """
+    Trigger image with hk trigger
+
+    Args:
+        img: write your description
+        height: write your description
+        width: write your description
+        distance: write your description
+        trig_h: write your description
+        trig_w: write your description
+        load_path: write your description
+    """
     # hello kitty pattern
     alpha = 0.2
     # load signal mask

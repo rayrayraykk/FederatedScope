@@ -94,11 +94,23 @@ def hook_on_batch_injected_data_generation(ctx):
 
 
 def hook_on_gan_cra_train(ctx):
+    """
+    Run on GPU training.
+
+    Args:
+        ctx: write your description
+    """
 
     ctx.gan_cra.update_discriminator(ctx.model)
     ctx.gan_cra.generator_train()
 
 
 def hook_on_data_injection_sav_data(ctx):
+    """
+    Runs when the data injection is done.
+
+    Args:
+        ctx: write your description
+    """
 
     ctx.gan_cra.generate_and_save_images()

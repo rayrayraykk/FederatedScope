@@ -16,6 +16,13 @@ logger = logging.getLogger(__name__)
 
 
 def discounted_mean(trace, factor=1.0):
+    """
+    Discounted mean of a trace.
+
+    Args:
+        trace: write your description
+        factor: write your description
+    """
 
     weight = factor**np.flip(np.arange(len(trace)), axis=0)
 
@@ -37,6 +44,21 @@ class FedExServer(Server):
                  device='cpu',
                  strategy=None,
                  **kwargs):
+        """
+        Initialize the server.
+
+        Args:
+            self: write your description
+            ID: write your description
+            state: write your description
+            config: write your description
+            data: write your description
+            model: write your description
+            client_num: write your description
+            total_round_num: write your description
+            device: write your description
+            strategy: write your description
+        """
 
         # initialize action space and the policy
         with open(config.hpo.fedex.ss, 'r') as ips:
@@ -102,6 +124,12 @@ class FedExServer(Server):
                 self._trace['mle'] = ckpt['mle']
 
     def entropy(self):
+        """
+        Entropy of the distribution
+
+        Args:
+            self: write your description
+        """
         entropy = 0.0
         for probs in product(*(theta[theta > 0.0] for theta in self._theta)):
             prob = np.prod(probs)
@@ -109,6 +137,12 @@ class FedExServer(Server):
         return entropy
 
     def mle(self):
+        """
+        Maximum likelihood.
+
+        Args:
+            self: write your description
+        """
 
         return np.prod([theta.max() for theta in self._theta])
 
@@ -201,6 +235,13 @@ class FedExServer(Server):
             self.sampler.change_state(self.unseen_clients_id, 'seen')
 
     def callback_funcs_model_para(self, message: Message):
+        """
+        Callback function for processing models.
+
+        Args:
+            self: write your description
+            message: write your description
+        """
         round, sender, content = message.state, message.sender, message.content
         self.sampler.change_state(sender, 'idle')
         # For a new round

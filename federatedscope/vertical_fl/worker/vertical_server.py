@@ -29,6 +29,21 @@ class vFLServer(Server):
                  device='cpu',
                  strategy=None,
                  **kwargs):
+        """
+        Initialize a vFLServer object.
+
+        Args:
+            self: write your description
+            ID: write your description
+            state: write your description
+            config: write your description
+            data: write your description
+            model: write your description
+            client_num: write your description
+            total_round_num: write your description
+            device: write your description
+            strategy: write your description
+        """
         super(vFLServer,
               self).__init__(ID, state, config, data, model, client_num,
                              total_round_num, device, strategy, **kwargs)
@@ -43,12 +58,24 @@ class vFLServer(Server):
                                self.callback_funcs_for_encryped_gradient)
 
     def trigger_for_start(self):
+        """
+        Broadcasts the model parameters to the connected clients.
+
+        Args:
+            self: write your description
+        """
         if self.check_client_join_in():
             self.broadcast_public_keys()
             self.broadcast_client_address()
             self.broadcast_model_para()
 
     def broadcast_public_keys(self):
+        """
+        Broadcast the public key to all neighbors.
+
+        Args:
+            self: write your description
+        """
         self.comm_manager.send(
             Message(msg_type='public_keys',
                     sender=self.ID,
@@ -57,6 +84,12 @@ class vFLServer(Server):
                     content=self.public_key))
 
     def broadcast_model_para(self):
+        """
+        Broadcast model parameter theta to all connected clients.
+
+        Args:
+            self: write your description
+        """
 
         client_ids = self.comm_manager.neighbors.keys()
         cur_idx = 0
@@ -72,6 +105,13 @@ class vFLServer(Server):
             cur_idx += self.dims[int(client_id)]
 
     def callback_funcs_for_encryped_gradient(self, message: Message):
+        """
+        Callback functions for encoder - gradient training.
+
+        Args:
+            self: write your description
+            message: write your description
+        """
         sample_num, en_v = message.content
 
         v = np.reshape(
@@ -112,6 +152,12 @@ class vFLServer(Server):
             logger.info(formatted_logs)
 
     def evaluate(self):
+        """
+        Evaluate the model.
+
+        Args:
+            self: write your description
+        """
         test_x = self.data['test']['x']
         test_y = self.data['test']['y']
         loss = np.mean(

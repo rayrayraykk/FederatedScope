@@ -3,6 +3,12 @@ from federatedscope.register import register_config
 
 
 def extend_hpo_cfg(cfg):
+    """
+    Extend the given cfg with the options of the hpo - related workflow.
+
+    Args:
+        cfg: write your description
+    """
 
     # ---------------------------------------------------------------------- #
     # hpo related options
@@ -50,6 +56,12 @@ def extend_hpo_cfg(cfg):
 
 
 def assert_hpo_cfg(cfg):
+    """
+    Asserts that the given HPO configuration is valid.
+
+    Args:
+        cfg: write your description
+    """
     # HPO related
     # assert cfg.hpo.init_strategy in [
     #    'full', 'grid', 'random'

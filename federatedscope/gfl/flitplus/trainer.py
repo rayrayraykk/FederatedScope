@@ -9,6 +9,12 @@ from federatedscope.core.trainers import GeneralTorchTrainer
 
 class FLITTrainer(GeneralTorchTrainer):
     def register_default_hooks_train(self):
+        """
+        Register default hooks for training.
+
+        Args:
+            self: write your description
+        """
         super(FLITTrainer, self).register_default_hooks_train()
         self.register_hook_in_train(new_hook=record_initialization_local,
                                     trigger='on_fit_start',
@@ -24,6 +30,12 @@ class FLITTrainer(GeneralTorchTrainer):
                                     insert_pos=-1)
 
     def register_default_hooks_eval(self):
+        """
+        Register default hooks for eval.
+
+        Args:
+            self: write your description
+        """
         super(FLITTrainer, self).register_default_hooks_eval()
         self.register_hook_in_eval(new_hook=record_initialization_local,
                                    trigger='on_fit_start',
@@ -39,6 +51,13 @@ class FLITTrainer(GeneralTorchTrainer):
                                    insert_pos=-1)
 
     def _hook_on_batch_forward(self, ctx):
+        """
+        Compose the loss function with the data batch and the model.
+
+        Args:
+            self: write your description
+            ctx: write your description
+        """
         batch = ctx.data_batch.to(ctx.device)
         pred = ctx.model(batch)
         ctx.global_model.to(ctx.device)
@@ -78,6 +97,13 @@ class FLITTrainer(GeneralTorchTrainer):
 
 class FLITPlusTrainer(FLITTrainer):
     def _hook_on_batch_forward(self, ctx):
+        """
+        Calculate LDS and save the loss.
+
+        Args:
+            self: write your description
+            ctx: write your description
+        """
         # LDS should be calculated before the forward for cross entropy
         batch = ctx.data_batch.to(ctx.device)
         ctx.global_model.to(ctx.device)
@@ -133,6 +159,12 @@ class FLITPlusTrainer(FLITTrainer):
 
 class FedFocalTrainer(GeneralTorchTrainer):
     def register_default_hooks_train(self):
+        """
+        Register default hooks for training.
+
+        Args:
+            self: write your description
+        """
         super(FedFocalTrainer, self).register_default_hooks_train()
         self.register_hook_in_train(new_hook=record_initialization_local,
                                     trigger='on_fit_start',
@@ -142,6 +174,12 @@ class FedFocalTrainer(GeneralTorchTrainer):
                                     insert_pos=-1)
 
     def register_default_hooks_eval(self):
+        """
+        Register default hooks for evaluation of the model.
+
+        Args:
+            self: write your description
+        """
         super(FedFocalTrainer, self).register_default_hooks_eval()
         self.register_hook_in_eval(new_hook=record_initialization_local,
                                    trigger='on_fit_start',
@@ -151,6 +189,13 @@ class FedFocalTrainer(GeneralTorchTrainer):
                                    insert_pos=-1)
 
     def _hook_on_batch_forward(self, ctx):
+        """
+        Compose the loss and loss variables for a single batch forward pass.
+
+        Args:
+            self: write your description
+            ctx: write your description
+        """
         batch = ctx.data_batch.to(ctx.device)
         pred = ctx.model(batch)
         if ctx.criterion._get_name() == 'CrossEntropyLoss':
@@ -186,6 +231,12 @@ class FedFocalTrainer(GeneralTorchTrainer):
 
 class FedVATTrainer(GeneralTorchTrainer):
     def register_default_hooks_train(self):
+        """
+        Register default hooks for training.
+
+        Args:
+            self: write your description
+        """
         super(FedVATTrainer, self).register_default_hooks_train()
         self.register_hook_in_train(new_hook=record_initialization_local,
                                     trigger='on_fit_start',
@@ -195,6 +246,12 @@ class FedVATTrainer(GeneralTorchTrainer):
                                     insert_pos=-1)
 
     def register_default_hooks_eval(self):
+        """
+        Register default hooks for evaluation of the model.
+
+        Args:
+            self: write your description
+        """
         super(FedVATTrainer, self).register_default_hooks_eval()
         self.register_hook_in_eval(new_hook=record_initialization_local,
                                    trigger='on_fit_start',
@@ -204,6 +261,13 @@ class FedVATTrainer(GeneralTorchTrainer):
                                    insert_pos=-1)
 
     def _hook_on_batch_forward(self, ctx):
+        """
+        TensorFlow forward pass of the batch forward function.
+
+        Args:
+            self: write your description
+            ctx: write your description
+        """
         batch = ctx.data_batch.to(ctx.device)
         if ctx.cur_mode == 'test':
             lossLocalVAT = torch.tensor(0.)

@@ -30,6 +30,13 @@ class Netflix(MovieLensData):
     mv_names = [f'mv_{str(x).rjust(7, "0")}.txt' for x in range(1, 17771)]
 
     def _extract_raw_file(self, dir_path):
+        """
+        Extracts the raw tarball from the specified directory.
+
+        Args:
+            self: write your description
+            dir_path: write your description
+        """
         # Extract flag
         flag = False
         if not os.path.exists(dir_path):
@@ -49,6 +56,12 @@ class Netflix(MovieLensData):
         return
 
     def _read_raw(self):
+        """
+        Reads the raw data files.
+
+        Args:
+            self: write your description
+        """
         dir_path = os.path.join(self.root, self.base_folder, self.filename,
                                 'training_set')
         self._extract_raw_file(dir_path)

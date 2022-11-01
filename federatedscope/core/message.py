@@ -24,6 +24,19 @@ class Message(object):
                  content=None,
                  timestamp=0,
                  strategy=None):
+        """
+        Initializes the message.
+
+        Args:
+            self: write your description
+            msg_type: write your description
+            sender: write your description
+            receiver: write your description
+            state: write your description
+            content: write your description
+            timestamp: write your description
+            strategy: write your description
+        """
         self._msg_type = msg_type
         self._sender = sender
         self._receiver = receiver
@@ -34,69 +47,174 @@ class Message(object):
 
     @property
     def msg_type(self):
+        """
+        Message type.
+
+        Args:
+            self: write your description
+        """
         return self._msg_type
 
     @msg_type.setter
     def msg_type(self, value):
+        """
+        Set the message type.
+
+        Args:
+            self: write your description
+            value: write your description
+        """
         self._msg_type = value
 
     @property
     def sender(self):
+        """
+        The sender of the message.
+
+        Args:
+            self: write your description
+        """
         return self._sender
 
     @sender.setter
     def sender(self, value):
+        """
+        Set the sender of the message.
+
+        Args:
+            self: write your description
+            value: write your description
+        """
         self._sender = value
 
     @property
     def receiver(self):
+        """
+        The receiver of the message.
+
+        Args:
+            self: write your description
+        """
         return self._receiver
 
     @receiver.setter
     def receiver(self, value):
+        """
+        Set receiver of message
+
+        Args:
+            self: write your description
+            value: write your description
+        """
         self._receiver = value
 
     @property
     def state(self):
+        """
+        The state of the camera.
+
+        Args:
+            self: write your description
+        """
         return self._state
 
     @state.setter
     def state(self, value):
+        """
+        Set the state of the motor.
+
+        Args:
+            self: write your description
+            value: write your description
+        """
         self._state = value
 
     @property
     def content(self):
+        """
+        The content of the response.
+
+        Args:
+            self: write your description
+        """
         return self._content
 
     @content.setter
     def content(self, value):
+        """
+        Set content.
+
+        Args:
+            self: write your description
+            value: write your description
+        """
         self._content = value
 
     @property
     def timestamp(self):
+        """
+        The timestamp of the change as a float.
+
+        Args:
+            self: write your description
+        """
         return self._timestamp
 
     @timestamp.setter
     def timestamp(self, value):
+        """
+        Set the timestamp.
+
+        Args:
+            self: write your description
+            value: write your description
+        """
         assert isinstance(value, int) or isinstance(value, float), \
             "We only support an int or a float value for timestamp"
         self._timestamp = value
 
     @property
     def strategy(self):
+        """
+        Strategy used for generating output.
+
+        Args:
+            self: write your description
+        """
         return self._strategy
 
     @strategy.setter
     def strategy(self, value):
+        """
+        Set strategy.
+
+        Args:
+            self: write your description
+            value: write your description
+        """
         self._strategy = value
 
     def __lt__(self, other):
+        """
+        Compares the state of this LogEntry to the other one.
+
+        Args:
+            self: write your description
+            other: write your description
+        """
         if self.timestamp != other.timestamp:
             return self.timestamp < other.timestamp
         else:
             return self.state < other.state
 
     def transform_to_list(self, x):
+        """
+        Transforms a value to a list.
+
+        Args:
+            self: write your description
+            x: write your description
+        """
         if isinstance(x, list) or isinstance(x, tuple):
             return [self.transform_to_list(each_x) for each_x in x]
         elif isinstance(x, dict):
@@ -110,6 +228,13 @@ class Message(object):
                 return x
 
     def msg_to_json(self, to_list=False):
+        """
+        Return a JSON string representation of the message.
+
+        Args:
+            self: write your description
+            to_list: write your description
+        """
         if to_list:
             self.content = self.transform_to_list(self.content)
 
@@ -125,6 +250,13 @@ class Message(object):
         return json.dumps(json_msg)
 
     def json_to_msg(self, json_string):
+        """
+        Convert a JSON message to a message object.
+
+        Args:
+            self: write your description
+            json_string: write your description
+        """
         json_msg = json.loads(json_string)
         self.msg_type = json_msg['msg_type']
         self.sender = json_msg['sender']
@@ -135,6 +267,14 @@ class Message(object):
         self.strategy = json_msg['strategy']
 
     def create_by_type(self, value, nested=False):
+        """
+        Creates a protobuf message value from a value.
+
+        Args:
+            self: write your description
+            value: write your description
+            nested: write your description
+        """
         if isinstance(value, dict):
             if isinstance(list(value.keys())[0], str):
                 m_dict = gRPC_comm_manager_pb2.mDict_keyIsString()
@@ -187,6 +327,13 @@ class Message(object):
                 return m_single
 
     def build_msg_value(self, value):
+        """
+        Builds a protobuf message value from the specified value.
+
+        Args:
+            self: write your description
+            value: write your description
+        """
         msg_value = gRPC_comm_manager_pb2.MsgValue()
 
         if isinstance(value, list) or isinstance(value, tuple):
@@ -203,6 +350,13 @@ class Message(object):
         return msg_value
 
     def transform(self, to_list=False):
+        """
+        Splits the message into a single message request.
+
+        Args:
+            self: write your description
+            to_list: write your description
+        """
         if to_list:
             self.content = self.transform_to_list(self.content)
 
@@ -220,6 +374,13 @@ class Message(object):
         return splited_msg
 
     def _parse_msg(self, value):
+        """
+        Parses a protobuf message.
+
+        Args:
+            self: write your description
+            value: write your description
+        """
         if isinstance(value, gRPC_comm_manager_pb2.MsgValue) or isinstance(
                 value, gRPC_comm_manager_pb2.mSingle):
             return self._parse_msg(getattr(value, value.WhichOneof("type")))
@@ -235,6 +396,13 @@ class Message(object):
             return value
 
     def parse(self, received_msg):
+        """
+        Parse a received message.
+
+        Args:
+            self: write your description
+            received_msg: write your description
+        """
         self.sender = self._parse_msg(received_msg['sender'])
         self.receiver = self._parse_msg(received_msg['receiver'])
         self.msg_type = self._parse_msg(received_msg['msg_type'])

@@ -21,9 +21,23 @@ class ProximalRegularizer(Module):
             Tensor: the norm of the given udpate.
     """
     def __init__(self):
+        """
+        Initialize the regularizer.
+
+        Args:
+            self: write your description
+        """
         super(ProximalRegularizer, self).__init__()
 
     def forward(self, ctx, p=2):
+        """
+        Compute the weight norm of the model
+
+        Args:
+            self: write your description
+            ctx: write your description
+            p: write your description
+        """
         norm = 0.
         for w_init, w in zip(ctx.weight_init, ctx.model.parameters()):
             norm += torch.pow(torch.norm(w - w_init, p), p)
@@ -31,6 +45,12 @@ class ProximalRegularizer(Module):
 
 
 def call_proximal_regularizer(type):
+    """
+    Call the proximal regularizer if applicable.
+
+    Args:
+        type: write your description
+    """
     if type == REGULARIZER_NAME:
         regularizer = ProximalRegularizer
         return regularizer

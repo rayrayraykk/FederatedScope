@@ -6,6 +6,12 @@ from federatedscope.core.data.wrap_dataset import WrapDataset
 
 
 def load_toy_data(config=None):
+    """
+    Loads toy data from a file.
+
+    Args:
+        config: write your description
+    """
     def _generate_data(client_num=5,
                        instance_num=1000,
                        feature_num=5,

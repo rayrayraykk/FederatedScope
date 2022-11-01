@@ -4,6 +4,11 @@ from federatedscope.core.configs.config import global_cfg
 
 
 def parse_args(args=None):
+    """
+    Parse the command line arguments.
+
+    Args:
+    """
     parser = argparse.ArgumentParser(description='FederatedScope',
                                      add_help=False)
     parser.add_argument('--cfg',

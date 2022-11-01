@@ -3,6 +3,14 @@ from torch_geometric.utils import to_networkx
 
 
 def index_to_mask(index, size, device='cpu'):
+    """
+    Convert a numerical index to a mask.
+
+    Args:
+        index: write your description
+        size: write your description
+        device: write your description
+    """
     mask = torch.zeros(size, dtype=torch.bool, device=device)
     mask[index] = 1
     return mask
@@ -13,6 +21,16 @@ def random_planetoid_splits(data,
                             percls_trn=20,
                             val_lb=500,
                             Flag=0):
+    """
+    Randomly splits the data into num_classes planetoid clusters.
+
+    Args:
+        data: write your description
+        num_classes: write your description
+        percls_trn: write your description
+        val_lb: write your description
+        Flag: write your description
+    """
 
     indices = []
     for i in range(num_classes):
@@ -44,6 +62,12 @@ def random_planetoid_splits(data,
 
 
 def get_maxDegree(graphs):
+    """
+    Find the maximum degree of a set of undirected graphs.
+
+    Args:
+        graphs: write your description
+    """
     maxdegree = 0
     for i, graph in enumerate(graphs):
         g = to_networkx(graph, to_undirected=True)

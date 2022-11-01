@@ -3,6 +3,12 @@ from federatedscope.register import register_config
 
 
 def extend_attack_cfg(cfg):
+    """
+    Extend attack configuration with additional attributes
+
+    Args:
+        cfg: write your description
+    """
 
     # ---------------------------------------------------------------------- #
     # attack
@@ -60,6 +66,12 @@ def extend_attack_cfg(cfg):
 
 
 def assert_attack_cfg(cfg):
+    """
+    Assert that the attack CFG is valid.
+
+    Args:
+        cfg: write your description
+    """
     pass
 
 

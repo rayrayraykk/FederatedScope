@@ -26,10 +26,25 @@ class HideGraph(BaseTransform):
         nx.Graph
     """
     def __init__(self, hidden_portion=0.5, num_pred=5):
+        """
+        Initialize the model with the given parameters.
+
+        Args:
+            self: write your description
+            hidden_portion: write your description
+            num_pred: write your description
+        """
         self.hidden_portion = hidden_portion
         self.num_pred = num_pred
 
     def __call__(self, data):
+        """
+        Generate a graph from the data.
+
+        Args:
+            self: write your description
+            data: write your description
+        """
 
         val_ids = torch.where(data.val_mask == True)[0]
         hide_ids = np.random.choice(val_ids,
@@ -73,11 +88,27 @@ class HideGraph(BaseTransform):
         return from_networkx(nx.subgraph(G, remaining_nodes))
 
     def __repr__(self):
+        """
+        Representation of the hidden_portion field.
+
+        Args:
+            self: write your description
+        """
         return f'{self.__class__.__name__}({self.hidden_portion})'
 
 
 def FillGraph(impaired_data, original_data, pred_missing, pred_feats,
               num_pred):
+    """
+    Fills the graph with the missing and valid nodes.
+
+    Args:
+        impaired_data: write your description
+        original_data: write your description
+        pred_missing: write your description
+        pred_feats: write your description
+        num_pred: write your description
+    """
     # Mend the original data
     original_data = original_data.detach().cpu()
     new_features = original_data.x

@@ -28,6 +28,12 @@ logger = logging.getLogger(__name__)
 
 class GeneralTorchTrainer(Trainer):
     def get_model_para(self):
+        """
+        Returns the model parameters as a dictionary.
+
+        Args:
+            self: write your description
+        """
         return self._param_filter(
             self.ctx.model.state_dict() if self.cfg.federate.
             share_local_model else self.ctx.model.cpu().state_dict())
@@ -89,12 +95,25 @@ class GeneralTorchTrainer(Trainer):
         self.ctx.model.load_state_dict(merged_param, strict=strict)
 
     def evaluate(self, target_data_split_name="test"):
+        """
+        Evaluate the model on the data.
+
+        Args:
+            self: write your description
+            target_data_split_name: write your description
+        """
         with torch.no_grad():
             super(GeneralTorchTrainer, self).evaluate(target_data_split_name)
 
         return self.ctx.eval_metrics
 
     def register_default_hooks_train(self):
+        """
+        Register default hooks for training.
+
+        Args:
+            self: write your description
+        """
         self.register_hook_in_train(self._hook_on_fit_start_init,
                                     "on_fit_start")
         self.register_hook_in_train(
@@ -115,6 +134,12 @@ class GeneralTorchTrainer(Trainer):
         self.register_hook_in_train(self._hook_on_fit_end, "on_fit_end")
 
     def register_default_hooks_ft(self):
+        """
+        Registers default hooks for FFT
+
+        Args:
+            self: write your description
+        """
         self.register_hook_in_ft(self._hook_on_fit_start_init, "on_fit_start")
         self.register_hook_in_ft(self._hook_on_fit_start_calculate_model_size,
                                  "on_fit_start")
@@ -133,6 +158,12 @@ class GeneralTorchTrainer(Trainer):
         self.register_hook_in_ft(self._hook_on_fit_end, "on_fit_end")
 
     def register_default_hooks_eval(self):
+        """
+        Register default hooks for evaluation.
+
+        Args:
+            self: write your description
+        """
         # test/val
         self.register_hook_in_eval(self._hook_on_fit_start_init,
                                    "on_fit_start")
@@ -404,12 +435,27 @@ class GeneralTorchTrainer(Trainer):
         setattr(ctx, 'eval_metrics', results)
 
     def save_model(self, path, cur_round=-1):
+        """
+        Save the current model state to a file.
+
+        Args:
+            self: write your description
+            path: write your description
+            cur_round: write your description
+        """
         assert self.ctx.model is not None
 
         ckpt = {'cur_round': cur_round, 'model': self.ctx.model.state_dict()}
         torch.save(ckpt, path)
 
     def load_model(self, path):
+        """
+        Load a model from disk
+
+        Args:
+            self: write your description
+            path: write your description
+        """
         assert self.ctx.model is not None
 
         if os.path.exists(path):

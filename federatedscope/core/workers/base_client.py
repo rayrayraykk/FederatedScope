@@ -4,6 +4,17 @@ from federatedscope.core.workers.base_worker import Worker
 
 class BaseClient(Worker):
     def __init__(self, ID, state, config, model, strategy):
+        """
+        Initialize a client.
+
+        Args:
+            self: write your description
+            ID: write your description
+            state: write your description
+            config: write your description
+            model: write your description
+            strategy: write your description
+        """
         super(BaseClient, self).__init__(ID, state, config, model, strategy)
         # TODO: move to worker
         self.msg_handlers = dict()

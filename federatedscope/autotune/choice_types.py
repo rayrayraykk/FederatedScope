@@ -47,11 +47,25 @@ class Continuous(tuple):
     """Represents a continuous search space, e.g., in the range [0.001, 0.1].
     """
     def __new__(cls, lb, ub):
+        """
+        Create a new range from a lower and upper bound.
+
+        Args:
+            cls: write your description
+            lb: write your description
+            ub: write your description
+        """
         assert ub >= lb, "Invalid configuration where ub:{} is less than " \
                          "lb:{}".format(ub, lb)
         return tuple.__new__(cls, [lb, ub])
 
     def __repr__(self):
+        """
+        Return a string representation of the object.
+
+        Args:
+            self: write your description
+        """
         return "Continuous(%s,%s)" % self
 
     def sample(self):
@@ -80,6 +94,13 @@ class Continuous(tuple):
 
 
 def contd_constructor(loader, node):
+    """
+    Constructor for a Continuous object.
+
+    Args:
+        loader: write your description
+        node: write your description
+    """
     value = loader.construct_scalar(node)
     lb, ub = map(float, value.split(','))
     return Continuous(lb, ub)
@@ -92,9 +113,21 @@ class Discrete(tuple):
     """Represents a discrete search space, e.g., {'abc', 'ijk', 'xyz'}.
     """
     def __new__(cls, *args):
+        """
+        Create a new tuple of the same type as the tuple passed in.
+
+        Args:
+            cls: write your description
+        """
         return tuple.__new__(cls, args)
 
     def __repr__(self):
+        """
+        Representation of the object.
+
+        Args:
+            self: write your description
+        """
         return "Discrete(%s)" % ','.join(map(str, self))
 
     def sample(self):
@@ -107,6 +140,13 @@ class Discrete(tuple):
         return self[np.random.randint(len(self))]
 
     def grid(self, grid_cnt):
+        """
+        Selects a grid of numbers.
+
+        Args:
+            self: write your description
+            grid_cnt: write your description
+        """
         num_original = len(self)
         assert grid_cnt <= num_original, "There are only {} choices to " \
                                          "produce grids, but {} " \
@@ -136,6 +176,13 @@ class Discrete(tuple):
 
 
 def disc_constructor(loader, node):
+    """
+    Constructor for disc type.
+
+    Args:
+        loader: write your description
+        node: write your description
+    """
     value = loader.construct_sequence(node)
     return Discrete(*value)
 

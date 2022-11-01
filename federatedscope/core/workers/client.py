@@ -63,6 +63,21 @@ class Client(BaseClient):
                  is_unseen_client=False,
                  *args,
                  **kwargs):
+        """
+        Initialize client.
+
+        Args:
+            self: write your description
+            ID: write your description
+            server_id: write your description
+            state: write your description
+            config: write your description
+            data: write your description
+            model: write your description
+            device: write your description
+            strategy: write your description
+            is_unseen_client: write your description
+        """
 
         super(Client, self).__init__(ID, state, config, model, strategy)
 
@@ -157,6 +172,14 @@ class Client(BaseClient):
             }
 
     def _gen_timestamp(self, init_timestamp, instance_number):
+        """
+        Generate the timestamp for the next run.
+
+        Args:
+            self: write your description
+            init_timestamp: write your description
+            instance_number: write your description
+        """
         if init_timestamp is None:
             return None
 
@@ -168,6 +191,14 @@ class Client(BaseClient):
         return init_timestamp + comp_cost + comm_cost
 
     def _calculate_model_delta(self, init_model, updated_model):
+        """
+        Calculates the model delta between the two given models.
+
+        Args:
+            self: write your description
+            init_model: write your description
+            updated_model: write your description
+        """
         if not isinstance(init_model, list):
             init_model = [init_model]
             updated_model = [updated_model]

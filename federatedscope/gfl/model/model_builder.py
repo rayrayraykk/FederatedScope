@@ -13,6 +13,13 @@ from federatedscope.gfl.model.mpnn import MPNNs2s
 
 
 def get_gnn(model_config, input_shape):
+    """
+    Construct the appropriate GNN model given the model configuration.
+
+    Args:
+        model_config: write your description
+        input_shape: write your description
+    """
 
     x_shape, num_label, num_edge_features = input_shape
     if not num_label:

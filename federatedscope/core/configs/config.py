@@ -12,6 +12,14 @@ logger = logging.getLogger(__name__)
 
 
 def set_help_info(cn_node, help_info_dict, prefix=""):
+    """
+    Recursively adds help information to the help_info_dict.
+
+    Args:
+        cn_node: write your description
+        help_info_dict: write your description
+        prefix: write your description
+    """
     for k, v in cn_node.items():
         if isinstance(v, Argument) and k not in help_info_dict:
             help_info_dict[prefix + k] = v.description
@@ -30,6 +38,15 @@ class CN(CfgNode):
 
     """
     def __init__(self, init_dict=None, key_list=None, new_allowed=False):
+        """
+        Initialize the configuration object.
+
+        Args:
+            self: write your description
+            init_dict: write your description
+            key_list: write your description
+            new_allowed: write your description
+        """
         init_dict = super().__init__(init_dict, key_list, new_allowed)
         self.__cfg_check_funcs__ = list()  # to check the config values
         # validity
@@ -47,18 +64,38 @@ class CN(CfgNode):
                         self.__help_info__[name] = des
 
     def __getattr__(self, name):
+        """
+        Get attribute value.
+
+        Args:
+            self: write your description
+            name: write your description
+        """
         if name in self:
             return self[name]
         else:
             raise AttributeError(name)
 
     def __delattr__(self, name):
+        """
+        Remove an attribute from the container.
+
+        Args:
+            self: write your description
+            name: write your description
+        """
         if name in self:
             del self[name]
         else:
             raise AttributeError(name)
 
     def clear_aux_info(self):
+        """
+        Clears all the auxiliary information of the CN object.
+
+        Args:
+            self: write your description
+        """
         if hasattr(self, "__cfg_check_funcs__"):
             delattr(self, "__cfg_check_funcs__")
         if hasattr(self, "__help_info__"):
@@ -83,6 +120,13 @@ class CN(CfgNode):
                 print(f"  --{k} \t {v}")
 
     def register_cfg_check_fun(self, cfg_check_fun):
+        """
+        Register a function that checks the configuration of the node.
+
+        Args:
+            self: write your description
+            cfg_check_fun: write your description
+        """
         self.__cfg_check_funcs__.append(cfg_check_fun)
 
     def merge_from_file(self, cfg_filename, check_cfg=True):
@@ -162,6 +206,12 @@ class CN(CfgNode):
                             del v[k]
 
     def check_required_args(self):
+        """
+        Check required arguments.
+
+        Args:
+            self: write your description
+        """
         for k, v in self.items():
             if isinstance(v, CN):
                 v.check_required_args()
@@ -183,6 +233,13 @@ class CN(CfgNode):
                 self[k] = v.value
 
     def ready_for_run(self, check_cfg=True):
+        """
+        Cleans up the internal state of the state machine and de - serializes the arguments.
+
+        Args:
+            self: write your description
+            check_cfg: write your description
+        """
         self.assert_cfg(check_cfg)
         self.clean_unused_sub_cfgs()
         self.check_required_args()

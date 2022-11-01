@@ -6,6 +6,13 @@ from federatedscope.core.splitters import BaseSplitter
 
 class RandChunkSplitter(BaseTransform, BaseSplitter):
     def __init__(self, client_num):
+        """
+        Initializes the splitter with the given client_num.
+
+        Args:
+            self: write your description
+            client_num: write your description
+        """
         BaseSplitter.__init__(self, client_num)
 
     def __call__(self, dataset, **kwargs):

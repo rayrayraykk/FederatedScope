@@ -15,12 +15,31 @@ class LocalGenTrainer(NodeFullBatchTrainer):
                  config,
                  only_for_eval=False,
                  monitor=None):
+        """
+        Local Gen model initialization.
+
+        Args:
+            self: write your description
+            model: write your description
+            data: write your description
+            device: write your description
+            config: write your description
+            only_for_eval: write your description
+            monitor: write your description
+        """
         super(LocalGenTrainer, self).__init__(model, data, device, config,
                                               only_for_eval, monitor)
         self.criterion_num = F.smooth_l1_loss
         self.criterion_feat = GreedyLoss
 
     def _hook_on_batch_forward(self, ctx):
+        """
+        Run the forward pass on the batch.
+
+        Args:
+            self: write your description
+            ctx: write your description
+        """
         batch = ctx.data_batch.to(ctx.device)
         mask = batch['{}_mask'.format(ctx.cur_mode)]
         pred_missing, pred_feat, nc_pred = ctx.model(batch)
@@ -45,6 +64,13 @@ class LocalGenTrainer(NodeFullBatchTrainer):
 
 class FedGenTrainer(LocalGenTrainer):
     def _hook_on_batch_forward(self, ctx):
+        """
+        Run the forward pass on the batch.
+
+        Args:
+            self: write your description
+            ctx: write your description
+        """
         batch = ctx.data_batch.to(ctx.device)
         mask = batch['{}_mask'.format(ctx.cur_mode)]
         pred_missing, pred_feat, nc_pred = ctx.model(batch)
@@ -143,6 +169,12 @@ class FedGenTrainer(LocalGenTrainer):
 
     @torch.no_grad()
     def embedding(self):
+        """
+        Embedding of the context into a space.
+
+        Args:
+            self: write your description
+        """
         model = self.ctx.model.to(self.ctx.device)
         data = self.ctx.data['data'].to(self.ctx.device)
         return model.encoder_model(data).to('cpu')

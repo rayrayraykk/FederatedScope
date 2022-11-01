@@ -1,0 +1,30 @@
+name: Auto-docstring
+
+on: [push, pull_request]
+
+jobs:
+  run:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: False
+      matrix:
+        os: [ubuntu-latest]
+    env:
+      OS: ${{ matrix.os }}
+      PYTHON: '3.9'
+    steps:
+    - uses: ponicode/dogstring-action@master
+      with:
+        repo_path: ./
+        auth_token: ${{ secrets.PONICODE_TOKEN }}
+        all_repo: False
+    - name: Create Pull Request
+      uses: peter-evans/create-pull-request@v3
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        commit-message: "[ponicode-pull-request] Ponicode found docstrings to write!"
+        branch: ponicode-dogstring
+        title: "[Ponicode] Docstrings created"
+        body: |
+          Ponicode report
+          - Ponicode found docstrings to write

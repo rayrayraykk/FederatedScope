@@ -35,7 +35,7 @@ jobs:
         branch: ${{ steps.extract_branch.outputs.BRANCH_NAME }} # DO NOT MODIFY
         githubToken: ${{ secrets.GITHUB_TOKEN }} # DO NOT MODIFY
         ponicodeSquarToken: ${{ secrets.PONICODE_SQUAR_TOKEN }} # DO NOT MODIFY
-        displayFullReport: 'true'
+        displayFullReport: 'false'
 
     # Run Ponicode Unit-Testing Action
     - uses: ponicode/unit-testing-action@master

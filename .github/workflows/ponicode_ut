@@ -1,0 +1,36 @@
+name: Auto-UT
+
+on:
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+  ponicode:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+    - run: |
+        npm install -g ponicode
+        npm i --save-dev rewire @types/rewire jest@26 ts-jest@26 @types/jest
+    
+    # Identify which files are impacted by the Push / PR
+    - id: get_changed_files
+      uses: jitterbit/get-changed-files@v1
+      continue-on-error: true
+      with:
+        format: 'json'
+
+    # Extract branch name
+    - id: extract_branch
+      if: github.event_name == 'pull_request'
+      run: echo "::set-output name=BRANCH_NAME::$(echo ${GITHUB_HEAD_REF})"
+    
+    # Run Ponicode Unit Test Action
+    - uses: ponicode/unit-testing-action@master
+      with:
+        repoURL: ${{github.repository}} # DO NOT MODIFY
+        branch: ${{ steps.extract_branch.outputs.BRANCH_NAME }} # DO NOT MODIFY
+        githubToken: ${{ secrets.GITHUB_TOKEN }} # DO NOT MODIFY
+        ponicodeUtToken: ${{ secrets.PONICODE_TOKEN }} # DO NOT MODIFY
+        impactedFiles: ${{ steps.get_changed_files.outputs.added_modified }} # DO NOT MODIFY IF YOU WANT TO GENERATE TESTS ON PR IMPACTED FILES ONLY
+        commentUTs: "false"

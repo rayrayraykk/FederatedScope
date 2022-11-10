@@ -37,7 +37,7 @@ lrs=(0.00001)
 wds=(0.0)
 steps=(1)
 batch_sizes=(256)
-datasets = (10101 53 146818 146821 146822 31 3917)
+datasets=(10101 53 146818 146821 146822 31 3917)
 
 for (( sr=0; sr<${#sample_rates[@]}; sr++ ))
 do

@@ -5,12 +5,16 @@ early_stop:
 federate:
   mode: 'standalone'
   total_round_num: 250
-  batch_or_epoch: 'epoch'
   client_num: 5
   share_local_model: True
   online_aggr: True
 trainer:
   type: 'general'
+train:
+  batch_or_epoch: 'epoch'
+  optimizer:
+    lr: 0.0001
+    weight_decay: 0.0
 eval:
   freq: 1
   metrics: ['acc', 'correct', 'f1']
@@ -22,8 +26,5 @@ data:
 model:
   type: lr
   out_channels: 2
-optimizer:
-  lr: 0.0001
-  weight_decay: 0.0
 criterion:
   type: CrossEntropyLoss

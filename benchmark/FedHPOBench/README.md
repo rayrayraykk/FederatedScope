@@ -21,7 +21,7 @@ We highly recommend running FedHPO-B with conda.
 
   ```bash
   # hpbandster, smac3, optuna via conda
-  conda install hpbandster smac3 optuna -c conda-forge
+  conda install hpbandster smac optuna -c conda-forge
   
   # dehb via git
   conda install dask distributed -c conda-forge

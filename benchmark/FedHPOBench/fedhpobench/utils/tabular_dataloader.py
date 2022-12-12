@@ -69,16 +69,21 @@ def logs2info(dname, root, sample_client_rate=[0.2, 0.4, 0.6, 0.8, 1.0]):
 
 
 def read_fairness(lines):
-    fairness_list = []
+    fairness_dict = {}
     for line in lines:
         tmp_line = str(line)
         if 'Server' in tmp_line:
             results = eval(line)
-            new_results = {}
             for key in results['Results_raw']:
-                new_results[f'{key}_fair'] = results['Results_raw'][key]
-            fairness_list.append(new_results)
-    return fairness_list
+                if f'{key}_fair' in fairness_dict:
+                    fairness_dict[f'{key}_fair'].append(
+                        results['Results_raw'][key])
+                else:
+                    fairness_dict[f'{key}_fair'] = [
+                        results['Results_raw'][key]
+                    ]
+
+    return fairness_dict
 
 
 def logs2df(dname,
@@ -112,15 +117,15 @@ def logs2df(dname,
                 for x in ['train_time', 'eval_time', 'tol_time']
             }
             # Load fairness-related metric if exists.
-            fairness_list = None
+            fairness_dict = None
             fairness_gz = os.path.join(path, file_name, 'eval_results.raw.gz')
             fairness_log = os.path.join(path, file_name, 'eval_results.raw')
             if os.path.exists(fairness_gz):
                 with gzip.open(fairness_gz, 'rb') as f:
-                    fairness_list = read_fairness(f.readlines())
+                    fairness_dict = read_fairness(f.readlines())
             elif os.path.exists(fairness_log):
                 with open(fairness_log, 'rb') as f:
-                    fairness_list = read_fairness(f.readlines())
+                    fairness_dict = read_fairness(f.readlines())
 
             with open(os.path.join(path, file_name, 'exp_print.log')) as f:
                 F = f.readlines()
@@ -173,8 +178,8 @@ def logs2df(dname,
                         else:
                             metrics_dict[key].append(
                                 results['Results_weighted_avg'][key])
-                if fairness_list and cnt < len(fairness_list):
-                    metrics_dict = {**metrics_dict, **fairness_list[cnt]}
+                if fairness_dict:
+                    metrics_dict = {**metrics_dict, **fairness_dict}
                 value = [
                     float(file_name.split('_')[i][len(arg):])
                     for i, arg in enumerate(args)

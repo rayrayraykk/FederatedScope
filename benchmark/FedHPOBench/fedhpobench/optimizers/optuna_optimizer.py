@@ -124,7 +124,9 @@ def run_optuna(cfg):
         raise NotImplementedError
 
     sampler = TPESampler(seed=cfg.optimizer.seed)
-    study = optuna.create_study(direction='minimize', sampler=sampler, pruner=pruner)
+    study = optuna.create_study(direction='minimize',
+                                sampler=sampler,
+                                pruner=pruner)
 
     study.optimize(func=partial(
         objective,

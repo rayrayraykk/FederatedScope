@@ -102,8 +102,6 @@ def run_optuna(cfg):
         cfg.benchmark.data,
         cfg.benchmark.algo,
         device=cfg.benchmark.device)
-    sampler = TPESampler(seed=cfg.optimizer.seed)
-    study = optuna.create_study(direction='minimize', sampler=sampler)
     if cfg.optimizer.type == 'tpe_md':
         pruner = MedianPruner()
         sh_iters = precompute_sh_iters(cfg.optimizer.min_budget,
@@ -124,6 +122,9 @@ def run_optuna(cfg):
         ]
     else:
         raise NotImplementedError
+
+    sampler = TPESampler(seed=cfg.optimizer.seed)
+    study = optuna.create_study(direction='minimize', sampler=sampler, pruner=pruner)
 
     study.optimize(func=partial(
         objective,

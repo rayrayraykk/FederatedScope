@@ -1,7 +1,7 @@
 """
 Utils for language models.
 from https://github.com/litian96/FedProx/blob/ \
-master/flearn/utils/language_utils.py
+master/flearn/exp_utils/language_utils.py
 """
 
 import re
@@ -9,7 +9,7 @@ import numpy as np
 from collections import Counter
 
 # ------------------------
-# utils for shakespeare dataset
+# exp_utils for shakespeare dataset
 
 ALL_LETTERS = "\n !\"&'(),-.0123456789:;>?ABCDEFGHIJKLMNOPQRSTUVWXYZ[" \
               "]abcdefghijklmnopqrstuvwxyz}"
@@ -44,7 +44,7 @@ def word_to_indices(word):
 
 
 # ------------------------
-# utils for sent140 dataset
+# exp_utils for sent140 dataset
 
 
 def split_line(line):

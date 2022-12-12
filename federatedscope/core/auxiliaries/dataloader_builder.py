@@ -28,7 +28,7 @@ def get_dataloader(dataset, config, split='train'):
         ``dataloader.type``       Source
         ========================  ===============================
         ``raw``                   No DataLoader
-        ``base``                  ``torch.utils.data.DataLoader``
+        ``base``                  ``torch.exp_utils.data.DataLoader``
         ``pyg``                   ``torch_geometric.loader.DataLoader``
         ``graphsaint-rw``             \
         ``torch_geometric.loader.GraphSAINTRandomWalkSampler``

@@ -34,7 +34,7 @@ class BaseDataTranslator:
     def __call__(self, dataset):
         """
         Args:
-            dataset: `torch.utils.data.Dataset`, `List` of (feature, label)
+            dataset: `torch.exp_utils.data.Dataset`, `List` of (feature, label)
                 or split dataset tuple of (train, val, test) or Tuple of
                 split dataset with [train, val, test]
 

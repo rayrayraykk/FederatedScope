@@ -20,7 +20,7 @@ except ImportError:
 logger = logging.getLogger(__name__)
 
 
-# ****** Worker-related utils ******
+# ****** Worker-related exp_utils ******
 class Timeout(object):
     def __init__(self, seconds, max_failure=5):
         self.seconds = seconds
@@ -126,7 +126,7 @@ def calculate_time_cost(instance_number,
     return comp_cost, comm_cost
 
 
-# ****** Runner-related utils ******
+# ****** Runner-related exp_utils ******
 def setup_seed(seed):
     np.random.seed(seed)
     random.seed(seed)

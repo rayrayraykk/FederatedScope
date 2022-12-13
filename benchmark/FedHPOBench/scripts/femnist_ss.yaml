@@ -1,0 +1,67 @@
+train.optimizer.lr:
+  type: cate
+  choices: [0.01, 0.01668, 0.02783, 0.04642, 0.07743, 0.12915, 0.21544, 0.35938, 0.59948, 1.0]
+train.optimizer.weight_decay:
+  type: cate
+  choices: [0.0, 0.001, 0.01, 0.1]
+model.dropout:
+  type: cate
+  choices: [0.0, 0.5]
+train.local_update_steps:
+  type: cate
+  choices: [1, 2, 3, 4]
+dataloader.batch_size:
+  type: cate
+  choices: [16, 32, 64]
+federate.sample_client_rate:
+  type: cate
+  choices: [1.0, 0.8, 0.6, 0.4, 0.2]
+
+# FedOpt
+fedopt.use:
+  type: cate
+  choices: [True, False]
+fedopt.optimizer.lr:
+  type: cate
+  choices: [ 0.1, 0.5, 1.0]
+condition1:
+  type: equal
+  child: fedopt.optimizer.lr
+  parent: fedopt.use
+  value: True
+condition2:
+  type: equal
+  child: train.local_update_steps
+  parent: fedopt.use
+  value: False
+
+# FedProx
+fedprox.use:
+  type: cate
+  choices: [True, False]
+fedprox.mu:
+  type: cate
+  choices: [0.1, 1.0, 5.0]
+condition3:
+  type: equal
+  child: fedprox.mu
+  parent: fedprox.use
+  value: True
+
+# DP (nbafl)
+nbafl.use:
+  type: cate
+  choices: [True, False]
+nbafl.epsilon:
+  type: cate
+  choices: [1, 10, 20]
+condition4:
+  type: equal
+  child: nbafl.epsilon
+  parent: nbafl.use
+  value: True
+
+# Ditto
+federate.method:
+  type: cate
+  choices: [Ditto, FedAvg]

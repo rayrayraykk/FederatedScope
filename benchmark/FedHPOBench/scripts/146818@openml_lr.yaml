@@ -1,0 +1,52 @@
+use_gpu: True
+device: 0
+early_stop:
+  patience: 100
+seed: 12345
+federate:
+  mode: 'standalone'
+  total_round_num: 250
+  client_num: 5
+  share_local_model: True
+  online_aggr: True
+trainer:
+  type: 'general'
+data:
+  type: 146818@openml
+  splits: [0.8, 0.1, 0.1]
+  splitter: 'lda'
+  splitter_args: [{'alpha': 0.5}]
+  consistent_label_distribution: True
+model:
+  type: lr
+  out_channels: 2
+train:
+  local_update_steps: 1
+  batch_or_epoch: epoch
+  optimizer:
+    lr: 0.01
+    weight_decay: 0.0
+criterion:
+  type: CrossEntropyLoss
+eval:
+  freq: 1
+  metrics: ['acc', 'correct', 'f1']
+  split: ['train', 'val', 'test']
+
+# Alg related
+nbafl:
+  use: False
+  mu: 0.1
+  epsilon: 20.
+  constant: 1.
+  w_clip: 0.1
+fedprox:
+  use: False
+  mu: 5.0
+fedopt:
+  use: False
+  optimizer:
+    lr: 0.5
+
+hpo:
+  ss: 'lr_ss.yaml'

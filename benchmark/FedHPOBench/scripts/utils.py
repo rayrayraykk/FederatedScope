@@ -75,3 +75,10 @@ def convert_yaml_to_cmd(cfg_path, num_device=8, num_trial_per_device=1, rp=3):
 
 if __name__ == '__main__':
     convert_yaml_to_cmd('femnist.yaml')
+    convert_yaml_to_cmd('31@openml_lr.yaml')
+    convert_yaml_to_cmd('53@openml_lr.yaml')
+    convert_yaml_to_cmd('3917@openml_lr.yaml')
+    convert_yaml_to_cmd('10101@openml_lr.yaml')
+    convert_yaml_to_cmd('146818@openml_lr.yaml')
+    convert_yaml_to_cmd('146821@openml_lr.yaml')
+    convert_yaml_to_cmd('146822@openml_lr.yaml')

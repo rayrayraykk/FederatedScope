@@ -25,7 +25,10 @@ def load_nlp_dataset(config=None):
 
     path = config.data.root
     name = config.data.type.lower()
-    transforms_funcs, _, _ = get_transform(config, 'torchtext')
+
+    # torchtext.transforms requires >= 0.12.0 and torch = 1.11.0,
+    # so we do not use `get_transform` in torchtext.
+    transforms_funcs = {}
 
     if name in ['shakespeare', 'subreddit']:
         dataset = LEAF_NLP(root=path,

@@ -49,7 +49,7 @@ class Lobby(Manager):
             if not self.get_cmd_from_pid(pid):
                 dead_pids.append(i)
         if dead_pids:
-            lobby.drop(dead_pids)
+            lobby = lobby.drop(dead_pids)
             self._save('lobby', lobby)
 
     def _check_user(self, user, is_root=False):
@@ -86,35 +86,38 @@ class Lobby(Manager):
             new_room_idx = 1
         cfg = args2yaml(args)
 
+        # Update cfg
+        cfg.distribute.server_port = self.find_free_port()
+
+        cmd_cfg = config2cmdargs(flatten_dict(cfg))
+
         room = {
             'idx': new_room_idx,
             'abstract': f'{cfg.data.type} {cfg.model.type}',  # TODO: prettify
-            'cfg': config2cmdargs(flatten_dict(cfg)),
+            'cfg': cmd_cfg,
             'password': password,
             'auth': auth,
-            'log_file': str(datetime.now().strftime('_%Y%m%d%H%M%S')) + '.out',
-            'port': self.find_free_port(),
+            'log_file': os.path.join(
+                'logs',
+                str(datetime.now().strftime('log_%Y%m%d%H%M%S')) + '.out'),
+            'port': cfg.distribute.server_port,
             'pid': None,  # default, to be updated after launch
             'cur_client': 0,
             'max_client': cfg.federate.client_num
         }
 
         # Launch FS
-        input_args = args.split(' ')
-        # TODO: add port!!!
-        cmd = ['nohup', 'python', '../../federatedscope/main.py'] + \
-            input_args + ['>', room['log_file']]
-        print(cmd)
-        p = subprocess.Popen(cmd,
-                             stdout=subprocess.DEVNULL,
-                             stderr=subprocess.DEVNULL)
+        input_args = [str(x) for x in cmd_cfg]
+        cmd = ['python', '../../federatedscope/main.py'] + input_args
+        log = open(room['log_file'], 'a')
+        p = subprocess.Popen(cmd, stdout=log, stderr=log)
         # Update pid
         room['pid'] = p.pid
 
         # Update lobby
         lobby.loc[len(lobby)] = room
         self._save('lobby', lobby)
-        return f"The room was created successfully with {room}."
+        return f"The room was created successfully with Room {room['idx']}."
 
     def display(self, auth):
         """
@@ -126,7 +129,6 @@ class Lobby(Manager):
         self._refresh_lobby()
         mask_key = ['cfg', 'password', 'auth', 'pid']  # Important information
         lobby = self._load('lobby')
-        print(lobby.columns)
         for mask in mask_key:
             del lobby[mask]
         return lobby.to_json()
@@ -140,9 +142,9 @@ class Lobby(Manager):
 
         self._refresh_lobby()
         lobby = self._load('lobby')
-        if int(idx) in list(lobby['idx']):
+        if idx in list(lobby['idx']):
             # Check the validity of the room
-            room = lobby.loc[lobby['idx'] == int(idx)].loc[0]
+            room = lobby.loc[lobby['idx'] == idx].loc[0]
             if room['cur_client'] < room['max_client']:
                 # Joinable, check auth and password
                 room_auth, user = room['auth'], auth['owner']
@@ -175,16 +177,19 @@ class Lobby(Manager):
             self._refresh_lobby()
             lobby = self._load('lobby')
 
-            room = lobby.loc[lobby['idx'] == int(idx)].loc[0]
-            room_auth, user = room['auth'], auth['owner']
-            if room_auth['owner'] == user:
-                try:
-                    os.kill(room['pid'], signal.SIGTERM)
-                except ProcessLookupError as error:
-                    pass
-                return f'Room {idx} shut down successfully.'
+            if len(lobby.loc[lobby['idx'] == idx]):
+                room = lobby.loc[lobby['idx'] == idx].iloc[0]
+                room_auth, user = room['auth'], auth['owner']
+                if room_auth['owner'] == user:
+                    try:
+                        os.kill(room['pid'], signal.SIGTERM)
+                    except ProcessLookupError:
+                        pass
+                    return f'Shut down room {idx} successfully.'
+                else:
+                    return 'You are not permitted'
             else:
-                return 'You are not permitted'
+                return 'Non-existent room ID.'
         else:
             if not self._check_user(auth['owner'], is_root=True):
                 return 'You are not permitted！'
@@ -193,7 +198,10 @@ class Lobby(Manager):
                 lobby = self._load('lobby')
                 for p in lobby['pid']:
                     try:
-                        os.kill(p, signal.SIGTERM)
+                        # os.kill(p, signal.SIGTERM)
+                        subprocess.Popen(['kill', '-9', f'{p}'],
+                                         stdout=subprocess.DEVNULL,
+                                         stderr=subprocess.DEVNULL)
                     except ProcessLookupError as error:
                         pass
                 return 'Shut down all rooms successfully.'

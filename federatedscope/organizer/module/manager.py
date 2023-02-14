@@ -53,12 +53,16 @@ class Manager(abc.ABC):
 
     @staticmethod
     def get_cmd_from_pid(pid):
-        # TODO: its format might be `[top] <defunct>`, to be fixed
         cmd = subprocess.Popen(f'ps -o cmd fp {pid}'.split(),
                                stdout=subprocess.PIPE).communicate()[0]
-        cmd = str(cmd).split("b'CMD\\n")[1]
-        if "\\n'" in cmd:
-            return cmd[:len("\\n'")]
+        cmd = str(cmd)
+        if 'b"CMD\\n' in cmd:
+            cmd = str(cmd).split('b"CMD\\n')[1]
+        elif "b'CMD\\n" in cmd:
+            cmd = str(cmd).split("b'CMD\\n")[1]
+
+        if "\\n'" or '\\n"' in cmd:
+            return cmd[:-3]
         else:
             return False
 

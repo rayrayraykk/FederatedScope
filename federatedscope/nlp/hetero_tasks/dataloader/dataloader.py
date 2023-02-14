@@ -119,7 +119,7 @@ def load_heteroNLP_data(config, client_cfgs):
 
             use_pretrain_task = config.model.stage == 'assign'
             use_contrastive = config.model.stage == 'contrast'
-            tokenizer = setup_tokenizer(config.model.model_type)
+            tokenizer = setup_tokenizer(config.model.type)
             data_collator = DataCollator(tokenizer=tokenizer) \
                 if use_pretrain_task else None
             is_debug = config.data.is_debug  # load a subset of data

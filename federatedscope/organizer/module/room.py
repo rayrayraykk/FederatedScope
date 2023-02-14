@@ -1,4 +1,5 @@
 import time
+import json
 
 import pandas as pd
 
@@ -28,22 +29,28 @@ class RoomManager(Manager):
             time.sleep(1)
             cnt += 1
         lobby = pd.read_json(result.get(timeout=1))
+
         if len(lobby) == 0:
             self.logger.info(
                 'No task available now. Please create a new task.')
         else:
+            oudated_room = []
             for i in range(len(self.df)):
                 room = self.df.loc[i]
-                # TODO: update self.df
-                print(room)
+                if room['idx'] in lobby['idx'] and room['abstract'] in \
+                        lobby['abstract']:
+                    pass
+                else:
+                    oudated_room.append(i)
+            self.df = self.df.drop(oudated_room)
 
-        # Filter by condition
-        if condition:
-            # convert `str` to `dict`
-            for key, value in condition.items():
-                lobby = lobby.loc[lobby[key] == value]
+            # Filter by condition
+            if condition:
+                # convert `str` to `dict`
+                for key, value in condition.items():
+                    lobby = lobby.loc[lobby[key] == value]
 
-        self.logger.info(lobby)
+            self.logger.info(lobby)
 
     def add(self, yaml, opts='', password='123'):
         opts = opts.split(' ')
@@ -81,11 +88,14 @@ class RoomManager(Manager):
             time.sleep(1)
             cnt += 1
         info = result.get(timeout=1)
-        if isinstance(info, pd.Series):
-            room = info
-            self.logger.info(room)
-            # TODO: add to authorized Rooms
-        else:
+        try:
+            room = json.loads(s=info)
+            self.logger.info(f'Get authorization of room {idx}.')
+            if room['idx'] in self.df['idx']:
+                self.df.loc[self.df['idx'] == room['idx']] = room
+            else:
+                self.df.loc[len(self.df)] = room
+        except:
             self.logger.info(info)
 
     def shutdown(self, idx=None):
@@ -112,8 +122,14 @@ if __name__ == '__main__':
 
     # Test functions
     rm.display()
-    rm.add('scripts/example_configs/femnist.yaml', password=12345)
+    rm.add(
+        'scripts/distributed_scripts/distributed_configs'
+        '/distributed_femnist_server.yaml',
+        password=12345)
     rm.display()
     rm.authorize(1, 12345)
+    rm.authorize(1, 12345)
+    rm.display()
     rm.shutdown(1)
+    rm.shutdown(2)
     rm.shutdown()

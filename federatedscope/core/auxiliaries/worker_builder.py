@@ -46,9 +46,10 @@ def get_client_cls(cfg):
         if worker_class is not None:
             return worker_class['client']
 
-    if cfg.hpo.fedex.use:
-        from federatedscope.autotune.fedex import FedExClient
-        return FedExClient
+    if cfg.hpo.use:
+        if cfg.hpo.fedex.use:
+            from federatedscope.autotune.fedex import FedExClient
+            return FedExClient
 
     if cfg.vertical.use:
         if cfg.vertical.algo == 'lr':
@@ -135,9 +136,10 @@ def get_server_cls(cfg):
         if worker_class is not None:
             return worker_class['server']
 
-    if cfg.hpo.fedex.use:
-        from federatedscope.autotune.fedex import FedExServer
-        return FedExServer
+    if cfg.hpo.use:
+        if cfg.hpo.fedex.use:
+            from federatedscope.autotune.fedex import FedExServer
+            return FedExServer
 
     if cfg.attack.attack_method.lower() in ['dlg', 'ig']:
         from federatedscope.attack.worker_as_attacker.server_attacker import\

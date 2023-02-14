@@ -8,12 +8,12 @@ from contextlib import closing
 
 
 class Manager(abc.ABC):
-    def __init__(self, columns, user, verbose=0):
+    def __init__(self, columns, user, white_list=[], black_list=[], verbose=0):
         self._verbose = verbose
         self.auth = {
             'owner': user,
-            'white_list': [],
-            'black_list': [],
+            'white_list': white_list,
+            'black_list': black_list,
         }
         self.df = pd.DataFrame(columns=columns)
 

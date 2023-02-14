@@ -18,3 +18,4 @@ ENV_NAME = 'test_org'
 ROOT_PATH = 'test_org'
 FS_VERSION = '0.2.1'
 TIMEOUT = 30
+USER = 'root'

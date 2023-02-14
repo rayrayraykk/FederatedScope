@@ -8,9 +8,11 @@ from federatedscope.organizer.cfg_client import server_ip as SERVER_IP
 
 
 class ECSManager(Manager):
-    def __init__(self, user, logger):
+    def __init__(self, user, logger, white_list=[], black_list=[]):
         super(ECSManager, self).__init__(['ip', 'user', 'password', 'manager'],
-                                         user=user)
+                                         user=user,
+                                         white_list=white_list,
+                                         black_list=black_list)
         self.logger = logger
 
     def display(self, condition={}):

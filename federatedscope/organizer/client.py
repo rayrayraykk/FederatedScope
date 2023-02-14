@@ -1,95 +1,82 @@
+import sys
 import gradio as gr
 
-# from federatedscope.organizer.module.event_handler import EventHandler
+from celery import Celery
+from datetime import datetime
 
-# Rules: Naming Components `tab1_tab2_label_module`
+import federatedscope.organizer.cfg_client as cfg_client
+from federatedscope.organizer.module.room import RoomManager
+from federatedscope.organizer.module.ecs import ECSManager
+from federatedscope.organizer.module.logging import FileLogger, GRLogger
 
-# TODO: add manager
+IS_OPEN_ACCORDIN = False
+LOG_NAME = str(datetime.now().strftime('organizer_%Y%m%d%H%M%S')) + '.log'
+
+
+def read_logs():
+    # Used for cache `sys.out`
+    sys.stdout.flush()
+    with open(LOG_NAME, "r") as f:
+        return f.read()
+
+
+# Initialization
+organizer = Celery()
+organizer.config_from_object(cfg_client)
+
+logger = GRLogger()
+room_manager = RoomManager(cfg_client.USER, organizer, logger)
+ecs_manager = ECSManager(cfg_client.USER, logger)
+
+sys.stdout = FileLogger(LOG_NAME)
+
+# TODO: delete this line
+gr.close_all()
 
 with gr.Blocks() as demo:
     gr.Markdown("Welcome to FederatedScope Cloud Demo!")
 
-    with gr.Tab("Task Runner"):
-        with gr.Box():  # "Basic settings"
-            gr.Markdown("Basic settings")
-            with gr.Row():
-                with gr.Box():
-                    data_text = gr.Markdown("Data")
-                    with gr.Tab("Choose"):
-                        data = gr.Dropdown(
-                            ['adult', 'credit', 'abalone', 'blog'],
-                            value=['adult'],
-                            label='vFL data')
-                    with gr.Tab("Upload"):
-                        data_text = gr.Markdown("Data")
-                        data_upload_button = gr.UploadButton(
-                            "Click to Upload "
-                            "data",
-                            file_types=['file'],
-                            file_count="single")
-                opts = gr.Textbox(label='Opts')
-        with gr.Box():  # "Tuning setting"
-            gr.Markdown("Tuning setting")
-            optimizer = gr.Dropdown(['rs', 'bo_rf', 'bo_gp'],
-                                    value=['bo_rf'],
-                                    label='Optimizer')
-            with gr.Row():
-                model = gr.Dropdown(['lr', 'xgb', 'gbdt'],
-                                    value=['lr', 'xgb'],
-                                    multiselect=True,
-                                    label='Model Selection')
-                feat = gr.Dropdown([
-                    '', 'min_max_norm', 'instance_norm', 'standardization',
-                    'log_transform', 'uniform_binning', 'variance_filter',
-                    'iv_filter'
-                ],
-                                   value=[
-                                       '', 'min_max_norm', 'instance_norm',
-                                       'standardization', 'log_transform',
-                                       'uniform_binning', 'variance_filter',
-                                       'iv_filter'
-                                   ],
-                                   multiselect=True,
-                                   label='Feature Engineer')
-            with gr.Box():
-                lr = gr.Markdown("Learning Rate")
-                with gr.Row():
-                    min_lr = gr.Slider(0, 1, value=0.1, label='Minimum')
-                    max_lr = gr.Slider(0, 1, value=0.8, label='Maximum')
-            with gr.Box():
-                yaml = gr.Markdown("Yaml (optional)")
-                upload_button = gr.UploadButton("Click to Upload a Yaml",
-                                                file_types=['file'],
-                                                file_count="single")
-            upload_button.upload(None, upload_button, None)
+    with gr.Tab("Lobby"):
+        with gr.Accordion("Display Rooms", open=True):
+            lobby_disp_condition = gr.Textbox(label='condition (optinal)',
+                                              ines=1)
+            lobby_disp_btn = gr.Button("Display Rooms")
+            lobby_disp_btn.click(room_manager.display,
+                                 inputs=lobby_disp_condition,
+                                 outputs=None)
 
-        # with gr.Row():
-        #     task_input = [gr.Textbox(label='Yaml'), gr.Textbox(label='Opts')]
+        with gr.Accordion("Get Authorization", open=IS_OPEN_ACCORDIN):
+            gr.Markdown("...")
 
-        task_input = [data, opts, model, feat, min_lr, max_lr, optimizer]
-        task_button = gr.Button("Launch")
+        with gr.Accordion("Create Room", open=IS_OPEN_ACCORDIN):
+            gr.Markdown("...")
 
-    with gr.Tab("ECS Manager"):
-        with gr.Row():
-            ecs_input = [
-                gr.Textbox(label='IP'),
-                gr.Textbox(label='User'),
-                gr.Textbox(label='Password', type='password')
-            ]
-        ecs_button = gr.Button("Add")
+        with gr.Accordion("Matching", open=IS_OPEN_ACCORDIN):
+            gr.Markdown("...")
 
-    output = gr.Textbox(label='Logs', lines=10, interactive=False)
+        with gr.Accordion("Shutdown", open=IS_OPEN_ACCORDIN):
+            gr.Markdown("...")
 
-    shutdown_button = gr.Button("Shutdown")
+    with gr.Tab("ECS"):
+        with gr.Accordion("Display ECS", open=True):
+            gr.Markdown("...")
 
-    # # Event
-    # task_button.click(handler.handle_create_task,
-    #                   inputs=task_input,
-    #                   outputs=output)
-    # ecs_button.click(handler.handle_add_ecs, inputs=ecs_input,
-    # outputs=output)
-    # shutdown_button.click(handler.handle_shut_down,
-    #                       inputs=None,
-    #                       outputs=output)
+        with gr.Accordion("Add ECS", open=IS_OPEN_ACCORDIN):
+            gr.Markdown("...")
 
-demo.launch(share=False, server_name="0.0.0.0", debug=True, server_port=7860)
+        with gr.Accordion("Shutdown ECS", open=IS_OPEN_ACCORDIN):
+            gr.Markdown("...")
+
+        with gr.Accordion("Join Room", open=IS_OPEN_ACCORDIN):
+            gr.Markdown("...")
+
+    # log block for gradio
+    logs = gr.Textbox(label='Log')
+    demo.load(read_logs, None, logs, every=1)
+
+# demo.queue().launch()
+
+demo.queue().launch(share=False,
+                    server_name="0.0.0.0",
+                    debug=True,
+                    server_port=7860)

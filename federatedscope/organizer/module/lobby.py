@@ -11,12 +11,19 @@ from federatedscope.organizer.utils import args2yaml, config2cmdargs, \
 
 
 class Lobby(Manager):
-    def __init__(self, host='localhost', port=6379, db=0):
+    def __init__(self,
+                 host='localhost',
+                 port=6379,
+                 db=0,
+                 white_list=[],
+                 black_list=[]):
         super(Lobby, self).__init__([
             'idx', 'abstract', 'cfg', 'password', 'auth', 'log_file', 'port',
             'pid', 'cur_client', 'max_client'
         ],
-                                    user='root')
+                                    user='root',
+                                    white_list=white_list,
+                                    black_list=black_list)
         self.database = redis.StrictRedis(host=host, port=port, db=db)
         self._save('lobby', self.df)
         self._save('auth', self.auth)

@@ -174,6 +174,22 @@ def wrap_server_for_evaluation(server):
             formatted_logs['feature_importance'] = self.feature_importance
             logger.info(formatted_logs)
 
+            # Used for wandb
+            if self._cfg.wandb.use:
+                try:
+                    import wandb
+                    baseline_log = {}
+                    new_log = {}
+                    log = {'epoch': state, **self.metrics, **baseline_log}
+                    for key, value in log.items():
+                        new_log[f'{self._cfg.hpo.trial_index}:{key}'] = \
+                            value
+                    wandb.log(new_log)
+                except ImportError:
+                    logger.error("cfg.wandb.use=True "
+                                 "but not install the wandb package")
+                    exit()
+
             if self.state + 1 == self._cfg.model.num_of_trees:
                 self.terminate()
 

@@ -13,6 +13,7 @@ def extend_hpo_cfg(cfg):
     # hpo related options
     # ---------------------------------------------------------------------- #
     cfg.hpo = CN()
+    cfg.hpo.use = False
     cfg.hpo.trial_index = 0
     cfg.hpo.working_folder = 'hpo'
     cfg.hpo.ss = ''
@@ -55,6 +56,13 @@ def extend_hpo_cfg(cfg):
     cfg.hpo.table.eps = 0.1
     cfg.hpo.table.num = 27
     cfg.hpo.table.idx = 0
+
+    # HPO Diagnosis
+    cfg.hpo.diagnosis = CN()
+    cfg.hpo.diagnosis.use = False
+    cfg.hpo.diagnosis.landscape_1d = []  # From one hyper_param, eg. [lr, wd]
+
+    cfg.hpo.trial_index = 0
 
     # --------------- register corresponding check function ----------
     cfg.register_cfg_check_fun(assert_hpo_cfg)

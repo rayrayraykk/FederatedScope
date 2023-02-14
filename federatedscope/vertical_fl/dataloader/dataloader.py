@@ -1,7 +1,7 @@
+import copy
 import numpy as np
 
 from federatedscope.vertical_fl.dataset import Adult, Abalone, Credit, Blog
-from federatedscope.core.data.wrap_dataset import WrapDataset
 
 VERTICAL_DATASET = {
     'adult': Adult,
@@ -47,7 +47,7 @@ def load_vertical_data(config=None, generate=False):
         INSTANCE_NUM = 1000
         TRAIN_SPLIT = 0.9
 
-        total_dims = np.sum(config.vertical.dims)
+        total_dims = config.vertical.dims[-1]
         theta = np.random.uniform(low=-1.0, high=1.0, size=(total_dims, 1))
         x = np.random.choice([-1.0, 1.0, -2.0, 2.0, -3.0, 3.0],
                              size=(INSTANCE_NUM, total_dims))
@@ -70,7 +70,7 @@ def load_vertical_data(config=None, generate=False):
         data[1] = dict()
         data[1]['train'] = {'x': x[:train_num, :config.vertical.dims[0]]}
         data[1]['val'] = None
-        data[1]['test'] = test_data
+        data[1]['test'] = copy.deepcopy(test_data)
 
         # For Client #2
         data[2] = dict()
@@ -79,6 +79,6 @@ def load_vertical_data(config=None, generate=False):
             'y': y[:train_num]
         }
         data[2]['val'] = None
-        data[2]['test'] = test_data
+        data[2]['test'] = copy.deepcopy(test_data)
 
         return data, config

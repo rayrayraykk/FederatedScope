@@ -1,9 +1,18 @@
+import copy
+import time
 import yaml
 import logging
+import numpy as np
 import pandas as pd
 import ConfigSpace as CS
 
+from typing import List
+
+from federatedscope.autotune.draw import draw_interation, draw_landscape, \
+    draw_pca, draw_info, draw_para_coo
+
 logger = logging.getLogger(__name__)
+IS_BETTER_VIEW = False
 
 
 def generate_hpo_exp_name(cfg):
@@ -279,6 +288,25 @@ def eval_in_fs(cfg, config=None, budget=0, client_cfgs=None, trial_index=0):
         # specify the budget
         trial_cfg.merge_from_list(["federate.total_round_num", int(budget)])
 
+    # WandB
+    if cfg.wandb.use:
+        try:
+            import wandb
+            # config_str = f'{readable_args(config)}'.replace(',', ',\n')
+            inter_fig = wandb.Image(
+                draw_interation(info=f'Launch FS runner. \n'
+                                f'Configuration is \n'
+                                f' {readable_args(config)}',
+                                arrow_dir='down'))
+            wandb.log({'inter_fig': inter_fig})
+            # For visualization
+            if IS_BETTER_VIEW:
+                time.sleep(5)
+        except ImportError:
+            logger.error("cfg.wandb.use=True but "
+                         "not install the wandb package")
+            exit()
+
     setup_seed(trial_cfg.seed)
     data, modified_config = get_data(config=trial_cfg.clone())
     trial_cfg.merge_from_other_cfg(modified_config)
@@ -294,7 +322,6 @@ def eval_in_fs(cfg, config=None, budget=0, client_cfgs=None, trial_index=0):
 
 
 def config_bool2int(config):
-    # TODO: refactor bool/str to int
     import copy
     new_dict = copy.deepcopy(config)
     for key, value in new_dict.items():
@@ -303,12 +330,99 @@ def config_bool2int(config):
     return new_dict
 
 
-def log2wandb(trial, config, results, trial_cfg):
+def readable_args(obj):
+    name_map = {
+        'train.optimizer.lr': 'Learning Rate',
+        'model.num_of_trees': 'Number of trees',
+        'vertical.algo': 'Model selection',
+        'feat_engr.type': 'Feature engineer',
+        'vertical.dims': 'Data selection',
+        'federate.total_round_num': 'Number of rounds'
+    }
+    obj = copy.deepcopy(obj)
+    if isinstance(obj, dict):
+        for key in name_map:
+            if key in obj:
+                obj[name_map[key]] = obj.pop(key)
+    elif isinstance(obj, pd.DataFrame):
+        obj = copy.deepcopy(obj)
+        obj.rename(columns=name_map, inplace=True)
+    elif isinstance(obj, List):
+        for i, x in enumerate(obj):
+            if x in name_map.keys():
+                obj[i] = name_map[x]
+    return obj
+
+
+def log2wandb(trial, config, results, trial_cfg, df):
+    import io
     import wandb
+    from PIL import Image
+
+    if 'acc' in trial_cfg.hpo.metric:
+        metric = 'Accuracy'
+    elif 'loss' in trial_cfg.hpo.metric:
+        metric = 'Loss'
+    else:
+        metric = trial_cfg.hpo.metric
+
+    config = readable_args(config)
+    df = readable_args(df).fillna(value=np.nan)
+
+    # Base information
     key1, key2 = trial_cfg.hpo.metric.split('.')
     log_res = {
         'Trial_index': trial,
         'Config': config_bool2int(config),
         trial_cfg.hpo.metric: results[key1][key2],
     }
-    wandb.log(log_res)
+
+    # Diagnosis with 1d landscape
+    landscape_1d = {}
+    if trial_cfg.hpo.diagnosis.use:
+        landscape_1d = draw_landscape(
+            df, readable_args(trial_cfg.hpo.diagnosis.landscape_1d),
+            trial_cfg.hpo.larger_better, metric)
+        landscape_1d = {x: wandb.Image(landscape_1d[x]) for x in landscape_1d}
+
+    # PCA of exploration
+    if trial_cfg.hpo.diagnosis.use:
+        pca = wandb.Image(draw_pca(df, metric))
+
+    # Text info guidance
+    if trial_cfg.hpo.diagnosis.use:
+        info = wandb.Image(draw_info(trial, config, trial_cfg.hpo.metric))
+
+    # Parallel coordinates
+    para_coo = wandb.Image(Image.open(io.BytesIO(draw_para_coo(df))))
+
+    # Interaction
+    inter_fig = wandb.Image(
+        draw_interation(arrow_dir='up',
+                        info=f'Feedback results with performance: '
+                        f'{round(results[key1][key2], 4)}'))
+
+    # Baseline
+    # TODO: remove this or add read baseline
+    base_perfs = [
+        0.63 + x * 0.12 / trial_cfg.hpo.sha.iter
+        for x in range(trial_cfg.hpo.sha.iter)
+    ]
+    base_perf = base_perfs[len(df)]
+
+    wandb.log({
+        'pca': pca,
+        'info': info,
+        'delimiter': 1.0,
+        'best_perf': np.max(df['performance'])
+        if trial_cfg.hpo.larger_better else np.min(df['performance']),
+        'base_perf': base_perf,
+        'para_coo': para_coo,
+        'inter_fig': inter_fig,
+        **log_res,
+        **landscape_1d
+    })
+
+    # For visualization
+    if IS_BETTER_VIEW:
+        time.sleep(5)

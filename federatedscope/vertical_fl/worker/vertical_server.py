@@ -46,6 +46,13 @@ class vFLServer(Server):
 
     def _init_data_related_var(self):
         self.dims = [0] + self.vertical_dims
+
+        # Update `self.data` in server according to `self.dims`
+        for split in ['train', 'val', 'test']:
+            if split in self.data.keys():
+                if self.data[split] is not None and 'x' in self.data[split]:
+                    self.data[split]['x'] = self.data[split]['x'][:, :self.
+                                                                  dims[-1]]
         self.model = get_model(self._cfg.model, self.data)
         self.theta = self.model.state_dict()['fc.weight'].numpy().reshape(-1)
 
@@ -100,6 +107,21 @@ class vFLServer(Server):
                 role='Server #',
                 forms=self._cfg.eval.report)
             logger.info(formatted_logs)
+            # Used for wandb
+            if self._cfg.wandb.use:
+                try:
+                    import wandb
+                    baseline_log = {}
+                    new_log = {}
+                    log = {'epoch': self.state, **metrics, **baseline_log}
+                    for key, value in log.items():
+                        new_log[f'{self._cfg.hpo.trial_index}:{key}'] = \
+                          value
+                    wandb.log(new_log)
+                except ImportError:
+                    logger.error("cfg.wandb.use=True "
+                                 "but not install the wandb package")
+                    exit()
 
         if self.state < self.total_round_num:
             # Move to next round of training
@@ -117,6 +139,21 @@ class vFLServer(Server):
                 role='Server #',
                 forms=self._cfg.eval.report)
             logger.info(formatted_logs)
+            # Used for wandb
+            if self._cfg.wandb.use:
+                try:
+                    import wandb
+                    baseline_log = {}
+                    new_log = {}
+                    log = {'epoch': self.state, **metrics, **baseline_log}
+                    for key, value in log.items():
+                        new_log[f'{self._cfg.hpo.trial_index}:{key}'] = \
+                          value
+                    wandb.log(new_log)
+                except ImportError:
+                    logger.error("cfg.wandb.use=True but "
+                                 "not install the wandb package")
+                    exit()
 
     def evaluate(self):
         test_x = self.data['test']['x']

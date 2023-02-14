@@ -1,3 +1,8 @@
+# How to use:
+# python federatedscope/hpo.py --cfg \
+#  federatedscope/autotune/baseline/fedhpo_vfl.yaml wandb.use \
+#  True wandb.name_project vfl_demo wandb.name_user vfl_demo
+
 use_gpu: False
 device: 0
 backend: torch
@@ -11,6 +16,7 @@ model:
   lambda_: 0.1
   gamma: 0
   num_of_trees: 10
+  max_tree_depth: 3
 train:
   optimizer:
     lr: 0.5
@@ -36,16 +42,20 @@ vertical:
   dims: [7, 14]
   algo: 'xgb'
 eval:
-  freq: 5
+  freq: 1
   best_res_update_round_wise_key: test_loss
 hpo:
-  scheduler: sha
+  scheduler: bo_rf
   num_workers: 0
-  init_cand_num: 9
+  init_cand_num: 50
   ss: 'federatedscope/autotune/baseline/vfl_ss.yaml'
   sha:
-    budgets: [ 3, 9 ]
+    budgets: [ 50, 50 ]
     elim_rate: 3
-    iter: 1
-  metric: 'server_global_eval.test_loss'
-  working_folder: sha
+    iter: 150
+  metric: 'server_global_eval.test_acc'
+  working_folder: rs
+  # Enable wandb
+  diagnosis:
+    use: True
+    landscape_1d: ['feat_engr.type', 'vertical.algo', 'vertical.dims', 'model.num_of_trees']

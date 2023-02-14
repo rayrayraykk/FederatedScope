@@ -161,6 +161,7 @@ def init_wandb(cfg):
                job_type=method_name,
                name=exp_name,
                notes=f"{method_name}, {exp_name}")
+    # wandb_url = wandb.run.get_url()
 
 
 def logfile_2_wandb_dict(exp_log_f, raw_out=True):
@@ -201,7 +202,8 @@ def logline_2_wandb_dict(exp_stop_normal, line, log_res_best, raw_out):
         best_key, best_val = parse_res[-2], parse_res[-1]
         # client_best_individual.test_acc -> client_best_individual/test_acc
         best_key = best_key.replace("Find new best result for",
-                                    "").replace(".", "/")
+                                    "").replace(".",
+                                                "/").replace("nan", "NaN")
         log_res_best[best_key.strip()] = float(best_val.strip())
 
     if "Find new best result:" in line:
@@ -212,7 +214,8 @@ def logline_2_wandb_dict(exp_stop_normal, line, log_res_best, raw_out):
         # 133.54320907592773, 'test_acc': 0.05555555555555555, 'val_total':
         # 36, 'val_avg_loss': 3.693923234939575, 'val_correct': 4.0,
         # 'val_acc': 0.1111111111111111}}
-        line = line.replace("Find new best result: ", "").replace("\'", "\"")
+        line = line.replace("Find new best result: ",
+                            "").replace("\'", "\"").replace("nan", "NaN")
         res = json.loads(s=line)
         for best_type_key, val in res.items():
             for inner_key, inner_val in val.items():

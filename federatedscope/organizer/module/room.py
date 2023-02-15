@@ -34,7 +34,7 @@ class RoomManager(Manager):
 
         if len(lobby) == 0:
             self.logger.info(
-                'No task available now. Please create a new task.')
+                'No room available now. Please create a new room.')
         else:
             oudated_room = []
             for i in range(len(self.df)):
@@ -56,6 +56,7 @@ class RoomManager(Manager):
 
     def add(self, yaml, opts='', password='123'):
         opts = opts.split(' ')
+        yaml = yaml.name
         cfg = global_cfg.clone()
         if yaml.endswith('.yaml'):
             cfg.merge_from_file(yaml)
@@ -100,9 +101,10 @@ class RoomManager(Manager):
         except:
             self.logger.info(info)
 
-    def matching(self, yaml, opts='', password='123'):
+    def matching(self, yaml, opts='', password='123', **kwargs):
         # TODO: add new task type
         opts = opts.split(' ')
+        yaml = yaml.name
         cfg = global_cfg.clone()
         if yaml.endswith('.yaml'):
             cfg.merge_from_file(yaml)
@@ -128,8 +130,10 @@ class RoomManager(Manager):
         msg = result.get(timeout=1)
         self.logger.info(msg)
 
-    def shutdown(self, idx=None):
+    def shutdown(self, idx=0):
         # Shut down room
+        if idx == 0:
+            idx = None
         result = self.organizer.send_task('server.shutdown', [idx, self.auth])
         cnt = 0
         while (not result.ready()) and cnt < TIMEOUT:

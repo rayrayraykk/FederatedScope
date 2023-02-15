@@ -1,1 +1,1 @@
-Dir to save logs.
+Directory where client's logs are saved.

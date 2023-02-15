@@ -8,12 +8,18 @@ from federatedscope.organizer.cfg_client import server_ip as SERVER_IP
 
 
 class ECSManager(Manager):
-    def __init__(self, user, logger, white_list=[], black_list=[]):
+    def __init__(self,
+                 user,
+                 logger,
+                 room_manager,
+                 white_list=[],
+                 black_list=[]):
         super(ECSManager, self).__init__(['ip', 'user', 'password', 'manager'],
                                          user=user,
                                          white_list=white_list,
                                          black_list=black_list)
         self.logger = logger
+        self.room_manager = room_manager
 
     def display(self, condition={}):
         if condition:
@@ -46,11 +52,12 @@ class ECSManager(Manager):
                 break
         self.df.drop(i)
 
-    def join(self, lobby, idx, ip, yaml, opts):
+    def join(self, idx, ip, opts):
+        lobby = self.room_manager.df
         try:
             room = lobby.loc[lobby['idx'] == ip].iloc[0]
         except:
-            return f'Room {idx} not found.'
+            return f'Room {idx} not found or authorized.'
 
         try:
             manager = self.df.loc[self.df['ip'] == ip].iloc[0]
@@ -62,8 +69,6 @@ class ECSManager(Manager):
         cfg.merge_from_list(room_cfg)
 
         # Merge other opts and convert to command string
-        if yaml.endswith('.yaml'):
-            cfg.merge_from_file(yaml)
         if len(opts):
             opts = opts.split(' ')
             cfg.merge_from_list(opts)

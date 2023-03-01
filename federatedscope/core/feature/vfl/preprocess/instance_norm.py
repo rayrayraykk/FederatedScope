@@ -60,7 +60,6 @@ def wrap_instance_norm_server(worker):
                 instance_mean[split] = instance_mean[split][
                     'sum'] / self._cfg.vertical.dims[-1]
             logger.info('Server send instance_mean to clients')
-            print(instance_mean, self._cfg.vertical.dims[-1])
             self.global_mean = instance_mean
             self.comm_manager.send(
                 Message(msg_type='instance_mean',
@@ -146,8 +145,6 @@ def wrap_instance_norm_client(worker):
                 if split_data is not None and 'x' in split_data:
                     content[split] = self.ss_manager.secret_split(
                         {'sum': np.sum(split_data['x'], axis=1)})
-                    print(np.max(split_data['x']))
-                    print(1, split, self.ID, np.sum(split_data['x'], axis=1))
         # Self-hosted ss_instance_sum
         self.msg_buffer['ss_instance_sum'][self.ID] = {
             key: value[self.ID - 1]
@@ -210,11 +207,6 @@ def wrap_instance_norm_client(worker):
             if hasattr(self.data, split):
                 split_data = getattr(self.data, split)
                 if split_data is not None and 'x' in split_data:
-                    for each in np.reshape(feat_mean[split], -1):
-                        if abs(each) > 100:
-                            print(each)
-                    print(222,
-                          self.ss_manager.secret_split({'a': [1052072880724]}))
                     content[split] = self.ss_manager.secret_split({
                         'sum_norm_square': np.sum(
                             (split_data['x'].T - feat_mean[split]).T**2,

@@ -67,14 +67,17 @@ class BaseRunner(object):
         self.unseen_clients_id = []
         self.feat_engr_wrapper_client, self.feat_engr_wrapper_server = \
             get_feat_engr_wrapper(config)
-        if self.cfg.federate.unseen_clients_rate > 0:
-            self.unseen_clients_id = np.random.choice(
-                np.arange(1, self.cfg.federate.client_num + 1),
-                size=max(
-                    1,
-                    int(self.cfg.federate.unseen_clients_rate *
-                        self.cfg.federate.client_num)),
-                replace=False).tolist()
+        if len(self.cfg.federate.unseen_clients_idx):
+            self.unseen_clients_id = self.cfg.federate.unseen_clients_idx
+        else:
+            if self.cfg.federate.unseen_clients_rate > 0:
+                self.unseen_clients_id = np.random.choice(
+                    np.arange(1, self.cfg.federate.client_num + 1),
+                    size=max(
+                        1,
+                        int(self.cfg.federate.unseen_clients_rate *
+                            self.cfg.federate.client_num)),
+                    replace=False).tolist()
         # get resource information
         self.resource_info = get_resource_info(
             config.federate.resource_info_file)
@@ -594,14 +597,17 @@ class FedRunner(object):
                                       specified_device=self.cfg.device)
 
         self.unseen_clients_id = []
-        if self.cfg.federate.unseen_clients_rate > 0:
-            self.unseen_clients_id = np.random.choice(
-                np.arange(1, self.cfg.federate.client_num + 1),
-                size=max(
-                    1,
-                    int(self.cfg.federate.unseen_clients_rate *
-                        self.cfg.federate.client_num)),
-                replace=False).tolist()
+        if len(self.cfg.federate.unseen_clients_idx):
+            self.unseen_clients_id = self.cfg.federate.unseen_clients_idx
+        else:
+            if self.cfg.federate.unseen_clients_rate > 0:
+                self.unseen_clients_id = np.random.choice(
+                    np.arange(1, self.cfg.federate.client_num + 1),
+                    size=max(
+                        1,
+                        int(self.cfg.federate.unseen_clients_rate *
+                            self.cfg.federate.client_num)),
+                    replace=False).tolist()
         # get resource information
         self.resource_info = get_resource_info(
             config.federate.resource_info_file)

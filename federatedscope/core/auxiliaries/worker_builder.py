@@ -46,6 +46,10 @@ def get_client_cls(cfg):
         if worker_class is not None:
             return worker_class['client']
 
+    if cfg.matching.use:
+        if cfg.matching.method.lower() == 'pad':
+            from federatedscope.core.matching.pad import PADClient
+            return PADClient
     if cfg.hpo.fedex.use:
         from federatedscope.autotune.fedex import FedExClient
         return FedExClient
@@ -141,6 +145,10 @@ def get_server_cls(cfg):
         if worker_class is not None:
             return worker_class['server']
 
+    if cfg.matching.use:
+        if cfg.matching.method.lower() == 'pad':
+            from federatedscope.core.matching.pad import PADServer
+            return PADServer
     if cfg.hpo.fedex.use:
         from federatedscope.autotune.fedex import FedExServer
         return FedExServer

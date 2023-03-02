@@ -54,4 +54,4 @@ if __name__ == '__main__':
                         client_class=get_client_cls(init_cfg),
                         config=init_cfg.clone(),
                         client_configs=client_cfgs)
-    _ = runner.run()
+    results = runner.run()

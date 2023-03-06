@@ -15,6 +15,7 @@ def extend_matching_cfg(cfg):
     cfg.matching.use = False  # If True, return similarity of each client
 
     cfg.matching.method = ''
+    cfg.matching.target_client_idx = 1
     cfg.matching.round = 1
     cfg.matching.split = 'val'
 
@@ -33,6 +34,8 @@ def assert_matching_cfg(cfg):
         cfg.model.out_channels = 2
         cfg.eval.freq = cfg.matching.round
         cfg.early_stop.patience = 0
+        cfg.federate.make_global_eval = False
+        cfg.federate.merge_test_data = False
 
 
 register_config("matching", extend_matching_cfg)

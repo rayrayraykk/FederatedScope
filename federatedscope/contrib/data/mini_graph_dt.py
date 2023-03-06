@@ -3,14 +3,14 @@ import numpy as np
 
 from federatedscope.register import register_data
 
-# Run with mini_graph_dt:
+# Run with mini_graph_dc:
 # python federatedscope/main.py --cfg \
 # federatedscope/gfl/baseline/mini_graph_dc/fedavg.yaml --client_cfg \
 # federatedscope/gfl/baseline/mini_graph_dc/fedavg_per_client.yaml
 # Test Accuracy: ~0.7
 
 
-def load_mini_graph_dt(config, client_cfgs=None):
+def load_mini_graph_dc(config, client_cfgs=None):
     import torch
     from torch_geometric.data import InMemoryDataset, Data
     from torch_geometric.datasets import TUDataset, MoleculeNet
@@ -19,7 +19,7 @@ def load_mini_graph_dt(config, client_cfgs=None):
     from federatedscope.core.data import DummyDataTranslator
 
     class MiniGraphDCDataset(InMemoryDataset):
-        NAME = 'mini_graph_dt'
+        NAME = 'mini_graph_dc'
         DATA_NAME = ['BACE', 'BBBP', 'CLINTOX', 'ENZYMES', 'PROTEINS_full']
         IN_MEMORY_DATA = {}
 
@@ -155,10 +155,10 @@ def load_mini_graph_dt(config, client_cfgs=None):
     return translator(datadict), config
 
 
-def call_mini_graph_dt(config, client_cfgs):
+def call_mini_graph_dc(config, client_cfgs):
     if config.data.type == "mini-graph-dc":
-        data, modified_config = load_mini_graph_dt(config, client_cfgs)
+        data, modified_config = load_mini_graph_dc(config, client_cfgs)
         return data, modified_config
 
 
-register_data("mini-graph-dc", call_mini_graph_dt)
+register_data("mini-graph-dc", call_mini_graph_dc)

@@ -31,10 +31,17 @@ class PADServer(Server):
               self).__init__(ID, state, config, data, model, client_num,
                              total_round_num, device, strategy, **kwargs)
         self.init_models = [copy.deepcopy(x) for x in self.models]
-        # Client 1 is the master to match others
-        self.candidates_id = 1
+
+        # Target client id for matching with other clients
+        self.target_client_idx = self._cfg.matching.target_client_idx
         self.sample_client_num = 2
-        self._total_round_num = self._cfg.matching.round * self.client_num
+
+        self.candidates_ids = [
+            x for x in range(1, self.client_num + 1)
+            if x != self.target_client_idx
+        ]
+        self._total_round_num = self._cfg.matching.round * \
+            (self.client_num - 1)
 
     def broadcast_model_para(self,
                              msg_type='model_para',
@@ -42,20 +49,24 @@ class PADServer(Server):
                              filter_unseen_clients=True):
         if msg_type == 'model_para' and \
                 self.state % self._cfg.matching.round == 0:
-            self.candidates_id += 1
-            self.unseen_clients_id = [x for x in range(2, self.client_num + 1)]
-            if self.candidates_id in self.unseen_clients_id:
-                self.unseen_clients_id.remove(self.candidates_id)
-            else:
-                self.save_best_results()
-                self.terminate(msg_type='finish')
-                return
-
+            self.unseen_clients_id = list(
+                set(self.candidates_ids) - set([
+                    self.candidates_ids[self.state // self._cfg.matching.round]
+                ]))
             for model, init_model in zip(self.models, self.init_models):
                 model.load_state_dict(init_model.state_dict())
         super(PADServer,
               self).broadcast_model_para(msg_type, sample_client_num,
                                          filter_unseen_clients)
+
+    def save_best_results(self):
+        super(PADServer, self).save_best_results()
+        key = f'{self._cfg.matching.split}_acc'
+        try:
+            logger.info(f"Similarity: "
+                        f"{self.history_results['Results_weighted_avg'][key]}")
+        except KeyError:
+            pass
 
 
 class PADClient(Client):

@@ -1,6 +1,7 @@
 # For test this module: python federatedscope/main.py --cfg \
 # federatedscope/cv/baseline/fedavg_convnet2_on_cifar10.yaml matching.use \
-# True matching.method pad data.splits "[0.9, 0.1, 0.0]"
+# True matching.method pad data.splits "[0.9, 0.1, 0.0]" data.splitter_args
+# "[{'alpha': 1.0}]"
 
 import copy
 import torch
@@ -73,7 +74,7 @@ class PADServer(Server):
             sim = np.abs(
                 np.array(self.history_results['Results_weighted_avg'][key]) -
                 0.5) * -2 + 1
-            logger.info(f"PAD Similarity: {pad}, Similarity {sim}")
+            logger.info(f"PAD: {pad}, Similarity {sim}")
         except KeyError:
             pass
 

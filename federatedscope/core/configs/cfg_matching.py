@@ -31,11 +31,13 @@ def assert_matching_cfg(cfg):
         cfg.eval.split.append(cfg.matching.split)
 
     if cfg.matching.method.lower() == 'pad':
-        cfg.model.out_channels = 2
+        cfg.model.out_channels = 1
         cfg.eval.freq = cfg.matching.round
         cfg.early_stop.patience = 0
         cfg.federate.make_global_eval = False
         cfg.federate.merge_test_data = False
+        cfg.criterion.type = 'L1Loss'
+        cfg.eval.metrics = ['loss']
 
 
 register_config("matching", extend_matching_cfg)

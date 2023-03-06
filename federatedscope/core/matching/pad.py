@@ -1,5 +1,11 @@
+# For test this module: python federatedscope/main.py --cfg \
+# federatedscope/cv/baseline/fedavg_convnet2_on_cifar10.yaml matching.use \
+# True matching.method pad data.splits "[0.9, 0.1, 0.0]"
+
 import copy
+import torch
 import logging
+import numpy as np
 
 from federatedscope.core.data import ClientData
 from federatedscope.core.workers import Server, Client
@@ -11,7 +17,7 @@ logger = logging.getLogger(__name__)
 def change_label(data, label):
     new_dataset = []
     for (x, y), new_y in zip(data, label):
-        new_dataset.append((x, new_y))
+        new_dataset.append((x, torch.FloatTensor([new_y])))
     return new_dataset
 
 
@@ -60,10 +66,14 @@ class PADServer(Server):
 
     def save_best_results(self):
         super(PADServer, self).save_best_results()
-        key = f'{self._cfg.matching.split}_acc'
+        key = f'{self._cfg.matching.split}_avg_loss'
         try:
-            logger.info(f"Similarity: "
-                        f"{self.history_results['Results_weighted_avg'][key]}")
+            pad = np.array(
+                self.history_results['Results_weighted_avg'][key]) * -4 + 2
+            sim = np.abs(
+                np.array(self.history_results['Results_weighted_avg'][key]) -
+                0.5) * -2 + 1
+            logger.info(f"PAD Similarity: {pad}, Similarity {sim}")
         except KeyError:
             pass
 
@@ -85,7 +95,7 @@ class PADClient(Client):
               self).__init__(ID, server_id, state, config, data, model, device,
                              strategy, is_unseen_client, *args, **kwargs)
         # Modify data labels
-        label = 1 if self.ID == 1 else 0
+        label = 1.0 if self.ID == self._cfg.matching.target_client_idx else 0.0
         new_data = {'client_cfg': self._cfg}
         for split in ['train_data', 'val_data', 'test_data']:
             if hasattr(data, split):

@@ -50,9 +50,8 @@ class PADServer(Server):
         if msg_type == 'model_para' and \
                 self.state % self._cfg.matching.round == 0:
             self.unseen_clients_id = list(
-                set(self.candidates_ids) - set([
-                    self.candidates_ids[self.state // self._cfg.matching.round]
-                ]))
+                set(self.candidates_ids) -
+                {self.candidates_ids[self.state // self._cfg.matching.round]})
             for model, init_model in zip(self.models, self.init_models):
                 model.load_state_dict(init_model.state_dict())
         super(PADServer,

@@ -31,6 +31,8 @@ trainer:
 eval:
   freq: 100
   metrics: []
+  best_res_update_round_wise_key: test_avg_loss
+  count_flops: False
 hpo:
   scheduler: bohb
   num_workers: 0

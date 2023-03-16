@@ -44,7 +44,7 @@ hpo:
   scheduler: wrap_hb
   num_workers: 0
   init_cand_num: 100
-  ss: 'scripts/example_configs/femnist/avg/ss.yaml'
+  ss: 'scripts/hpo_exp_scripts/usability/femnist/ss.yaml'
   sha:
     budgets: [ 9, 81 ]
     elim_rate: 3

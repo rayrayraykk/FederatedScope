@@ -42,7 +42,7 @@ eval:
 hpo:
   scheduler: bo_rf
   num_workers: 0
-  ss: 'scripts/example_configs/femnist/avg/ss.yaml'
+  ss: 'scripts/hpo_exp_scripts/usability/femnist/ss.yaml'
   sha:
     budgets: [ 50, 50 ]
     elim_rate: 3

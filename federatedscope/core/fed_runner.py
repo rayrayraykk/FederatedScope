@@ -166,6 +166,9 @@ class BaseRunner(object):
         if self.cfg.vertical.use:
             from federatedscope.vertical_fl.utils import wrap_vertical_server
             server = wrap_vertical_server(server, self.cfg)
+        if self.cfg.fedswa.use:
+            from federatedscope.core.workers.wrapper import wrap_swa_server
+            server = wrap_swa_server(server)
         logger.info('Server has been set up ... ')
         return self.feat_engr_wrapper_server(server)
 
@@ -284,6 +287,9 @@ class BaseRunner(object):
 
 class StandaloneRunner(BaseRunner):
     def _set_up(self):
+        """
+        To set up server and client for standalone mode.
+        """
         self.is_run_online = True if self.cfg.federate.online_aggr else False
         self.shared_comm_queue = deque()
 
@@ -497,6 +503,9 @@ class StandaloneRunner(BaseRunner):
 
 class DistributedRunner(BaseRunner):
     def _set_up(self):
+        """
+        To set up server or client for distributed mode.
+        """
         # sample resource information
         if self.resource_info is not None:
             sampled_index = np.random.choice(list(self.resource_info.keys()))

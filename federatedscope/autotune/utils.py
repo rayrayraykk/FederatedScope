@@ -164,7 +164,8 @@ def summarize_hpo_results(configs,
                           perfs,
                           white_list=None,
                           desc=False,
-                          use_wandb=False):
+                          use_wandb=False,
+                          is_sorted=True):
     if white_list is not None:
         cols = list(white_list) + ['performance']
     else:
@@ -179,7 +180,8 @@ def summarize_hpo_results(configs,
             ] + [result])
         else:
             d.append([trial_cfg[k] for k in trial_cfg] + [result])
-    d = sorted(d, key=lambda ele: ele[-1], reverse=desc)
+    if is_sorted:
+        d = sorted(d, key=lambda ele: ele[-1], reverse=desc)
     df = pd.DataFrame(d, columns=cols)
     pd.set_option('display.max_colwidth', None)
     pd.set_option('display.max_columns', None)
@@ -242,9 +244,13 @@ def parse_logs(file_list):
     plt.close()
 
 
-def eval_in_fs(cfg, config, budget, config_id, ss, client_cfgs=None):
+def eval_in_fs(cfg,
+               config=None,
+               budget=0,
+               client_cfgs=None,
+               trial_index=0,
+               ss=None):
     """
-
     Args:
         cfg: fs cfg
         config: sampled trial CS.Configuration
@@ -252,7 +258,6 @@ def eval_in_fs(cfg, config, budget, config_id, ss, client_cfgs=None):
         config_id: Identifier to generate somadditional files
         ss: search space of HPO
         client_cfgs: client-wise cfg
-
     Returns:
         The best results returned from FedRunner
     """
@@ -264,44 +269,55 @@ def eval_in_fs(cfg, config, budget, config_id, ss, client_cfgs=None):
     from federatedscope.core.auxiliaries.runner_builder import get_runner
     from os.path import join as osp
 
-    if isinstance(config, CS.Configuration):
-        config = dict(config)
-    if 'wrap' in cfg.hpo.scheduler:
-        logger.info('FedEx is wrapped by scheduler.')
-        config['hpo.fedex.ss'] = osp(
-            cfg.hpo.working_folder, f"{config_id}_tmp_grid_search_space.yaml")
-        if not os.path.exists(config['hpo.fedex.ss']):
-            generate_arm(cfg, config, config_id, ss)
-
-        config['federate.save_to'] = osp(cfg.hpo.working_folder,
-                                         f"idx_{config_id}.pth")
-        config['federate.restore_from'] = osp(cfg.hpo.working_folder,
-                                              f"idx_{config_id}.pth")
     # Global cfg
+
     trial_cfg = cfg.clone()
-    # specify the configuration of interest
-    if cfg.hpo.personalized_ss:
-        if isinstance(client_cfgs, CS.Configuration):
-            client_cfgs.merge_from_list(config2cmdargs(config))
-        else:
-            client_cfgs = CfgNode(flatten2nestdict(config))
-    else:
+
+    if config:
+        if isinstance(config, CS.Configuration):
+            config = dict(config)
+        # Add FedEx related keys to config
+        if 'wrap' in cfg.hpo.scheduler:
+            logger.info('FedEx is wrapped by scheduler.')
+            config['hpo.fedex.ss'] = osp(
+                cfg.hpo.working_folder,
+                f"{trial_index}_tmp_grid_search_space.yaml")
+            if not os.path.exists(config['hpo.fedex.ss']):
+                generate_arm(cfg, config, trial_index, ss)
+
+            config['federate.save_to'] = osp(cfg.hpo.working_folder,
+                                             f"idx_{trial_index}.pth")
+            config['federate.restore_from'] = osp(cfg.hpo.working_folder,
+                                                  f"idx_{trial_index}.pth")
+        config['hpo.trial_index'] = trial_index
+        # specify the configuration of interest
         trial_cfg.merge_from_list(config2cmdargs(config))
 
-    # specify the budget
-    trial_cfg.merge_from_list(
-        ["federate.total_round_num",
-         int(budget), "eval.freq",
-         int(budget)])
+        if cfg.hpo.personalized_ss:
+            if isinstance(client_cfgs, CS.Configuration):
+                client_cfgs.merge_from_list(config2cmdargs(config))
+            else:
+                client_cfgs = CfgNode(flatten2nestdict(config))
+        else:
+            trial_cfg.merge_from_list(config2cmdargs(config))
+
+    if budget:
+        # specify the budget
+        trial_cfg.merge_from_list([
+            "federate.total_round_num",
+            int(budget), 'eval.freq',
+            int(budget)
+        ])
+
     setup_seed(trial_cfg.seed)
     data, modified_config = get_data(config=trial_cfg.clone())
     trial_cfg.merge_from_other_cfg(modified_config)
     trial_cfg.freeze()
-    fed_runner = get_runner(data=data,
-                            server_class=get_server_cls(trial_cfg),
+    fed_runner = get_runner(server_class=get_server_cls(trial_cfg),
                             client_class=get_client_cls(trial_cfg),
                             config=trial_cfg.clone(),
-                            client_configs=client_cfgs)
+                            client_configs=client_cfgs,
+                            data=data)
     results = fed_runner.run()
 
     return results

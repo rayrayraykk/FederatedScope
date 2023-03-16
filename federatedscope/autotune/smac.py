@@ -1,6 +1,9 @@
+import os
 import logging
 import numpy as np
-from federatedscope.autotune.utils import eval_in_fs, log2wandb
+import ConfigSpace as CS
+from federatedscope.autotune.utils import eval_in_fs, log2wandb, \
+    summarize_hpo_results
 from smac.facade.smac_bb_facade import SMAC4BB
 from smac.facade.smac_hpo_facade import SMAC4HPO
 from smac.scenario.scenario import Scenario
@@ -9,7 +12,7 @@ from smac.multi_objective.parego import ParEGO
 logging.basicConfig(level=logging.WARNING)
 logger = logging.getLogger(__name__)
 
-config_id = 0
+trial_index = 0
 
 
 def run_smac(cfg, scheduler, client_cfgs=None):
@@ -22,15 +25,14 @@ def run_smac(cfg, scheduler, client_cfgs=None):
         Used as an evaluation function for SMAC optimizer.
         Args:
             config: configurations of FS run.
-
         Returns:
             Best results of server of specific FS run.
         """
-        global config_id
+        global trial_index
 
         budget = cfg.hpo.sha.budgets[-1]
-        results = eval_in_fs(cfg, config, budget, config_id, config_space,
-                             client_cfgs)
+        results = eval_in_fs(cfg, config, budget, client_cfgs, trial_index,
+                             config_space)
         key1, key2 = cfg.hpo.metric.split('.')
         res = results[key1][key2]
         if cfg.hpo.scheduler == 'multi':
@@ -48,15 +50,24 @@ def run_smac(cfg, scheduler, client_cfgs=None):
         else:
             perfs.append(res)
 
-        config_id += 1
         logger.info(f'Evaluate the {len(perfs)-1}-th config '
                     f'{config}, and get performance {res}')
         if cfg.wandb.use:
-            log2wandb(len(perfs) - 1, config, results, cfg)
-        return res
+            tmp_results = \
+                summarize_hpo_results(init_configs,
+                                      perfs,
+                                      white_list=set(config_space.keys()),
+                                      desc=cfg.hpo.larger_better,
+                                      is_sorted=False)
+            log2wandb(len(perfs) - 1, config, results, cfg, tmp_results)
+        trial_index += 1
+
+        if cfg.hpo.larger_better:
+            return -res
+        else:
+            return res
 
     def summarize():
-        from federatedscope.autotune.utils import summarize_hpo_results
         results = summarize_hpo_results(init_configs,
                                         perfs,
                                         white_list=set(config_space.keys()),
@@ -65,10 +76,11 @@ def run_smac(cfg, scheduler, client_cfgs=None):
         logger.info(
             "========================== HPO Final ==========================")
         logger.info("\n{}".format(results))
+        results.to_csv(os.path.join(cfg.hpo.working_folder, 'results.csv'))
         logger.info("====================================================")
         logger.info(f'Winner config_id: {np.argmin(perfs)}')
 
-        return results
+        return perfs
 
     if cfg.hpo.sha.iter != 0:
         n_iterations = cfg.hpo.sha.iter
@@ -81,6 +93,8 @@ def run_smac(cfg, scheduler, client_cfgs=None):
         multi_obj_kwargs = {
             "multi_objectives": [cfg.hpo.metric] + cfg.hpo.multi_obj.key,
         }
+    else:
+        multi_obj_kwargs = {}
 
     scenario = Scenario({
         "run_obj": "quality",

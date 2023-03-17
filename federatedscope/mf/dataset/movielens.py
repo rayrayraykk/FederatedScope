@@ -1,9 +1,10 @@
 import os
+import copy
 import pickle
 import logging
 
 from torchvision.datasets.utils import check_integrity, \
-    download_and_extract_archive, calculate_md5
+    download_and_extract_archive
 import pandas as pd
 from tqdm import tqdm
 import scipy.sparse as sp
@@ -30,12 +31,17 @@ class VMFDataset:
             client_ratings = ratings[:, items]
             train_ratings, test_ratings = self._split_train_test_ratings(
                 client_ratings, test_portion)
-            data[clientId + 1] = {"train": train_ratings, "test": test_ratings}
+            data[clientId + 1] = {
+                "train": train_ratings,
+                "val": copy.deepcopy(test_ratings),
+                "test": test_ratings
+            }
             train_ratings_all.append(train_ratings)
             test_ratings_all.append(test_ratings)
         # Server holds all
         data[0] = {
             "train": sp.hstack(train_ratings_all).tocsc(),
+            "val": sp.hstack(test_ratings_all).tocsc(),
             "test": sp.hstack(test_ratings_all).tocsc()
         }
         with open(self.processed_data, 'wb') as f:
@@ -58,12 +64,17 @@ class HMFDataset:
             client_ratings = ratings[users, :]
             train_ratings, test_ratings = self._split_train_test_ratings(
                 client_ratings, test_portion)
-            data[cliendId + 1] = {"train": train_ratings, "test": test_ratings}
+            data[cliendId + 1] = {
+                "train": train_ratings,
+                "val": copy.deepcopy(test_ratings),
+                "test": test_ratings
+            }
             train_ratings_all.append(train_ratings)
             test_ratings_all.append(test_ratings)
         # Server holds all
         data[0] = {
             "train": sp.vstack(train_ratings_all).tocsc(),
+            "val": sp.vstack(test_ratings_all).tocsc(),
             "test": sp.vstack(test_ratings_all).tocsc()
         }
         with open(self.processed_data, 'wb') as f:
@@ -80,7 +91,13 @@ class MovieLensData(object):
         train_portion (float): the portion of training data
         download (bool): indicator to download dataset
     """
-    def __init__(self, root, num_client, train_portion=0.9, download=True):
+    def __init__(self,
+                 root,
+                 num_client,
+                 train_portion=0.9,
+                 download=True,
+                 user_subsample=1.0,
+                 item_subsample=1.0):
         super(MovieLensData, self).__init__()
 
         self.root = root
@@ -88,6 +105,8 @@ class MovieLensData(object):
 
         self.n_user = None
         self.n_item = None
+        self.user_subsample = user_subsample
+        self.item_subsample = item_subsample
 
         if download:
             self.download()
@@ -162,7 +181,8 @@ class MovieLensData(object):
 
             ratings = coo_matrix((data["rating"], (row, col)),
                                  shape=(n_user, n_item))
-            ratings = ratings.tocsc()
+            ratings = ratings.tocsc()[:n_user * self.user_subsample, :n_item *
+                                      self.item_subsample]
 
             with open(meta_path, 'wb') as f:
                 pickle.dump(ratings, f)

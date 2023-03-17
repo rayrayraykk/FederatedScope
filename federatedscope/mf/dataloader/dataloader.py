@@ -41,7 +41,9 @@ def load_mf_dataset(config=None, client_cfgs=None):
                               root=config.data.root,
                               num_client=config.federate.client_num,
                               train_portion=config.data.splits[0],
-                              download=True)
+                              download=True,
+                              user_subsample=config.data.subsample,
+                              item_subsample=config.data.subsample)
     else:
         raise NotImplementedError("Dataset {} is not implemented.".format(
             config.data.type))

@@ -181,8 +181,9 @@ class MovieLensData(object):
 
             ratings = coo_matrix((data["rating"], (row, col)),
                                  shape=(n_user, n_item))
-            ratings = ratings.tocsc()[:n_user * self.user_subsample, :n_item *
-                                      self.item_subsample]
+            ratings = ratings.tocsc()[:int(n_user * self.user_subsample
+                                           ), :int(n_item *
+                                                   self.item_subsample)]
 
             with open(meta_path, 'wb') as f:
                 pickle.dump(ratings, f)

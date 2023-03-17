@@ -99,8 +99,8 @@ def extend_hpo_cfg(cfg):
     # FLoRA
     cfg.hpo.flora = CN()
     cfg.hpo.flora.ss = ''
-    cfg.hpo.flora.local_tuner = 'bo'
-    cfg.hpo.flora.global_tuner = 'bo'
+    cfg.hpo.flora.local_tuner = 'bo_gp'
+    cfg.hpo.flora.global_tuner = 'bo_gp'
     cfg.hpo.flora.iter = 500
     cfg.hpo.flora.aggregation = 'aplm'
 

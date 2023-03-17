@@ -7,12 +7,14 @@ seed: 12345
 federate:
   mode: standalone
   total_round_num: 100
-  client_num: 2000
+  client_num: 200
   online_aggr: True
   share_local_model: True
   sample_client_rate: 0.01
+  use_diff: True
 data:
   root: data/
+  subsample: 0.001
   type: HFLNetflix
 dataloader:
   batch_size: 32
@@ -29,9 +31,10 @@ criterion:
 trainer:
   type: mftrainer
 eval:
-  freq: 100
+  freq: 1
   metrics: []
-  best_res_update_round_wise_key: test_avg_loss
+  split: ['test', 'val', 'train']
+  best_res_update_round_wise_key: val_avg_loss
   count_flops: False
 hpo:
   scheduler: wrap_bo_rf

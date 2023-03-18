@@ -1,5 +1,8 @@
+import copy
 import logging
+import numpy as np
 
+from torch.utils.data import Subset
 from smac.facade.smac_bb_facade import SMAC4BB
 from smac.facade.smac_hpo_facade import SMAC4HPO
 from smac.scenario.scenario import Scenario
@@ -7,6 +10,7 @@ from smac.scenario.scenario import Scenario
 from federatedscope.core.message import Message
 from federatedscope.core.workers import Client
 from federatedscope.autotune.utils import parse_search_space
+from federatedscope.core.auxiliaries.trainer_builder import get_trainer
 
 logger = logging.getLogger(__name__)
 
@@ -28,6 +32,23 @@ class FLoRAClient(Client):
         super(FLoRAClient,
               self).__init__(ID, server_id, state, config, data, model, device,
                              strategy, is_unseen_client, *args, **kwargs)
+
+        subdata = copy.deepcopy(data)
+        dataset = getattr(subdata, 'train_data')
+        if dataset is not None:
+            index = np.random.permutation(np.arange(len(dataset)))
+            sub_size = int(self._cfg.hpo.flora.sample_loc_data * len(dataset))
+            sub_dataset = Subset(dataset, index[:sub_size])
+            setattr(subdata, 'train_data', sub_dataset)
+        subdata.setup(self._cfg, force_init=True)
+
+        self.loc_trainer = get_trainer(model=model,
+                                       data=subdata,
+                                       device=device,
+                                       config=self._cfg,
+                                       is_attacker=self.is_attacker,
+                                       monitor=self._monitor)
+
         self.register_handlers('local_tune',
                                self.callback_funcs_for_local_tune,
                                ['local_results'])
@@ -98,12 +119,12 @@ class FLoRAClient(Client):
 
     def _local_train(self, hyperparams):
         self._apply_hyperparams(hyperparams)
-        self.trainer.update(self.init_model_para)
+        self.loc_trainer.update(self.init_model_para)
         for i in range(self._cfg.hpo.flora.loc_epoch):
-            self.trainer.train()
+            self.loc_trainer.train()
             logger.info(f'\tClient #{self.ID} local tune @iter '
                         f'{self.num_iter} @Epoch {i}.')
-        eval_metrics = self.trainer.evaluate(target_data_split_name='val')
+        eval_metrics = self.loc_trainer.evaluate(target_data_split_name='val')
         res = eval_metrics['val_avg_loss']
         logger.info(f'\tClient #{self.ID} local tune @iter '
                     f'{self.num_iter} results: {res}.')

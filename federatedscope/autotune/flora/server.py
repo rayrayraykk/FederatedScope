@@ -73,8 +73,7 @@ class FLoRAServer(Server):
                     summarize_hpo_results(configs, perfs)
 
             best_hyperparams = \
-                get_best_hyperpara(local_results_df,
-                                   self._cfg.hpo.flora.aggregation)
+                get_best_hyperpara(local_results_df, self._cfg)
             self.comm_manager.send(
                 Message(msg_type='hyperparams',
                         sender=self.ID,

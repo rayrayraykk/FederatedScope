@@ -37,15 +37,17 @@ trainer:
 eval:
   freq: 1
   metrics: ['acc', 'correct', 'f1']
-  split: ['test', 'val', 'train']
+  split: ['test', 'val']
 hpo:
+  working_folder: flora_on_femnist
   flora:
     use: True
     ss: 'federatedscope/autotune/flora/ss.yaml'
     local_tuner: 'bo_gp'
     global_tuner: 'bo_gp'
-    iter: 1
-    loc_epoch: 2
+    loc_iter: 3
+    glob_iter: 200
+    loc_epoch: 3
     sample_loc_data: 1.0
     aggregation: 'aplm'
   metric: 'client_summarized_weighted_avg.val_avg_loss'

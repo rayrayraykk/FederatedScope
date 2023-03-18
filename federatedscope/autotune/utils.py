@@ -169,17 +169,17 @@ def summarize_hpo_results(configs,
     if white_list is not None:
         cols = list(white_list) + ['performance']
     else:
-        cols = [k for k in configs[0]] + ['performance']
+        col = sorted([k for k in configs[0]])
+        cols = col + ['performance']
 
     d = []
     for trial_cfg, result in zip(configs, perfs):
         if white_list is not None:
-            d.append([
-                trial_cfg[k] if k in trial_cfg.keys() else None
-                for k in white_list
-            ] + [result])
+            d.append(
+                [trial_cfg[k] if k in cols[:-1] else None
+                 for k in white_list] + [result])
         else:
-            d.append([trial_cfg[k] for k in trial_cfg] + [result])
+            d.append([trial_cfg[k] for k in cols[:-1]] + [result])
     if is_sorted:
         d = sorted(d, key=lambda ele: ele[-1], reverse=desc)
     df = pd.DataFrame(d, columns=cols)

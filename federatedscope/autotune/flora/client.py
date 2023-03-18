@@ -61,7 +61,8 @@ class FLoRAClient(Client):
         # Local Tune
         scenario = Scenario({
             "run_obj": "quality",
-            "runcount-limit": self._cfg.hpo.flora.iter,
+            "runcount-limit": self._cfg.hpo.flora.loc_iter,
+            "output_dir": self._cfg.hpo.working_folder,
             "cs": parse_search_space(self._cfg.hpo.flora.ss),
             "deterministic": "true",
             "limit_resources": False,

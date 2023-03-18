@@ -48,6 +48,6 @@ hpo:
     loc_iter: 50
     glob_iter: 2000
     loc_epoch: 50
-    sample_loc_data: 1,0
+    sample_loc_data: 1.0
     aggregation: 'aplm'
   metric: 'client_summarized_weighted_avg.val_avg_loss'

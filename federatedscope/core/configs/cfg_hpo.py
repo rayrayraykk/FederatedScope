@@ -98,10 +98,13 @@ def extend_hpo_cfg(cfg):
 
     # FLoRA
     cfg.hpo.flora = CN()
+    cfg.hpo.flora.use = False
     cfg.hpo.flora.ss = ''
     cfg.hpo.flora.local_tuner = 'bo_gp'
     cfg.hpo.flora.global_tuner = 'bo_gp'
-    cfg.hpo.flora.iter = 500
+    cfg.hpo.flora.iter = 50
+    cfg.hpo.flora.loc_epoch = 50
+    cfg.hpo.flora.sample_loc_data = 1.0  # TODO: implement this
     cfg.hpo.flora.aggregation = 'aplm'
 
     # --------------- register corresponding check function ----------

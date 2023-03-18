@@ -1,7 +1,4 @@
 import logging
-import json
-import copy
-import numpy as np
 
 from smac.facade.smac_bb_facade import SMAC4BB
 from smac.facade.smac_hpo_facade import SMAC4HPO
@@ -15,13 +12,35 @@ logger = logging.getLogger(__name__)
 
 
 class FLoRAClient(Client):
+    def __init__(self,
+                 ID=-1,
+                 server_id=None,
+                 state=-1,
+                 config=None,
+                 data=None,
+                 model=None,
+                 device='cpu',
+                 strategy=None,
+                 is_unseen_client=False,
+                 *args,
+                 **kwargs):
+
+        super(FLoRAClient,
+              self).__init__(ID, server_id, state, config, data, model, device,
+                             strategy, is_unseen_client, *args, **kwargs)
+        self.register_handlers('local_tune',
+                               self.callback_funcs_for_local_tune,
+                               ['local_results'])
+        self.register_handlers('hyperparams',
+                               self.callback_funcs_for_hyperparams,
+                               ['ready_for_fl'])
+
     def _apply_hyperparams(self, hyperparams):
         """Apply the given hyperparameters
         Arguments:
             hyperparams (dict): keys are hyperparameter names \
                 and values are specific choices.
         """
-
         cmd_args = []
         for k, v in hyperparams.items():
             cmd_args.append(k)
@@ -35,8 +54,9 @@ class FLoRAClient(Client):
     def callback_funcs_for_local_tune(self, message: Message):
         sender = message.sender
         self.state = message.state
-        self.init_model_para = message.content
+        self.init_model_para = message.content[0]
         self.local_tune_res = []
+        self.num_iter = 0
 
         # Local Tune
         scenario = Scenario({
@@ -62,11 +82,30 @@ class FLoRAClient(Client):
         self.comm_manager.send(
             Message(msg_type='local_results',
                     sender=self.ID,
-                    receiver=sender,
+                    receiver=[sender],
                     state=self.state,
                     content=self.local_tune_res))
 
-    def _local_train(self, config):
-        res = ...
+    def callback_funcs_for_hyperparams(self, message: Message):
+        sender, hyperparams = message.sender, message.content
+        self._apply_hyperparams(hyperparams)
+        self.comm_manager.send(
+            Message(msg_type='ready_for_fl',
+                    sender=self.ID,
+                    receiver=[sender],
+                    state=self.state))
 
-        self.local_tune_res.append((config, res))
+    def _local_train(self, hyperparams):
+        self._apply_hyperparams(hyperparams)
+        self.trainer.update(self.init_model_para)
+        for i in range(self._cfg.hpo.flora.loc_epoch):
+            self.trainer.train()
+            logger.info(f'\tClient #{self.ID} local tune @iter '
+                        f'{self.num_iter} @Epoch {i}.')
+        eval_metrics = self.trainer.evaluate(target_data_split_name='val')
+        res = eval_metrics['val_loss']
+        logger.info(f'\tClient #{self.ID} local tune @iter '
+                    f'{self.num_iter} results: {res}.')
+        self.local_tune_res.append((hyperparams, res))
+        self.num_iter += 1
+        return res

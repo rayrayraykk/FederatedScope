@@ -44,8 +44,8 @@ hpo:
     ss: 'federatedscope/autotune/flora/ss.yaml'
     local_tuner: 'bo_gp'
     global_tuner: 'bo_gp'
-    iter: 2
-    loc_epoch: 5
+    iter: 1
+    loc_epoch: 2
     sample_loc_data: 1.0
     aggregation: 'aplm'
   metric: 'client_summarized_weighted_avg.val_avg_loss'

@@ -1,9 +1,9 @@
 import logging
 
-import yaml
-
 from federatedscope.core.message import Message
 from federatedscope.core.workers import Server
+from federatedscope.autotune.utils import summarize_hpo_results
+from federatedscope.autotune.flora.utils import get_best_hyperpara
 
 logger = logging.getLogger(__name__)
 
@@ -60,10 +60,21 @@ class FLoRAServer(Server):
         self.msg_buffer['local_results'][sender] = local_tune_res
 
         if len(self.msg_buffer['local_results']) == self._client_num:
-            print(self.msg_buffer['local_results'])
-            # Find the best config from local_results and send
-            raise ValueError('You get this place')
-            best_hyperparams = ...
+
+            local_results_df = {}
+            for client, client_local_results in \
+                    self.msg_buffer['local_results'].items():
+                configs, perfs = [], []
+                for config, perf in client_local_results:
+                    configs.append(config)
+                    perfs.append(perf)
+                # Convert to DataFrame
+                local_results_df[client] = \
+                    summarize_hpo_results(configs, perfs)
+
+            best_hyperparams = \
+                get_best_hyperpara(local_results_df,
+                                   self._cfg.hpo.flora.aggregation)
             self.comm_manager.send(
                 Message(msg_type='hyperparams',
                         sender=self.ID,

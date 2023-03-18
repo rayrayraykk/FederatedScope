@@ -103,7 +103,7 @@ class FLoRAClient(Client):
             logger.info(f'\tClient #{self.ID} local tune @iter '
                         f'{self.num_iter} @Epoch {i}.')
         eval_metrics = self.trainer.evaluate(target_data_split_name='val')
-        res = eval_metrics['val_loss']
+        res = eval_metrics['val_avg_loss']
         logger.info(f'\tClient #{self.ID} local tune @iter '
                     f'{self.num_iter} results: {res}.')
         self.local_tune_res.append((hyperparams, res))

@@ -364,8 +364,8 @@ def initial_cfg(cfg):
     cfg.cost.bandwidth = CN()
     cfg.cost.bandwidth.client_up = 0.25 * 1024 * 1024 * 8 / 32
     cfg.cost.bandwidth.client_down = 0.75 * 1024 * 1024 * 8 / 32
-    cfg.cost.bandwidth.server_up = 0.25 * 1024 * 1024 * 8 / 32
-    cfg.cost.bandwidth.server_down = 0.75 * 1024 * 1024 * 8 / 32
+    cfg.cost.bandwidth.server_up = 0.25 * 1024 * 1024 * 1024 * 8 / 32
+    cfg.cost.bandwidth.server_down = 0.75 * 1024 * 1024 * 1024 * 8 / 32
 
     # ---------------------------------------------------------------------- #
     # optimizer related options

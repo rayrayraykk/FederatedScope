@@ -104,7 +104,7 @@ def extend_hpo_cfg(cfg):
     cfg.hpo.flora.global_tuner = 'bo_gp'
     cfg.hpo.flora.loc_iter = 50
     cfg.hpo.flora.loc_epoch = 50
-    cfg.hpo.flora.glob_iter = 2000
+    cfg.hpo.flora.glob_iter = 500
     cfg.hpo.flora.sample_loc_data = 1.0
     cfg.hpo.flora.aggregation = 'aplm'
 
@@ -143,6 +143,11 @@ def assert_hpo_cfg(cfg):
     if cfg.hpo.fts.use:
         assert cfg.hpo.fts.use == cfg.federate.use_diff, \
             "Once FTS is adopted, federate.use_diff must be True."
+
+    if cfg.hpo.flora.use:
+        assert cfg.hpo.flora.aggregation in ['aplm', 'sgm', 'mplm'], \
+            "`cfg.hpo.flora.aggregation` must be chose from " \
+            "`['aplm', 'sgm', 'mplm']`"
 
 
 register_config("hpo", extend_hpo_cfg)

@@ -14,13 +14,13 @@ logger = logging.getLogger(__name__)
 def get_best_hyperpara(local_results_df, cfg):
     configs = []
     perfs = []
-
+    logger.info('Building regressor(s)...')
     if cfg.hpo.flora.aggregation == 'sgm':
         random_forest = RandomForestRegressor()
         x_train = np.vstack(
-            [df.values[:, :-1] for df in local_results_df.values])
-        y_train = np.vstack(
-            [df.values[:, -1] for df in local_results_df.values])
+            [df.values[:, :-1] for df in local_results_df.values()])
+        y_train = np.hstack(
+            [df.values[:, -1] for df in local_results_df.values()])
         random_forest.fit(x_train, y_train)
     elif cfg.hpo.flora.aggregation == 'aplm' \
             or cfg.hpo.flora.aggregation == 'mplm':

@@ -167,7 +167,7 @@ def summarize_hpo_results(configs,
                           use_wandb=False,
                           is_sorted=True):
     if white_list is not None:
-        cols = list(white_list) + ['performance']
+        cols = sorted(list(white_list)) + ['performance']
     else:
         col = sorted([k for k in configs[0]])
         cols = col + ['performance']
@@ -176,10 +176,12 @@ def summarize_hpo_results(configs,
     for trial_cfg, result in zip(configs, perfs):
         if white_list is not None:
             d.append(
-                [trial_cfg[k] if k in cols[:-1] else None
+                [trial_cfg[k] if k in trial_cfg else None
                  for k in white_list] + [result])
         else:
-            d.append([trial_cfg[k] for k in cols[:-1]] + [result])
+            d.append(
+                [trial_cfg[k] if k in trial_cfg else None
+                 for k in cols[:-1]] + [result])
     if is_sorted:
         d = sorted(d, key=lambda ele: ele[-1], reverse=desc)
     df = pd.DataFrame(d, columns=cols)
@@ -289,9 +291,7 @@ def eval_in_fs(cfg,
                                              f"idx_{trial_index}.pth")
             config['federate.restore_from'] = osp(cfg.hpo.working_folder,
                                                   f"idx_{trial_index}.pth")
-        config['hpo.trial_index'] = trial_index
         # specify the configuration of interest
-        trial_cfg.merge_from_list(config2cmdargs(config))
 
         if cfg.hpo.personalized_ss:
             if isinstance(client_cfgs, CS.Configuration):
@@ -300,6 +300,8 @@ def eval_in_fs(cfg,
                 client_cfgs = CfgNode(flatten2nestdict(config))
         else:
             trial_cfg.merge_from_list(config2cmdargs(config))
+
+        config['hpo.trial_index'] = trial_index
 
     if budget:
         # specify the budget

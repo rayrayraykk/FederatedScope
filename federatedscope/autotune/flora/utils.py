@@ -15,7 +15,15 @@ def get_best_hyperpara(local_results_df, cfg):
     configs = []
     perfs = []
 
-    if cfg.hpo.flora.aggregation == 'aplm':
+    if cfg.hpo.flora.aggregation == 'sgm':
+        random_forest = RandomForestRegressor()
+        x_train = np.vstack(
+            [df.values[:, :-1] for df in local_results_df.values])
+        y_train = np.vstack(
+            [df.values[:, -1] for df in local_results_df.values])
+        random_forest.fit(x_train, y_train)
+    elif cfg.hpo.flora.aggregation == 'aplm' \
+            or cfg.hpo.flora.aggregation == 'mplm':
         random_forest = {}
         for client, df in tqdm(local_results_df.items()):
             random_forest[client] = RandomForestRegressor()
@@ -25,12 +33,19 @@ def get_best_hyperpara(local_results_df, cfg):
 
     def eval_in_surrogate(config):
         input_x = [[config[x] for x in sorted(list(config.keys()))]]
-
-        if cfg.hpo.flora.aggregation:
+        if cfg.hpo.flora.aggregation == 'sgm':
+            model = random_forest
+            perf = model.predict(input_x)
+        elif cfg.hpo.flora.aggregation == 'aplm':
             preds = []
             for model in random_forest.values():
                 preds.append(model.predict(input_x))
             perf = np.mean(preds)
+        elif cfg.hpo.flora.aggregation == 'mplm':
+            preds = []
+            for model in random_forest.values():
+                preds.append(model.predict(input_x))
+            perf = np.max(preds)
         else:
             raise NotImplementedError
         configs.append(config)

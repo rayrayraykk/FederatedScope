@@ -10,7 +10,7 @@ federate:
   client_num: 2000
   online_aggr: True
   share_local_model: True
-  sample_client_rate: 0.01
+  sample_client_rate: 1.0
 data:
   root: data/
   type: HFLNetflix

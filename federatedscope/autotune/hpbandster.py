@@ -2,9 +2,7 @@ import os
 import time
 import logging
 
-from os.path import join as osp
 import numpy as np
-import ConfigSpace as CS
 import hpbandster.core.nameserver as hpns
 from hpbandster.core.worker import Worker
 from hpbandster.optimizers import BOHB, HyperBand, RandomSearch
@@ -14,13 +12,6 @@ from federatedscope.autotune.utils import eval_in_fs, log2wandb, \
 
 logging.basicConfig(level=logging.WARNING)
 logger = logging.getLogger(__name__)
-
-
-def clear_cache(working_folder):
-    # Clear cached ckpt
-    for name in os.listdir(working_folder):
-        if name.endswith('.pth'):
-            os.remove(osp(working_folder, name))
 
 
 class MyRandomSearch(RandomSearch):
@@ -34,11 +25,11 @@ class MyBOHB(BOHB):
         self.working_folder = working_folder
         super(MyBOHB, self).__init__(**kwargs)
 
-    def get_next_iteration(self, iteration, iteration_kwargs={}):
-        if os.path.exists(self.working_folder):
-            clear_cache(self.working_folder)
-        return super(MyBOHB, self).get_next_iteration(iteration,
-                                                      iteration_kwargs)
+    # def get_next_iteration(self, iteration, iteration_kwargs={}):
+    #     if os.path.exists(self.working_folder):
+    #         clear_cache(self.working_folder)
+    #     return super(MyBOHB, self).get_next_iteration(iteration,
+    #                                                   iteration_kwargs)
 
 
 class MyHyperBand(HyperBand):
@@ -46,11 +37,11 @@ class MyHyperBand(HyperBand):
         self.working_folder = working_folder
         super(MyHyperBand, self).__init__(**kwargs)
 
-    def get_next_iteration(self, iteration, iteration_kwargs={}):
-        if os.path.exists(self.working_folder):
-            clear_cache(self.working_folder)
-        return super(MyHyperBand,
-                     self).get_next_iteration(iteration, iteration_kwargs)
+    # def get_next_iteration(self, iteration, iteration_kwargs={}):
+    #     if os.path.exists(self.working_folder):
+    #         clear_cache(self.working_folder)
+    #     return super(MyHyperBand,
+    #                  self).get_next_iteration(iteration, iteration_kwargs)
 
 
 class MyWorker(Worker):
@@ -70,9 +61,9 @@ class MyWorker(Worker):
         self._perfs = []
         self.trial_index = 0
 
-    def compute(self, config, budget, **kwargs):
+    def compute(self, config, budget, config_id, **kwargs):
         results = eval_in_fs(self.cfg, config, int(budget), self.client_cfgs,
-                             self.trial_index)
+                             config_id, self._ss)
         key1, key2 = self.cfg.hpo.metric.split('.')
         res = results[key1][key2]
         config = dict(config)
@@ -99,7 +90,8 @@ class MyWorker(Worker):
         else:
             return {'loss': float(res), 'info': res}
 
-    def summarize(self):
+    def summarize(self, res=None):
+        from federatedscope.autotune.utils import summarize_hpo_results
         results = summarize_hpo_results(self._init_configs,
                                         self._perfs,
                                         white_list=set(self._ss.keys()),
@@ -111,16 +103,13 @@ class MyWorker(Worker):
         results.to_csv(os.path.join(self.cfg.hpo.working_folder,
                                     'results.csv'))
         logger.info("====================================================")
+        logger.info(f'Winner config_id: {res.get_incumbent_id()}')
 
         return results
 
 
 def run_hpbandster(cfg, scheduler, client_cfgs=None):
     config_space = scheduler._search_space
-    if cfg.hpo.scheduler.startswith('wrap_'):
-        ss = CS.ConfigurationSpace()
-        ss.add_hyperparameter(config_space['hpo.table.idx'])
-        config_space = ss
     NS = hpns.NameServer(run_id=cfg.hpo.scheduler, host='127.0.0.1', port=0)
     ns_host, ns_port = NS.start()
     w = MyWorker(sleep_interval=0,
@@ -160,6 +149,6 @@ def run_hpbandster(cfg, scheduler, client_cfgs=None):
     optimizer.shutdown(shutdown_workers=True)
     NS.shutdown()
     all_runs = res.get_all_runs()
-    w.summarize()
+    w.summarize(res)
 
     return [x.info for x in all_runs]

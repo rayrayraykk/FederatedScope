@@ -46,8 +46,9 @@ class MFTrainer(GeneralTorchTrainer):
 
     def _hook_on_fit_end(self, ctx):
         results = {
-            f"{ctx.cur_mode}_avg_loss": ctx.loss_batch_total / ctx.num_samples,
-            f"{ctx.cur_mode}_total": ctx.num_samples
+            f"{ctx.cur_split}_avg_loss": ctx.loss_batch_total /
+            ctx.num_samples,
+            f"{ctx.cur_split}_total": ctx.num_samples
         }
         setattr(ctx, 'eval_metrics', results)
 

@@ -16,11 +16,20 @@ def extend_hpo_cfg(cfg):
     cfg.hpo.trial_index = 0
     cfg.hpo.working_folder = 'hpo'
     cfg.hpo.ss = ''
+    cfg.hpo.personalized_ss = False  # If True, the ss will be discrete to
+    # hadamard product of client's ss
     cfg.hpo.num_workers = 0
     cfg.hpo.init_cand_num = 16
     cfg.hpo.larger_better = False  # Non-configurable, determined by metric
     cfg.hpo.scheduler = 'rs'
     cfg.hpo.metric = 'client_summarized_weighted_avg.val_loss'
+
+    # multi-objective-optimization
+    cfg.hpo.multi_obj = CN()
+    cfg.hpo.multi_obj.algo = ''  # Choose from 'mean', 'parego'
+    cfg.hpo.multi_obj.key = []
+    cfg.hpo.multi_obj.weight = []  # `cfg.hpo.metric` weight is 1.0 when
+    # multi-objective-optimization algo is `mean`
 
     # SHA
     cfg.hpo.sha = CN()
@@ -50,11 +59,14 @@ def extend_hpo_cfg(cfg):
     cfg.hpo.fedex.psn = False
     cfg.hpo.fedex.pi_lr = 0.01
 
-    # Table
-    cfg.hpo.table = CN()
-    cfg.hpo.table.eps = 0.1
-    cfg.hpo.table.num = 27
-    cfg.hpo.table.idx = 0
+    # FedEx wrap optimizer related args
+    cfg.hpo.fedex.wrapper = CN()
+    cfg.hpo.fedex.wrapper.eps = 0.1
+    cfg.hpo.fedex.wrapper.arm = 27
+
+    cfg.hpo.fedex.attack = CN()
+    cfg.hpo.fedex.attack.id = []  # client IDs who inject noise into policy
+    cfg.hpo.fedex.attack.sigma = 1.0  # sigma of white noise
 
     # FTS
     cfg.hpo.fts = CN()
@@ -84,6 +96,18 @@ def extend_hpo_cfg(cfg):
     cfg.hpo.pfedhpo.ss = ''
     cfg.hpo.pfedhpo.target_fl_total_round = 1000
 
+    # FLoRA
+    cfg.hpo.flora = CN()
+    cfg.hpo.flora.use = False
+    cfg.hpo.flora.ss = ''
+    cfg.hpo.flora.local_tuner = 'bo_gp'
+    cfg.hpo.flora.global_tuner = 'bo_gp'
+    cfg.hpo.flora.loc_iter = 50
+    cfg.hpo.flora.loc_epoch = 50
+    cfg.hpo.flora.glob_iter = 500
+    cfg.hpo.flora.sample_loc_data = 1.0
+    cfg.hpo.flora.aggregation = 'aplm'
+
     # --------------- register corresponding check function ----------
     cfg.register_cfg_check_fun(assert_hpo_cfg)
 
@@ -112,13 +136,18 @@ def assert_hpo_cfg(cfg):
         ['adaptive', 'aggressive', 'auto', 'constant', 'scale'])
     assert not cfg.hpo.fedex.gamma < .0 and cfg.hpo.fedex.gamma <= 1.0, \
         "{} must be in [0, 1]".format(cfg.hpo.fedex.gamma)
-    assert cfg.hpo.fedex.use == cfg.federate.use_diff, "Once FedEx is " \
-                                                       "adopted, " \
-                                                       "federate.use_diff " \
-                                                       "must be True."
+    if cfg.hpo.fts.use:
+        assert cfg.hpo.fedex.use == \
+               cfg.federate.use_diff, "Once FedEx is adopted, " \
+                                      "federate.use_diff must be True."
+    if cfg.hpo.fts.use:
+        assert cfg.hpo.fts.use == cfg.federate.use_diff, \
+            "Once FTS is adopted, federate.use_diff must be True."
 
-    assert cfg.hpo.fts.use == cfg.federate.use_diff, \
-        "Once FTS is adopted, federate.use_diff must be True."
+    if cfg.hpo.flora.use:
+        assert cfg.hpo.flora.aggregation in ['aplm', 'sgm', 'mplm'], \
+            "`cfg.hpo.flora.aggregation` must be chose from " \
+            "`['aplm', 'sgm', 'mplm']`"
 
 
 register_config("hpo", extend_hpo_cfg)

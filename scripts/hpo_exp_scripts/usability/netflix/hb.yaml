@@ -1,0 +1,46 @@
+use_gpu: True
+device: 3
+outdir: hb_netflix_avg
+early_stop:
+  patience: 100
+seed: 12345
+federate:
+  mode: standalone
+  total_round_num: 100
+  client_num: 200
+  online_aggr: True
+  share_local_model: True
+  sample_client_rate: 1.0
+data:
+  root: data/
+  subsample: 0.05
+  type: HFLNetflix
+dataloader:
+  batch_size: 32
+  type: mf
+model:
+  type: HMFNet
+  hidden: 10
+train:
+  local_update_steps: 50
+  optimizer:
+    lr: 1.
+criterion:
+  type: MSELoss
+trainer:
+  type: mftrainer
+eval:
+  freq: 100
+  metrics: []
+  best_res_update_round_wise_key: test_avg_loss
+  count_flops: False
+hpo:
+  scheduler: hb
+  num_workers: 0
+  ss: 'scripts/hpo_exp_scripts/usability/netflix/ss.yaml'
+  sha:
+    budgets: [ 9, 81 ]
+    elim_rate: 3
+    iter: 12
+  metric: 'client_summarized_weighted_avg.val_avg_loss'
+  working_folder: hb_netflix_avg

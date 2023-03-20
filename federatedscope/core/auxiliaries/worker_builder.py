@@ -55,6 +55,9 @@ def get_client_cls(cfg):
     if cfg.hpo.pfedhpo.use:
         from federatedscope.autotune.pfedhpo import pFedHPOClient
         return pFedHPOClient
+    if cfg.hpo.flora.use:
+        from federatedscope.autotune.flora import FLoRAClient
+        return FLoRAClient
 
     if cfg.vertical.use:
         if cfg.vertical.algo == 'lr':
@@ -154,6 +157,9 @@ def get_server_cls(cfg):
     if cfg.hpo.pfedhpo.use and cfg.hpo.pfedhpo.train_fl:
         from federatedscope.autotune.pfedhpo import pFedHPOFLServer
         return pFedHPOFLServer
+    if cfg.hpo.flora.use:
+        from federatedscope.autotune.flora import FLoRAServer
+        return FLoRAServer
 
     if cfg.attack.attack_method.lower() in ['dlg', 'ig']:
         from federatedscope.attack.worker_as_attacker.server_attacker import\

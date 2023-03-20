@@ -167,7 +167,7 @@ class ClientData(dict):
                 self[key] = kwargs[key]
         super(ClientData, self).__init__()
 
-    def setup(self, new_client_cfg=None):
+    def setup(self, new_client_cfg=None, force_init=False):
         """
         Set up ``DataLoader`` in ``ClientData`` with new configurations.
 
@@ -178,10 +178,11 @@ class ClientData(dict):
             Bool: Status for indicating whether the client_cfg is updated
         """
         # if `batch_size` or `shuffle` change, re-instantiate DataLoader
-        if self.client_cfg is not None:
-            if dict(self.client_cfg.dataloader) == dict(
-                    new_client_cfg.dataloader):
-                return False
+        if not force_init:
+            if self.client_cfg is not None:
+                if dict(self.client_cfg.dataloader) == dict(
+                        new_client_cfg.dataloader):
+                    return False
 
         self.client_cfg = new_client_cfg
 

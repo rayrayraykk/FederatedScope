@@ -59,6 +59,7 @@ class BaseRunner(object):
             config.ready_for_run()
         self.cfg = config
         self.client_cfgs = client_configs
+        self.serial_num_for_msg = 0
 
         self.mode = self.cfg.federate.mode.lower()
         self.gpu_manager = GPUManager(gpu_available=self.cfg.use_gpu,
@@ -290,6 +291,9 @@ class BaseRunner(object):
 
 class StandaloneRunner(BaseRunner):
     def _set_up(self):
+        """
+        To set up server and client for standalone mode.
+        """
         self.is_run_online = True if self.cfg.federate.online_aggr else False
         self.shared_comm_queue = deque()
 
@@ -471,6 +475,8 @@ class StandaloneRunner(BaseRunner):
                     # For the server, move the received message to a
                     # cache for reordering the messages according to
                     # the timestamps
+                    msg.serial_num = self.serial_num_for_msg
+                    self.serial_num_for_msg += 1
                     heapq.heappush(server_msg_cache, msg)
                 else:
                     self._handle_msg(msg)
@@ -503,6 +509,9 @@ class StandaloneRunner(BaseRunner):
 
 class DistributedRunner(BaseRunner):
     def _set_up(self):
+        """
+        To set up server or client for distributed mode.
+        """
         # sample resource information
         if self.resource_info is not None:
             sampled_index = np.random.choice(list(self.resource_info.keys()))

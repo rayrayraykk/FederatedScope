@@ -1,8 +1,3 @@
-# For test this module: python federatedscope/main.py --cfg \
-# federatedscope/cv/baseline/fedavg_convnet2_on_cifar10.yaml matching.use \
-# True matching.method pad data.splits "[0.9, 0.1, 0.0]" data.splitter_args
-# "[{'alpha': 1.0}]"
-
 import copy
 import torch
 import logging

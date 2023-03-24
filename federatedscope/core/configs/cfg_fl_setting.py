@@ -126,8 +126,12 @@ def assert_fl_setting_cfg(cfg):
         cfg.federate.unseen_clients_rate = unseen_clients_rate
     else:
         unseen_clients_rate = cfg.federate.unseen_clients_rate
-    participated_client_num = max(
-        1, int((1 - unseen_clients_rate) * cfg.federate.client_num))
+    if len(cfg.federate.unseen_clients_idx):
+        participated_client_num = cfg.federate.client_num - \
+                                  len(cfg.federate.unseen_clients_idx)
+    else:
+        participated_client_num = max(
+            1, int((1 - unseen_clients_rate) * cfg.federate.client_num))
 
     # sample client num pre-process
     sample_client_num_valid = (

@@ -24,6 +24,9 @@ def extend_matching_cfg(cfg):
 
 
 def assert_matching_cfg(cfg):
+    if not cfg.matching.use:
+        return
+
     cfg.federate.sample_client_num = -1
     cfg.federate.sample_client_rate = -1.0
 

@@ -124,10 +124,11 @@ class Server(BaseServer):
                 copy.deepcopy(self.aggregator)
                 for _ in range(self.model_num - 1)
             ])
+        self.sample_client_num = int(self._cfg.federate.sample_client_num)
 
         # function for recovering shared secret
         self.recover_fun = AdditiveSecretSharing(
-            shared_party_num=int(self._cfg.federate.sample_client_num)
+            shared_party_num=int(self.sample_client_num)
         ).fixedpoint2float if self._cfg.federate.use_ss else None
 
         if self._cfg.federate.make_global_eval:
@@ -154,7 +155,6 @@ class Server(BaseServer):
         # Initialize the number of joined-in clients
         self._client_num = client_num
         self._total_round_num = total_round_num
-        self.sample_client_num = int(self._cfg.federate.sample_client_num)
         self.join_in_client_num = 0
         self.join_in_info = dict()
         # the unseen clients indicate the ones that do not contribute to FL
@@ -252,7 +252,7 @@ class Server(BaseServer):
         # Running: listen for message (updates from clients),
         # aggregate and broadcast feedbacks (aggregated model parameters)
         min_received_num = self._cfg.asyn.min_received_num \
-            if self._cfg.asyn.use else self._cfg.federate.sample_client_num
+            if self._cfg.asyn.use else self.sample_client_num
         num_failure = 0
         time_budget = self._cfg.asyn.time_budget if self._cfg.asyn.use else -1
         with Timeout(time_budget) as time_counter:
@@ -317,7 +317,7 @@ class Server(BaseServer):
             if self._cfg.asyn.use:
                 min_received_num = self._cfg.asyn.min_received_num
             else:
-                min_received_num = self._cfg.federate.sample_client_num
+                min_received_num = self.sample_client_num
         assert min_received_num <= self.sample_client_num
 
         if check_eval_result and self._cfg.federate.mode.lower(
@@ -668,7 +668,6 @@ class Server(BaseServer):
 
         # We define the evaluation happens at the end of an epoch
         rnd = self.state - 1 if msg_type == 'evaluate' else self.state
-
         self.comm_manager.send(
             Message(msg_type=msg_type,
                     sender=self.ID,

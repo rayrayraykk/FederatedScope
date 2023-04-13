@@ -1,5 +1,5 @@
 # ---------------------------------------------------------------------- #
-# Lobby related (global variable stored in Redis)
+# FS-Service Server related (global variable stored in Redis)
 # ---------------------------------------------------------------------- #
 server_ip = '127.0.0.1'
 broker_url = f'redis://{server_ip}:6379/0'
@@ -12,7 +12,7 @@ timezone = 'Europe/Oslo'
 enable_utc = True
 
 # ---------------------------------------------------------------------- #
-# ECS ssh related (To verify and launch the virtual environment)
+# FL-Runner related (To verify and launch the virtual environment)
 # ---------------------------------------------------------------------- #
 ENV_NAME = 'test_org'
 ROOT_PATH = 'test_org'

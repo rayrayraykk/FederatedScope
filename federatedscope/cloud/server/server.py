@@ -1,7 +1,8 @@
 from celery import Celery
 
-from federatedscope.organizer import cfg_server
-from federatedscope.organizer.module.lobby import Lobby
+import federatedscope.cloud.server.config as cfg_server
+
+from federatedscope.cloud.module.lobby import Lobby
 
 # ---------------------------------------------------------------------- #
 # Message related

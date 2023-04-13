@@ -6,11 +6,13 @@ Organizer is implemented by [Celery](https://docs.celeryq.dev/en/latest/) and [R
 
 ```bash
 # For Server
-pip install -e .[org]
+pip install -e .[cloud]
+
+# Launch database
 docker run -d -p 6379:6379 redis
 
 # For Client
-pip install -e .[org]
+pip install -e .[cloud]
 # Not full login ssh, will conduct `source ~/.bashrc` first.
 # ** If not running interactively, `source ~/.bashrc` might fail **
 # ** due to: `[ -z "$PS1" ] && return`, please comment this line **
@@ -20,7 +22,7 @@ pip install -e .[org]
 
 ```bash
 # For Server
-cd federatedscope/organizer
+cd federatedscope/server
 celery -A server worker --loglevel=info
 
 ## For multi-worker
@@ -29,8 +31,8 @@ celery -A server worker --loglevel=info
 # ...
 
 # For Client
-# Modify `server_ip` in federatedscope/organizer/cfg_client.py
-python federatedscope/organizer/client.py
+# Modify `server_ip` in federatedscope/cloud/config.py
+python federatedscope/cloud/client/client.py
 help
 ```
 

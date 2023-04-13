@@ -8,7 +8,7 @@ from federatedscope.core.configs.config import global_cfg
 from federatedscope.core.auxiliaries.data_builder import get_data
 
 
-class OrganizerLogger:
+class Logger:
     def _get_time_stamp(self):
         return f"[{str(datetime.now().strftime('%Y%m%d%H%M%S'))}]"
 

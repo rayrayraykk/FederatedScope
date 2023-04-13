@@ -2,12 +2,12 @@ import os
 import paramiko
 
 from federatedscope.cloud.client.config import ENV_NAME, ROOT_PATH, FS_VERSION
-from federatedscope.cloud.common.utils import OrganizerLogger
+from federatedscope.cloud.common.utils import Logger
 
 
 class SSHManager(object):
     def __init__(self, ip, user, psw, ssh_port=22):
-        self.logger = OrganizerLogger()
+        self.logger = Logger()
         self.ip, self.user, self.psw = ip, user, psw
         self.ssh_port = ssh_port
         self.ssh, self.trans = None, None

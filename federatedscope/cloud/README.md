@@ -22,7 +22,7 @@ pip install -e .[cloud]
 
 ```bash
 # For Server
-cd federatedscope/server
+cd federatedscope/cloud/server
 celery -A server worker --loglevel=info
 
 ## For multi-worker

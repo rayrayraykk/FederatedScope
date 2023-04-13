@@ -1,8 +1,8 @@
 import os
 import paramiko
 
-from federatedscope.organizer.cfg_client import ENV_NAME, ROOT_PATH, FS_VERSION
-from federatedscope.organizer.utils import OrganizerLogger
+from federatedscope.cloud.client.config import ENV_NAME, ROOT_PATH, FS_VERSION
+from federatedscope.cloud.common.utils import OrganizerLogger
 
 
 class SSHManager(object):

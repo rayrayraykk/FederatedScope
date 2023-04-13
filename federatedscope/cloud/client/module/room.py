@@ -4,9 +4,9 @@ import json
 import pandas as pd
 
 from federatedscope.core.configs.config import global_cfg
-from federatedscope.organizer.utils import config2cmdargs, flatten_dict
-from federatedscope.organizer.module.manager import Manager
-from federatedscope.organizer.cfg_client import TIMEOUT
+from federatedscope.cloud.common.utils import config2cmdargs, flatten_dict
+from federatedscope.cloud.common.manager import Manager
+from federatedscope.cloud.client.config import TIMEOUT
 
 
 class RoomManager(Manager):

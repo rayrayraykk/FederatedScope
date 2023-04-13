@@ -1,10 +1,10 @@
 from federatedscope.core.configs.config import global_cfg
 
-from federatedscope.organizer.module.ssh import SSHManager
-from federatedscope.organizer.module.manager import Manager
-from federatedscope.organizer.utils import config2cmdargs, flatten_dict
+from federatedscope.cloud.client.module.ssh import SSHManager
+from federatedscope.cloud.common.manager import Manager
+from federatedscope.cloud.common.utils import config2cmdargs, flatten_dict
 
-from federatedscope.organizer.cfg_client import server_ip as SERVER_IP
+from federatedscope.cloud.client.config import server_ip as SERVER_IP
 
 
 class ECSManager(Manager):

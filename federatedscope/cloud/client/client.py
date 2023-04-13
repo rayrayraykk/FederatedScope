@@ -5,9 +5,9 @@ from celery import Celery
 from datetime import datetime
 
 import federatedscope.cloud.client.config as cfg_client
-from federatedscope.cloud.module.room import RoomManager
-from federatedscope.cloud.module.ecs import ECSManager
-from federatedscope.cloud.module.logging import FileLogger, GRLogger
+from federatedscope.cloud.client.module.room import RoomManager
+from federatedscope.cloud.client.module.ecs import ECSManager
+from federatedscope.cloud.client.module.logging import FileLogger, GRLogger
 
 IS_OPEN_ACCORDION = False
 IS_LOG_MODE = True

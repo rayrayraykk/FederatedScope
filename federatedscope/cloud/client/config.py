@@ -37,6 +37,6 @@ CONFIG.backend.cudatoolkit = '11.3'
 
 # FS related
 CONFIG.fs = CN()
-CONFIG.fs.source = 'https://github.com/alibaba/FederatedScope'
+CONFIG.fs.repo_url = 'https://github.com/alibaba/FederatedScope.git'
 CONFIG.fs.branch = 'master'
 CONFIG.fs.path = 'test_fabric'

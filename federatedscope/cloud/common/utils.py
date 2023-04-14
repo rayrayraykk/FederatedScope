@@ -8,7 +8,7 @@ from federatedscope.core.configs.config import global_cfg
 from federatedscope.core.auxiliaries.data_builder import get_data
 
 
-class OrganizerLogger:
+class Logger:
     def _get_time_stamp(self):
         return f"[{str(datetime.now().strftime('%Y%m%d%H%M%S'))}]"
 
@@ -22,13 +22,13 @@ class OrganizerLogger:
         print(f"{self._get_time_stamp()} - ERROR: {s}")
 
 
-def anonymize(info, mask):
-    for key, value in info.items():
-        if key == mask:
-            info[key] = "******"
-        elif isinstance(value, dict):
-            anonymize(info[key], mask)
-    return info
+# def anonymize(info, mask):
+#     for key, value in info.items():
+#         if key == mask:
+#             info[key] = "******"
+#         elif isinstance(value, dict):
+#             anonymize(info[key], mask)
+#     return info
 
 
 def args2yaml(args):

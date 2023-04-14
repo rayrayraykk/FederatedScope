@@ -1,1 +1,0 @@
-Directory where client's logs are saved.

@@ -17,7 +17,7 @@ test_requires = ['pytest', 'pytest-cov']
 
 dev_requires = test_requires + ['pre-commit', 'networkx', 'matplotlib']
 
-org_requires = ['paramiko==2.11.0', 'celery[redis]', 'cmd2', 'PySimpleGUI']
+cloud_requires = ['paramiko==2.11.0', 'celery[redis]', 'fabric']
 
 app_requires = [
     'torch-geometric==2.0.4', 'nltk', 'transformers==4.16.2',
@@ -31,7 +31,7 @@ benchmark_hpo_requires = [
 
 benchmark_htl_requires = ['learn2learn']
 
-full_requires = org_requires + benchmark_hpo_requires + \
+full_requires = cloud_requires + benchmark_hpo_requires + \
                 benchmark_htl_requires + app_requires
 
 with open("README.md", "r") as fh:
@@ -56,7 +56,7 @@ setuptools.setup(
     extras_require={
         'test': test_requires,
         'app': app_requires,
-        'org': org_requires,
+        'cloud': cloud_requires,
         'dev': dev_requires,
         'hpo': benchmark_hpo_requires,
         'htl': benchmark_htl_requires,

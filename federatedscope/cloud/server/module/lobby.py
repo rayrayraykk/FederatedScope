@@ -5,8 +5,8 @@ import signal
 import subprocess
 from datetime import datetime
 
-from federatedscope.organizer.module.manager import Manager
-from federatedscope.organizer.utils import args2yaml, config2cmdargs, \
+from federatedscope.cloud.common.manager import Manager
+from federatedscope.cloud.common.utils import args2yaml, config2cmdargs, \
     flatten_dict
 
 

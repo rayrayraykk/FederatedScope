@@ -36,7 +36,7 @@ def load_data_from_oss(config, client_cfgs=None):
                              connect_timeout=config.oss.timeout)
         if not does_bucket_exist(bucket):
             raise Exception(f'Unable to access {bucket}, with check your '
-                            f'auth and settings in the `cfg.cloud.oss`.')
+                            f'auth and settings in the `cfg.oss`.')
 
         bucket.get_object_to_file(config.data.file_path, file_path)
 

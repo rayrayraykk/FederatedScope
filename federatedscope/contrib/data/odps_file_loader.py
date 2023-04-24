@@ -1,12 +1,12 @@
 import os
 
 from federatedscope.register import register_data
-from federatedscope.core.data.utils import convert_data_mode
 from federatedscope.core.auxiliaries.utils import setup_seed
 
 
 def load_data_from_odps(config, client_cfgs=None):
     from odps import ODPS
+    from federatedscope.contrib.data.utils import convert2cdata, read_df
 
     odps = ODPS(config.odps.access_key_id,
                 config.odps.access_key_secret,
@@ -19,13 +19,8 @@ def load_data_from_odps(config, client_cfgs=None):
     table = odps.get_table(config.odps.table_name, project=config.odps.project)
     df = table.to_df()
 
-    # TODO: Convert table to ClientData
-    ...
-
-    # TO BE FIXED
-    # Convert `StandaloneDataDict` to `ClientData` when in distribute mode
-    # data = convert_data_mode(data, config)
-    data = table
+    data = read_df(df, config.data.splits)
+    data = convert2cdata(data, config, client_cfgs)
 
     # Restore the user-specified seed after the data generation
     setup_seed(config.seed)

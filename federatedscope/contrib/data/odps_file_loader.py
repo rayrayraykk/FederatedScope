@@ -12,7 +12,12 @@ def load_data_from_odps(config, client_cfgs=None):
                 config.odps.access_key_secret,
                 config.odps.project,
                 endpoint=config.odps.endpoint)
+    all_tables = [t.name for t in odps.list_tables()]
+    if config.odps.table_name not in all_tables:
+        raise FileNotFoundError(f'{config.odps.table_name} not in '
+                                f'{all_tables}.')
     table = odps.get_table(config.odps.table_name, project=config.odps.project)
+    df = table.to_df()
 
     # TODO: Convert table to ClientData
     ...

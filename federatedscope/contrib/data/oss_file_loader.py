@@ -3,12 +3,12 @@ import pickle
 from pathlib import Path
 
 from federatedscope.register import register_data
-from federatedscope.core.data.utils import convert_data_mode
 from federatedscope.core.auxiliaries.utils import setup_seed
-from federatedscope.core.data import DummyDataTranslator
 
 
 def load_data_from_oss(config, client_cfgs=None):
+    from federatedscope.contrib.data.utils import convert2cdata
+
     def does_bucket_exist(bucket):
         try:
             bucket.get_bucket_info()
@@ -18,7 +18,7 @@ def load_data_from_oss(config, client_cfgs=None):
             raise
         return True
 
-    file_path = os.path.join(config.data.root, config.oss.download.data_file)
+    file_path = os.path.join(config.data.root, config.data.file_path)
     folder_path = os.path.dirname(file_path)
     Path(folder_path).mkdir(parents=True, exist_ok=True)
 
@@ -38,16 +38,13 @@ def load_data_from_oss(config, client_cfgs=None):
             raise Exception(f'Unable to access {bucket}, with check your '
                             f'auth and settings in the `cfg.cloud.oss`.')
 
-        bucket.get_object_to_file(config.oss.download.data_file, file_path)
+        bucket.get_object_to_file(config.data.file_path, file_path)
 
     with open(file_path, 'br') as file:
         data = pickle.load(file)
 
-    translator = DummyDataTranslator(config, client_cfgs)
-    data = translator(data)
-
-    # Convert `StandaloneDataDict` to `ClientData` when in distribute mode
-    data = convert_data_mode(data, config)
+    data = convert2cdata(data, config, client_cfgs)
+    print(data)
 
     # Restore the user-specified seed after the data generation
     setup_seed(config.seed)

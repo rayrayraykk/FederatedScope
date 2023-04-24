@@ -24,12 +24,11 @@ def extend_cloud_cfg(cfg):
 
     #  OSS - Download
     cfg.oss.download = CN()
-    cfg.oss.download.data_file = ''
     cfg.oss.download.use_cache = True
 
     # OSS - Upload
     cfg.oss.upload = CN()
-    cfg.oss.upload.model_path = ''
+    cfg.oss.upload.model_path = ''  # To be fixed.
 
     # ---------------------------------------------------------------------- #
     # ODPS related options (Optional)

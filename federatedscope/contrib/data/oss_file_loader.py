@@ -1,9 +1,11 @@
 import os
 import pickle
+from pathlib import Path
 
 from federatedscope.register import register_data
 from federatedscope.core.data.utils import convert_data_mode
 from federatedscope.core.auxiliaries.utils import setup_seed
+from federatedscope.core.data import DummyDataTranslator
 
 
 def load_data_from_oss(config, client_cfgs=None):
@@ -17,8 +19,14 @@ def load_data_from_oss(config, client_cfgs=None):
         return True
 
     file_path = os.path.join(config.data.root, config.oss.download.data_file)
+    folder_path = os.path.dirname(file_path)
+    Path(folder_path).mkdir(parents=True, exist_ok=True)
 
-    if not os.path.exists(file_path):  # Download
+    if not os.path.exists(file_path) or not config.oss.download.use_cache:
+        if os.path.exists(file_path):
+            os.remove(file_path)
+
+        # Download
         import oss2
         auth = oss2.Auth(config.oss.access_key_id,
                          config.oss.access_key_secret)
@@ -34,6 +42,9 @@ def load_data_from_oss(config, client_cfgs=None):
 
     with open(file_path, 'br') as file:
         data = pickle.load(file)
+
+    translator = DummyDataTranslator(config, client_cfgs)
+    data = translator(data)
 
     # Convert `StandaloneDataDict` to `ClientData` when in distribute mode
     data = convert_data_mode(data, config)

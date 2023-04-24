@@ -24,7 +24,8 @@ def extend_cloud_cfg(cfg):
 
     #  OSS - Download
     cfg.oss.download = CN()
-    cfg.oss.download.data_files = ''
+    cfg.oss.download.data_file = ''
+    cfg.oss.download.use_cache = True
 
     # OSS - Upload
     cfg.oss.upload = CN()

@@ -21,11 +21,13 @@ def extend_cloud_cfg(cfg):
     cfg.oss.endpoint = ''
     cfg.oss.bucket = ''
     cfg.oss.timeout = 30
-    # Download
-    cfg.oss.download = CN()
-    cfg.oss.download.data_file = ''
 
-    # Upload
+    #  OSS - Download
+    cfg.oss.download = CN()
+    cfg.oss.download.data_files = ''
+
+    # OSS - Upload
+    cfg.oss.upload = CN()
     cfg.oss.upload.model_path = ''
 
     # ---------------------------------------------------------------------- #

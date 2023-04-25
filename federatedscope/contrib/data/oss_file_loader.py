@@ -44,7 +44,6 @@ def load_data_from_oss(config, client_cfgs=None):
         data = pickle.load(file)
 
     data = convert2cdata(data, config, client_cfgs)
-    print(data)
 
     # Restore the user-specified seed after the data generation
     setup_seed(config.seed)

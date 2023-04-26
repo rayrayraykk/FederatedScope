@@ -17,7 +17,7 @@ test_requires = ['pytest', 'pytest-cov']
 
 dev_requires = test_requires + ['pre-commit', 'networkx', 'matplotlib']
 
-cloud_requires = ['paramiko==2.11.0', 'celery[redis]', 'fabric']
+cloud_requires = ['paramiko==2.11.0', 'celery[redis]', 'gradio', 'fabric']
 
 app_requires = [
     'torch-geometric==2.0.4', 'nltk', 'transformers==4.16.2',
@@ -71,4 +71,11 @@ setuptools.setup(
         "Operating System :: OS Independent",
     ],
     python_requires='>=3.9',
-)
+    entry_points={
+        "console_scripts": [
+            "fs=federatedscope.main:main",
+            "fs-hpo=federatedscope.hpo:main",
+            "fs-cloud-client=federatedscope.cloud.client.client:main",
+            "fs-cloud-server=celery.__main__:main",
+        ]
+    })

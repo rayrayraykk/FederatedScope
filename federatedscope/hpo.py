@@ -20,7 +20,8 @@ if os.environ.get('https_proxy'):
 if os.environ.get('http_proxy'):
     del os.environ['http_proxy']
 
-if __name__ == '__main__':
+
+def main():
     init_cfg = global_cfg.clone()
     args = parse_args()
     if args.cfg_file:
@@ -46,3 +47,7 @@ if __name__ == '__main__':
 
     scheduler = get_scheduler(init_cfg, client_cfgs)
     run_scheduler(scheduler, init_cfg, client_cfgs)
+
+
+if __name__ == '__main__':
+    main()

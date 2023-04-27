@@ -1,3 +1,4 @@
+# TODO: outdated, to be deleted.
 from federatedscope.core.configs.config import global_cfg
 
 from federatedscope.cloud.client.module.ssh import SSHManager
@@ -41,7 +42,7 @@ class ECSManager(Manager):
             'ip': ip,
             'user': user,
             'password': password,
-            'manager': SSHManager(ip, user, password)
+            'manager': None  # SSHManager(ip, user, password)
         }
         self.logger.info(f"{ip} added.")
 

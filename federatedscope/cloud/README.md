@@ -23,7 +23,7 @@ pip install -e .[cloud]
 ```bash
 # For Server
 cd federatedscope/cloud/server
-celery -A server worker --loglevel=info
+fs-cloud-server -A server worker --loglevel=info
 
 ## For multi-worker
 # celery multi start w1 -A server -l info
@@ -32,7 +32,6 @@ celery -A server worker --loglevel=info
 
 # For Client
 # Modify `server_ip` in federatedscope/cloud/config.py
-python federatedscope/cloud/client/client.py
-help
+fs-cloud-client  # UserName Password
 ```
 

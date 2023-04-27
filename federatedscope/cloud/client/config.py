@@ -17,26 +17,32 @@ enable_utc = True
 from yacs.config import CfgNode as CN
 
 # Main
-CONFIG = CN()
-CONFIG.timeout = 30
+cloud_cfg = CN()
+cloud_cfg.timeout = 30
+cloud_cfg.user = ''
+cloud_cfg.password = ''
+
+# Runner related
+cloud_cfg.runner = CN()
+cloud_cfg.runner.balance = 'least_load'
 
 # Conda related
-CONFIG.conda = CN()
-CONFIG.conda.python = '3.9'
-CONFIG.conda.path = '/opt/anaconda3'
-CONFIG.conda.env_name = 'test_fabric'
+cloud_cfg.conda = CN()
+cloud_cfg.conda.python = '3.9'
+cloud_cfg.conda.path = '/opt/anaconda3'
+cloud_cfg.conda.env_name = 'test_fabric'
 
 # Backend related
-CONFIG.backend = CN()
-CONFIG.backend.type = 'torch'
-CONFIG.backend.pytorch = '1.10.1'
-CONFIG.backend.torchvision = '0.11.2'
-CONFIG.backend.torchaudio = '0.10.1'
-CONFIG.backend.torchtext = '0.11.1'
-CONFIG.backend.cudatoolkit = '11.3'
+cloud_cfg.backend = CN()
+cloud_cfg.backend.type = 'torch'
+cloud_cfg.backend.pytorch = '1.10.1'
+cloud_cfg.backend.torchvision = '0.11.2'
+cloud_cfg.backend.torchaudio = '0.10.1'
+cloud_cfg.backend.torchtext = '0.11.1'
+cloud_cfg.backend.cudatoolkit = '11.3'
 
 # FS related
-CONFIG.fs = CN()
-CONFIG.fs.repo_url = 'https://github.com/alibaba/FederatedScope.git'
-CONFIG.fs.branch = 'master'
-CONFIG.fs.path = 'test_fabric'
+cloud_cfg.fs = CN()
+cloud_cfg.fs.repo_url = 'https://github.com/rayrayraykk/FederatedScope.git'
+cloud_cfg.fs.branch = 'cloud-dev'
+cloud_cfg.fs.path = 'test_cloud'

@@ -3,6 +3,7 @@ import logging
 
 from collections import deque
 import heapq
+import socket
 
 import numpy as np
 
@@ -516,9 +517,21 @@ class DistributedRunner(BaseRunner):
         elif self.cfg.distribute.role == 'client':
             # When we set up the client in the distributed mode, we assume
             # the server has been set up and number with #0
+            client_port = self.cfg.distribute.client_port
+            s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            result = s.connect_ex(('127.0.0.1', client_port))
+            s.close()
+            if result == 0:  # Port occupied
+                s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                s.bind(('', 0))
+                client_port = s.getsockname()[1]
+                s.close()
+                logger.warning(f'Port {self.cfg.distribute.client_port} is '
+                               f'occupied, use {client_port}.')
+
             self.client_address = {
                 'host': self.cfg.distribute.client_host,
-                'port': self.cfg.distribute.client_port
+                'port': client_port
             }
             self.client = self._setup_client(resource_info=sampled_resource)
 

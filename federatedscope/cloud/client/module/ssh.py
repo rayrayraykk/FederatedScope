@@ -1,8 +1,11 @@
+# TODO: outdated, to be deleted.
 import os
 import paramiko
 
-from federatedscope.cloud.client.config import ENV_NAME, ROOT_PATH, FS_VERSION
+# from federatedscope.cloud.client.config import
 from federatedscope.cloud.common.utils import Logger
+
+ENV_NAME, ROOT_PATH, FS_VERSION = None, None, None
 
 
 class SSHManager(object):

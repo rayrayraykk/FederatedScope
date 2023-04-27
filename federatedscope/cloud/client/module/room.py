@@ -6,11 +6,16 @@ import pandas as pd
 from federatedscope.core.configs.config import global_cfg
 from federatedscope.cloud.common.utils import config2cmdargs, flatten_dict
 from federatedscope.cloud.common.manager import Manager
-from federatedscope.cloud.client.config import TIMEOUT
 
 
 class RoomManager(Manager):
-    def __init__(self, user, organizer, logger, white_list=[], black_list=[]):
+    def __init__(self,
+                 user,
+                 organizer,
+                 logger,
+                 white_list=[],
+                 black_list=[],
+                 config=None):
         super(RoomManager, self).__init__([
             'idx', 'abstract', 'cfg', 'auth', 'log_file', 'port', 'pid',
             'cur_client', 'max_client'
@@ -20,6 +25,7 @@ class RoomManager(Manager):
                                           black_list=black_list)
         self.organizer = organizer
         self.logger = logger
+        # TODO: replace test data with real data
         self.df_match = pd.DataFrame(
             data=[[34, 'tabular', 'dim_tb_itm', '0.93', ''],
                   [12, 'tabular', 'new_taobao', '0.79', ''],
@@ -36,13 +42,14 @@ class RoomManager(Manager):
             columns=[
                 'idx', 'room_idx', 'domain', 'abstract', 'rate', 'status'
             ])
+        self.config = config
 
     def display(self, condition={}):
         # Sync and display lobby
         result = self.organizer.send_task('server.display_lobby', [self.auth])
 
         cnt = 0
-        while (not result.ready()) and cnt < TIMEOUT:
+        while (not result.ready()) and cnt < self.config.timeout:
             self.logger.info('Waiting for response... (will re-try in 1s)')
             time.sleep(1)
             cnt += 1
@@ -146,7 +153,7 @@ class RoomManager(Manager):
         result = self.organizer.send_task('server.add_room',
                                           [args, password, self.auth])
         cnt = 0
-        while (not result.ready()) and cnt < TIMEOUT:
+        while (not result.ready()) and cnt < self.config.timeout:
             self.logger.info('Waiting for response... (will re-try in 1s)')
             time.sleep(1)
             cnt += 1
@@ -157,7 +164,7 @@ class RoomManager(Manager):
         result = self.organizer.send_task('server.auth_room',
                                           [idx, password, self.auth])
         cnt = 0
-        while (not result.ready()) and cnt < TIMEOUT:
+        while (not result.ready()) and cnt < self.config.timeout:
             self.logger.info('Waiting for response... (will re-try in 1s)')
             time.sleep(1)
             cnt += 1
@@ -185,7 +192,7 @@ class RoomManager(Manager):
             idx = None
         result = self.organizer.send_task('server.shutdown', [idx, self.auth])
         cnt = 0
-        while (not result.ready()) and cnt < TIMEOUT:
+        while (not result.ready()) and cnt < self.config.timeout:
             self.logger.info('Waiting for response... (will re-try in 1s)')
             time.sleep(1)
             cnt += 1
@@ -193,26 +200,27 @@ class RoomManager(Manager):
 
 
 if __name__ == '__main__':
-    import logging
-    from celery import Celery
-
-    from federatedscope.organizer import cfg_client
-    organizer = Celery()
-    organizer.config_from_object(cfg_client)
-    logging.basicConfig(level=logging.INFO)
-
-    rm = RoomManager('root', organizer, logging)
-
-    # Test functions
-    rm.display_room()
-    rm.add(
-        'scripts/distributed_scripts/distributed_configs'
-        '/distributed_femnist_server.yaml',
-        password=12345)
-    rm.display_room()
-    rm.authorize(1, 12345)
-    rm.authorize(1, 12345)
-    rm.display_room()
-    rm.shutdown(1)
-    rm.shutdown(2)
-    rm.shutdown()
+    ...
+    # import logging
+    # from celery import Celery
+    #
+    # from federatedscope.organizer import cfg_client
+    # organizer = Celery()
+    # organizer.config_from_object(cfg_client)
+    # logging.basicConfig(level=logging.INFO)
+    #
+    # rm = RoomManager('root', organizer, logging)
+    #
+    # # Test functions
+    # rm.display_room()
+    # rm.add(
+    #     'scripts/distributed_scripts/distributed_configs'
+    #     '/distributed_femnist_server.yaml',
+    #     password=12345)
+    # rm.display_room()
+    # rm.authorize(1, 12345)
+    # rm.authorize(1, 12345)
+    # rm.display_room()
+    # rm.shutdown(1)
+    # rm.shutdown(2)
+    # rm.shutdown()

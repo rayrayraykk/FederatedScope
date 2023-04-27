@@ -29,8 +29,9 @@ def main():
     organizer.config_from_object(cfg_client)
 
     logger = GRLogger()
-    room_manager = RoomManager(cfg_client.USER, organizer, logger)
-    ecs_manager = ECSManager(cfg_client.USER, logger, room_manager)
+    room_manager = RoomManager(cfg_client.cloud_cfg.user, organizer, logger,
+                               cfg_client.cloud_cfg)
+    ecs_manager = ECSManager(cfg_client.cloud_cfg.user, logger, room_manager)
 
     sys.stdout = FileLogger(LOG_NAME)
 

@@ -133,15 +133,11 @@ class FLManager(object):
             check_cmd = f"{self.conda} list " \
                         f"-n {self.config.conda.env_name} " \
                         f"| grep {package}"
-        if repo_url:
-            install_cmd = f"{self.pip} install {opt} " \
-                          f"git+{repo_url}@{git_tag}" \
-                          f"#egg={package}{package_version}" \
-                if repo_url else \
-                f"{self.pip} install {opt} {package}{package_version}"
-        else:
-            install_cmd = f"{self.pip} install " \
-                          f"{opt} {package}{package_version}"
+        install_cmd = f"{self.pip} install {opt} " \
+                      f"git+{repo_url}@{git_tag}" \
+                      f"#egg={package}{package_version}" \
+            if repo_url else \
+            f"{self.pip} install {opt} {package}{package_version}"
 
         if pip_index:
             install_cmd += f" -i {pip_index}"

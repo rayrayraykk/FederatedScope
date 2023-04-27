@@ -253,12 +253,13 @@ class FLManager(object):
         self._install_conda(hosts=hosts)
         self._install_python(hosts=hosts)
         self._install_backend(hosts=hosts)
-        self._pip_install_package(hosts=hosts,
-                                  package='federatedscope',
-                                  repo_url=self.config.fs.repo_url,
-                                  git_tag=self.config.fs.branch,
-                                  package_version="[cloud]",
-                                  is_force_update=True)
+        self._pip_install_package(
+            hosts=hosts,
+            package='federatedscope',
+            repo_url=self.config.fs.repo_url,
+            git_tag=self.config.fs.branch,
+            package_version="[cloud]",
+            is_force_update=self.config.fs.is_force_update)
 
     def add_host(self, host):  # TODO: if host is a list
         if host in self.hosts:

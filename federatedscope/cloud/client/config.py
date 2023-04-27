@@ -47,3 +47,4 @@ cloud_cfg.fs = CN()
 cloud_cfg.fs.repo_url = 'https://github.com/rayrayraykk/FederatedScope.git'
 cloud_cfg.fs.branch = 'cloud-dev'
 cloud_cfg.fs.path = 'test_cloud'
+cloud_cfg.fs.is_force_update = True

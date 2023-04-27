@@ -137,8 +137,8 @@ class FLManager(object):
             install_cmd = f"{self.pip} install {opt} " \
                           f"git+{repo_url}@{git_tag}" \
                           f"#egg={package}{package_version}" \
-                if repo_url else f"{self.pip} install " \
-                          f"{opt} {package}{package_version}"
+                if repo_url else \
+                f"{self.pip} install {opt} {package}{package_version}"
         else:
             install_cmd = f"{self.pip} install " \
                           f"{opt} {package}{package_version}"

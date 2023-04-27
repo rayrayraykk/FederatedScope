@@ -73,7 +73,7 @@ class FLManager(object):
 
         print(check_cmd)
         try:
-            res = group.run("echo 123", warn=True)
+            res = group.run(check_cmd, warn=True)
         except Exception as error:
             print(error)
             return

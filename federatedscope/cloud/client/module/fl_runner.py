@@ -66,30 +66,25 @@ class FLManager(object):
         return min(load_averages, key=load_averages.get)
 
     def _check_and_install(self, hosts, check_cmd, install_cmd, update_cmd=""):
-        print(hosts, *hosts)
         group = ThreadingGroup(*hosts,
                                user=self.user,
                                port=self.port,
                                connect_kwargs={"password": self.password})
 
-        print(check_cmd)
         retry = 0
         while retry < self.config.runner.max_retry:
             try:
                 res = group.run(check_cmd, warn=True)
                 break  # if no exception, exit the loop
             except Exception as error:
-                print(f"Command failed: {error}")
+                self.logger.info(f"Command failed: {error}")
                 retry += 1  # increment the retry counter
 
-        print('done', check_cmd)
         failed_groud = []
         for connection, result in res.items():
             if result.ok:
                 self.logger.info(f"{connection.host} already has installed"
                                  f" ('{check_cmd}').")
-                print(f"{connection.host} already has installed"
-                      f" ('{check_cmd}').")
             else:
                 failed_groud.append(connection)
         if len(failed_groud):
@@ -101,10 +96,9 @@ class FLManager(object):
                     tg.run(install_cmd)
                     self.logger.info(
                         f"Successfully installed with '{install_cmd}'.")
-                    print(f"Successfully installed with '{install_cmd}'.")
                     break  # if no exception, exit the loop
                 except Exception as error:
-                    print(f"Command failed: {error}")
+                    self.logger.info(f"Command failed: {error}")
                     retry += 1  # increment the retry counter
             tg.close()
         group.close()
@@ -116,7 +110,7 @@ class FLManager(object):
                     group.run(update_cmd, warn=True)
                     break
                 except Exception as error:
-                    print(f"Command failed: {error}")
+                    self.logger.info(f"Command failed: {error}")
 
     def _install_conda(self, hosts):
         check_cmd = f"{self.conda} --version"
@@ -300,9 +294,15 @@ class FLManager(object):
 if __name__ == '__main__':
     import argparse
     import logging
+    import sys
     from federatedscope.cloud.client.config import cloud_cfg
 
-    logger = logging.getLogger(__name__)
+    logger = logging.getLogger()
+    logger.setLevel(logging.INFO)
+
+    handler = logging.StreamHandler(sys.stdout)
+    handler.setLevel(logging.INFO)
+    logger.addHandler(handler)
 
     parser = argparse.ArgumentParser()
     parser.add_argument('hosts',
@@ -327,4 +327,4 @@ if __name__ == '__main__':
                         logger=logger,
                         config=cloud_cfg)
 
-    print(manager.df)
+    logger.info(manager.df)

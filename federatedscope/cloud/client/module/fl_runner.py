@@ -1,4 +1,4 @@
-# TODO: remove update; status update
+# TODO: status update
 
 import os
 import random
@@ -73,11 +73,15 @@ class FLManager(object):
                                connect_kwargs={"password": self.password})
 
         print(check_cmd)
-        try:
-            res = group.run(check_cmd, warn=True)
-        except Exception as error:
-            print(error)
-            return
+        retry = 0
+        while retry < self.config.runner.max_retry:
+            try:
+                res = group.run(check_cmd, warn=True)
+                break  # if no exception, exit the loop
+            except Exception as error:
+                print(f"Command failed: {error}")
+                retry += 1  # increment the retry counter
+
         print('done', check_cmd)
         failed_groud = []
         for connection, result in res.items():
@@ -90,18 +94,29 @@ class FLManager(object):
                 failed_groud.append(connection)
         if len(failed_groud):
             tg = ThreadingGroup.from_connections(failed_groud)
-            tg.run(install_cmd)
-            self.logger.info(f"Successfully installed with '{install_cmd}'.")
-            print(f"Successfully installed with '{install_cmd}'.")
 
+            retry = 0
+            while retry < self.config.runner.max_retry:
+                try:
+                    tg.run(install_cmd)
+                    self.logger.info(
+                        f"Successfully installed with '{install_cmd}'.")
+                    print(f"Successfully installed with '{install_cmd}'.")
+                    break  # if no exception, exit the loop
+                except Exception as error:
+                    print(f"Command failed: {error}")
+                    retry += 1  # increment the retry counter
+            tg.close()
         group.close()
 
         if len(update_cmd):
-            try:
-                group.run(update_cmd, warn=True)
-            except Exception as error:
-                print(error)
-                return
+            retry = 0
+            while retry < self.config.runner.max_retry:
+                try:
+                    group.run(update_cmd, warn=True)
+                    break
+                except Exception as error:
+                    print(f"Command failed: {error}")
 
     def _install_conda(self, hosts):
         check_cmd = f"{self.conda} --version"
@@ -129,10 +144,9 @@ class FLManager(object):
                              package_version="",
                              pip_index="",
                              is_force_update=False):
-        if not is_force_update:
-            check_cmd = f"{self.conda} list " \
-                        f"-n {self.config.conda.env_name} " \
-                        f"| grep {package}"
+        check_cmd = f"{self.conda} list " \
+                    f"-n {self.config.conda.env_name} " \
+                    f"| grep {package}" if not is_force_update else "false"
         install_cmd = f"{self.pip} install {opt} " \
                       f"git+{repo_url}@{git_tag}" \
                       f"#egg={package}{package_version}" \

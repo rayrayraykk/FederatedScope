@@ -25,6 +25,7 @@ cloud_cfg.password = ''
 # Runner related
 cloud_cfg.runner = CN()
 cloud_cfg.runner.balance = 'least_load'
+cloud_cfg.runner.max_retry = 3
 
 # Conda related
 cloud_cfg.conda = CN()

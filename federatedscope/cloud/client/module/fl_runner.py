@@ -25,6 +25,7 @@ class FLManager(object):
         self.password = password
         self.port = port
 
+        # NOTE: May hang when multiple machines run in parallel
         self.runner = ThreadingGroup(
             *self.hosts,
             user=self.user,
@@ -124,16 +125,26 @@ class FLManager(object):
                              package,
                              opt="",
                              repo_url="",
-                             tag="",
-                             version=""):
-        check_cmd = f"{self.conda} list " \
-                    f"-n {self.config.conda.env_name} " \
-                    f"| grep {package}"
-        if len(repo_url):
+                             git_tag="",
+                             package_version="",
+                             pip_index="",
+                             is_force_update=False):
+        if not is_force_update:
+            check_cmd = f"{self.conda} list " \
+                        f"-n {self.config.conda.env_name} " \
+                        f"| grep {package}"
+        if repo_url:
             install_cmd = f"{self.pip} install {opt} " \
-                          f"git+{repo_url}@{tag}#egg={package}{version}"
+                          f"git+{repo_url}@{git_tag}" \
+                          f"#egg={package}{package_version}" \
+                if repo_url else f"{self.pip} install " \
+                          f"{opt} {package}{package_version}"
         else:
-            install_cmd = f"{self.pip} install {opt} {package}{version}"
+            install_cmd = f"{self.pip} install " \
+                          f"{opt} {package}{package_version}"
+
+        if pip_index:
+            install_cmd += f" -i {pip_index}"
 
         self._check_and_install(hosts, check_cmd, install_cmd)
 
@@ -155,7 +166,7 @@ class FLManager(object):
         self._check_and_install(hosts, check_cmd, install_cmd)
 
     # ---------------------------------------------------------------------- #
-    # Not use function
+    # Not used method
     # ---------------------------------------------------------------------- #
     def _conda_install_package(self, hosts, package, extra_cmd=""):
         check_cmd = f"{self.conda} list " \
@@ -166,7 +177,7 @@ class FLManager(object):
         self._check_and_install(hosts, check_cmd, install_cmd)
 
     # ---------------------------------------------------------------------- #
-    # Not use function
+    # Not used method
     # ---------------------------------------------------------------------- #
     def _download_repo(self, hosts, repo_url, branch, path):
         repo_name = repo_url.split("/")[-1].replace(".git", "")
@@ -180,12 +191,14 @@ class FLManager(object):
                      f"timeout 10 git pull"
         self._check_and_install(hosts, check_cmd, install_cmd, update_cmd)
 
+    # ---------------------------------------------------------------------- #
+    # Not used method
+    # ---------------------------------------------------------------------- #
     def _run_python(self, command):
         result = self.runner.run(f"{self.python} -c "
                                  f"'{command}'")
         self.logger.info(f"{self.runner.host} {result.stdout.strip()}")
 
-    # Load balancing
     def run(self, command):
         log_file = os.path.join(self.log_dir,
                                 command.replace(" ", "_") + ".log")
@@ -195,6 +208,8 @@ class FLManager(object):
                                 command.replace(" ", "_") + ".pid")
         nohup_command = f"nohup {command} > {log_file} 2> {err_file} & echo " \
                         f"$! > {pid_file}"
+
+        # Load balancing
         if self.config.runner.balance == 'round_robin':
             selector = self._round_robin
         elif self.config.runner.balance == 'least_load':
@@ -213,6 +228,7 @@ class FLManager(object):
         self.runner.run(kill_command)
 
     def status(self, command):
+        # TODO: to be fixed
         pid_file = os.path.join(self.pid_dir,
                                 command.replace(" ", "_") + ".pid")
         status_command = f"ps -p $(cat {pid_file})"
@@ -230,24 +246,28 @@ class FLManager(object):
         self._pip_install_package(hosts=hosts,
                                   package='federatedscope',
                                   repo_url=self.config.fs.repo_url,
-                                  tag=self.config.fs.branch,
-                                  version="[cloud]")
+                                  git_tag=self.config.fs.branch,
+                                  package_version="[cloud]",
+                                  is_force_update=True)
 
-    def add_host(self, host):
+    def add_host(self, host):  # TODO: if host is a list
         if host in self.hosts:
             return
 
         self.setup(host)
         self.hosts.append(host)
+
+        self.runner.close()
         self.runner = ThreadingGroup(
             *self.hosts,
             user=self.user,
             port=self.port,
             connect_kwargs={"password": self.password})
 
-    def delete_host(self, host):
+    def delete_host(self, host):  # TODO: if host is a list
         if host in self.hosts:
             self.hosts.remove(host)
+            self.runner.close()
             self.runner = ThreadingGroup(
                 *self.hosts,
                 user=self.user,

@@ -5,7 +5,6 @@ import sys
 
 import numpy as np
 import pickle
-import time
 
 from federatedscope.core.monitors.early_stopper import EarlyStopper
 from federatedscope.core.message import Message
@@ -795,8 +794,12 @@ class Server(BaseServer):
                 ]
             else:
                 if self._cfg.backend == 'torch':
-                    model_size = sys.getsizeof(pickle.dumps(
-                        self.models[0])) / 1024.0 * 8.
+                    try:
+                        model_size = sys.getsizeof(pickle.dumps(
+                            self.models[0])) / 1024.0 * 8.
+                    except Exception as error:
+                        model_size = 1.0
+                        logger.warning(f'{error} in calculate model size.')
                 else:
                     # TODO: calculate model size for TF Model
                     model_size = 1.0

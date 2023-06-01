@@ -100,6 +100,8 @@ class GeneralTorchTrainer(Trainer):
     def register_default_hooks_train(self):
         self.register_hook_in_train(self._hook_on_data_parallel_init,
                                     "on_fit_start")
+        self.register_hook_in_train(
+            self._hook_on_fit_start_numerical_precision, "on_fit_start")
         self.register_hook_in_train(self._hook_on_fit_start_init,
                                     "on_fit_start")
         self.register_hook_in_train(
@@ -122,6 +124,8 @@ class GeneralTorchTrainer(Trainer):
     def register_default_hooks_ft(self):
         self.register_hook_in_ft(self._hook_on_data_parallel_init,
                                  "on_fit_start")
+        self.register_hook_in_ft(self._hook_on_fit_start_numerical_precision,
+                                 "on_fit_start")
         self.register_hook_in_ft(self._hook_on_fit_start_init, "on_fit_start")
         self.register_hook_in_ft(self._hook_on_fit_start_calculate_model_size,
                                  "on_fit_start")
@@ -142,6 +146,8 @@ class GeneralTorchTrainer(Trainer):
     def register_default_hooks_eval(self):
         # test/val
         self.register_hook_in_eval(self._hook_on_data_parallel_init,
+                                   "on_fit_start")
+        self.register_hook_in_eval(self._hook_on_fit_start_numerical_precision,
                                    "on_fit_start")
         self.register_hook_in_eval(self._hook_on_fit_start_init,
                                    "on_fit_start")
@@ -172,6 +178,10 @@ class GeneralTorchTrainer(Trainer):
             ctx.model = \
                 torch.nn.DataParallel(ctx.model,
                                       device_ids=ctx.cfg.train.data_para_dids)
+
+    def _hook_on_fit_start_numerical_precision(self, ctx):
+        if self.cfg.train.is_enable_half:
+            ctx.model = ctx.model.half()
 
     def _hook_on_fit_start_init(self, ctx):
         """

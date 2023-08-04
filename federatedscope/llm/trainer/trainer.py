@@ -52,6 +52,13 @@ class LLMTrainer(GeneralTorchTrainer):
         if ctx.scheduler is not None:
             ctx.scheduler.step()
 
+        input_ids = ctx.data_batch['input_ids'].to('cpu')
+        labels = ctx.data_batch['labels'].to('cpu')
+        attention_mask = ctx.data_batch['attention_mask'].to('cpu')
+
+        torch.cuda.empty_cache()
+        input('GPU')
+
     def _hook_on_batch_end(self, ctx):
         if ctx.skip_this_batch:
             return

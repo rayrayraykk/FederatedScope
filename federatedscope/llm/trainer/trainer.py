@@ -42,14 +42,16 @@ class LLMTrainer(GeneralTorchTrainer):
         if ctx.skip_this_batch:
             return
 
-        ctx.loss_task.backward()
-
         input_ids = ctx.data_batch['input_ids'].to('cpu')
         labels = ctx.data_batch['labels'].to('cpu')
         attention_mask = ctx.data_batch['attention_mask'].to('cpu')
-
         torch.cuda.empty_cache()
         input('GPU0')
+
+        ctx.loss_task.backward()
+
+        torch.cuda.empty_cache()
+        input('GPU1')
 
         if ctx.grad_clip > 0:
             torch.nn.utils.clip_grad_norm_(ctx.model.parameters(),
@@ -58,7 +60,8 @@ class LLMTrainer(GeneralTorchTrainer):
         if ctx.scheduler is not None:
             ctx.scheduler.step()
 
-        input('GPU1')
+        torch.cuda.empty_cache()
+        input('GPU2')
 
     def _hook_on_batch_end(self, ctx):
         if ctx.skip_this_batch:

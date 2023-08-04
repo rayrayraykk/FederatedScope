@@ -63,6 +63,8 @@ class LLMTrainer(GeneralTorchTrainer):
         torch.cuda.empty_cache()
         input('GPU2')
 
+        print(torch.cuda.max_memory_allocated(3))
+
     def _hook_on_batch_end(self, ctx):
         if ctx.skip_this_batch:
             return

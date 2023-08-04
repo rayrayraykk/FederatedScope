@@ -65,7 +65,7 @@ class LLMTrainer(GeneralTorchTrainer):
 
         ctx.time_list.append(time.time() - ctx.time)
         print('num:', len(ctx.time_list), 'cur:', ctx.time_list[-1], 'avg:',
-              np.mean(ctx.time_list))
+              np.mean(ctx.time_list), 'std:', np.std(ctx.time_list))
         input('batch finish')
 
     def _hook_on_fit_end(self, ctx):

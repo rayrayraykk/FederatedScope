@@ -94,7 +94,7 @@ class Server(BaseServer):
         size = 0
         for key, param in state_dict.items():
             size += sys.getsizeof(pickle.dumps(
-                b64serializer(param))) / 1024.0 * 8.
+                b64serializer(param))) / 1024.0 / 1024.
 
         print(size)
         input('xxx')

@@ -1,3 +1,5 @@
+import time
+import numpy as np
 import torch
 import logging
 from federatedscope.register import register_trainer
@@ -12,6 +14,8 @@ logger = logging.getLogger(__name__)
 
 class LLMTrainer(GeneralTorchTrainer):
     def _hook_on_batch_forward(self, ctx):
+        ctx.time = time.time()
+        ctx.time_list = []
         input_ids = ctx.data_batch['input_ids'].to(ctx.device)
         labels = ctx.data_batch['labels'].to(ctx.device)
         attention_mask = ctx.data_batch['attention_mask'].to(ctx.device)
@@ -58,6 +62,11 @@ class LLMTrainer(GeneralTorchTrainer):
         ctx.num_samples += ctx.batch_size
         ctx.loss_batch_total += ctx.loss_batch.item() * ctx.batch_size
         ctx.loss_regular_total += float(ctx.get("loss_regular", 0.))
+
+        ctx.time_list.append(time.time() - ctx.time)
+        print('num:', len(ctx.time_list), 'cur:', ctx.time_list[-1], 'avg:',
+              np.mean(ctx.time_list))
+        input('batch finish')
 
     def _hook_on_fit_end(self, ctx):
         avg_loss = 0 if float(

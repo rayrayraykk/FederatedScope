@@ -88,10 +88,17 @@ class Server(BaseServer):
             self._cfg.early_stop.patience, self._cfg.early_stop.delta,
             self._cfg.early_stop.improve_indicator_mode,
             self._monitor.the_larger_the_better)
-        import torch
-        model = model.half().to(device)
-        print(torch.cuda.max_memory_allocated())
-        input('xxxx')
+        from federatedscope.core.auxiliaries.utils import b64serializer
+
+        state_dict = model.state_dict()
+        size = 0
+        for key, param in state_dict.items():
+            size += sys.getsizeof(pickle.dumps(
+                b64serializer(param))) / 1024.0 * 8.
+
+        print(size)
+        input('xxx')
+
         if self._cfg.federate.share_local_model \
                 and not self._cfg.federate.process_num > 1:
             if self._cfg.train.is_enable_half:

@@ -88,7 +88,10 @@ class Server(BaseServer):
             self._cfg.early_stop.patience, self._cfg.early_stop.delta,
             self._cfg.early_stop.improve_indicator_mode,
             self._monitor.the_larger_the_better)
-
+        import torch
+        model = model.half().to(device)
+        print(torch.cuda.max_memory_allocated)
+        input('xxxx')
         if self._cfg.federate.share_local_model \
                 and not self._cfg.federate.process_num > 1:
             if self._cfg.train.is_enable_half:

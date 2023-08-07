@@ -34,18 +34,17 @@ def get_kd_loss_emu(raw_model, adap_model):
     return kd_loss
 
 
-def get_kd_loss_full(raw_model, model_logits, input_ids, labels,
+def get_kd_loss_full(raw_model, outputs_student, input_ids, labels,
                      attention_mask):
     with torch.no_grad():
         raw_model.eval()
         outputs_teacher = raw_model(input_ids=input_ids,
                                     labels=labels,
                                     attention_mask=attention_mask)
-    output_teacher = outputs_teacher.logits.float()
-    output_student = model_logits.float()
+    output_teacher = outputs_teacher.hidden_states[-1]
+    output_student = outputs_student.hidden_states[-1]
 
-    std = output_teacher.pow(2).mean().sqrt()
-    kd_loss = (output_teacher - output_student).div(std).pow(2).mean()
+    kd_loss = torch.mm.MSELoss(output_student, output_teacher)
     return kd_loss
 
 

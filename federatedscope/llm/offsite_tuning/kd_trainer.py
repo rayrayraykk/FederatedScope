@@ -7,7 +7,7 @@ from federatedscope.core.trainers.enums import LIFECYCLE
 logger = logging.getLogger(__name__)
 
 
-def get_kd_loss(raw_model, adap_model):
+def get_kd_loss_emu(raw_model, adap_model):
     """
     This function is borrowed from offsite-tuning:
     https://github.com/mit-han-lab/offsite-tuning/blob/main/offsite_tuning
@@ -34,6 +34,20 @@ def get_kd_loss(raw_model, adap_model):
     return kd_loss
 
 
+def get_kd_loss_full(raw_model, adap_model, input_ids, labels, attention_mask):
+    with torch.no_grad():
+        raw_model.eval()
+        outputs_teacher = raw_model(input_ids=input_ids,
+                                    labels=labels,
+                                    attention_mask=attention_mask)
+    output_teacher = outputs_teacher.logits.float()
+    output_student = adap_model.logits.float()
+
+    std = output_teacher.pow(2).mean().sqrt()
+    kd_loss = (output_teacher - output_student).div(std).pow(2).mean()
+    return kd_loss
+
+
 class KDTrainer(LLMTrainer):
     def __init__(self,
                  raw_model,
@@ -50,6 +64,7 @@ class KDTrainer(LLMTrainer):
             config.llm.offsite_tuning.emu_align.train.lm_loss_weight
         self.kd_loss_weight = \
             config.llm.offsite_tuning.emu_align.train.kd_loss_weight
+        self.dist_type = config.llm.offsite_tuning.emu_align.type
 
     def _hook_on_fit_start_numerical_precision(self, ctx):
         super(KDTrainer, self)._hook_on_fit_start_numerical_precision(ctx)
@@ -73,7 +88,19 @@ class KDTrainer(LLMTrainer):
                             attention_mask=attention_mask)
 
         logits = outputs.logits
-        kd_loss = self.kd_loss_weight * get_kd_loss(ctx.raw_model, ctx.model)
+
+        if self.dist_type == 'emu':
+            kd_loss = self.kd_loss_weight * get_kd_loss_emu(
+                ctx.raw_model, ctx.model)
+        elif self.dist_type == 'full':
+            kd_loss = self.kd_loss_weight * get_kd_loss_full(
+                ctx.raw_model,
+                ctx.model,
+                input_ids=input_ids,
+                labels=labels,
+                attention_mask=attention_mask)
+        else:
+            raise NotImplementedError
         lm_loss = self.lm_loss_weight * outputs.loss
         loss = kd_loss + lm_loss
 

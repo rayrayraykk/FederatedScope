@@ -47,11 +47,12 @@ def extend_llm_cfg(cfg):
     cfg.llm.offsite_tuning.emu_r = 10  # Index of emulator layer right
 
     # Used in `eval`
-    cfg.llm.offsite_tuning.eval_type = 'emu'  # Choose one of `[emu, full]`
+    cfg.llm.offsite_tuning.eval_type = 'emu'  # 'emu' or 'full'
 
     # Emulator alignment will use dataset in Server
     cfg.llm.offsite_tuning.emu_align = CN()
     cfg.llm.offsite_tuning.emu_align.use = False
+    cfg.llm.offsite_tuning.emu_align.type = 'emu'  # 'emu' or 'full'
     cfg.llm.offsite_tuning.emu_align.restore_from = ''
     cfg.llm.offsite_tuning.emu_align.save_to = ''
     cfg.llm.offsite_tuning.emu_align.exit_after_align = False

@@ -267,11 +267,17 @@ def align_student_with_teacher(raw_model, adap_model, cfg, device, monitor):
     # Case2: Restore fail or not assigned, start to train student
     new_cfg = build_cfg_for_alignment(cfg)
 
-    # Make adapter un-trainable
-    convert_layers_train_state(adap_model.adapter, is_trainable=False)
+    if cfg.llm.offsite_tuning.emu_align.type == 'emu':
+        # Make adapter un-trainable
+        convert_layers_train_state(adap_model.adapter, is_trainable=False)
 
-    # Make student trainable
-    convert_layers_train_state(adap_model.student, is_trainable=True)
+        # Make student trainable
+        convert_layers_train_state(adap_model.student, is_trainable=True)
+    elif cfg.llm.offsite_tuning.emu_align.type == 'full':
+        # Make full trainable
+        convert_layers_train_state(adap_model, is_trainable=True)
+    else:
+        raise NotImplementedError
 
     # Loading held-out data
     logger.info('Loading held-out dataset for alignment...')
@@ -294,11 +300,18 @@ def align_student_with_teacher(raw_model, adap_model, cfg, device, monitor):
     del adap_model.teacher
     adap_model.save_model(cfg.llm.offsite_tuning.emu_align.save_to)
 
-    # Make adapter trainable
-    convert_layers_train_state(adap_model.adapter, is_trainable=True)
-
-    # Make student un-trainable
-    convert_layers_train_state(adap_model.student, is_trainable=False)
+    if cfg.llm.offsite_tuning.emu_align.type == 'emu':
+        # Make adapter trainable
+        convert_layers_train_state(adap_model.adapter, is_trainable=True)
+        # Make student un-trainable
+        convert_layers_train_state(adap_model.student, is_trainable=False)
+    elif cfg.llm.offsite_tuning.emu_align.type == 'full':
+        # Make full trainable
+        convert_layers_train_state(adap_model, is_trainable=False)
+        # Make adapter trainable
+        convert_layers_train_state(adap_model.adapter, is_trainable=True)
+    else:
+        raise NotImplementedError
 
     return adap_model
 

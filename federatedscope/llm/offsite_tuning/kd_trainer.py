@@ -45,7 +45,7 @@ def get_kd_loss_full(raw_model, outputs_student, input_ids, labels,
     output_teacher = outputs_teacher.hidden_states[-1]
     output_student = outputs_student.hidden_states[-1]
 
-    kd_loss = torch.mm.MSELoss(output_student, output_teacher)
+    kd_loss = torch.nn.MSELoss()(output_student, output_teacher)
     return kd_loss
 
 

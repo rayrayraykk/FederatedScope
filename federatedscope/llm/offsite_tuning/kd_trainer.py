@@ -34,14 +34,15 @@ def get_kd_loss_emu(raw_model, adap_model):
     return kd_loss
 
 
-def get_kd_loss_full(raw_model, adap_model, input_ids, labels, attention_mask):
+def get_kd_loss_full(raw_model, model_logits, input_ids, labels,
+                     attention_mask):
     with torch.no_grad():
         raw_model.eval()
         outputs_teacher = raw_model(input_ids=input_ids,
                                     labels=labels,
                                     attention_mask=attention_mask)
     output_teacher = outputs_teacher.logits.float()
-    output_student = adap_model.logits.float()
+    output_student = model_logits.float()
 
     std = output_teacher.pow(2).mean().sqrt()
     kd_loss = (output_teacher - output_student).div(std).pow(2).mean()
@@ -95,7 +96,7 @@ class KDTrainer(LLMTrainer):
         elif self.dist_type == 'full':
             kd_loss = self.kd_loss_weight * get_kd_loss_full(
                 ctx.raw_model,
-                ctx.model,
+                logits,
                 input_ids=input_ids,
                 labels=labels,
                 attention_mask=attention_mask)

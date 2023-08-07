@@ -40,7 +40,8 @@ def get_kd_loss_full(raw_model, outputs_student, input_ids, labels,
         raw_model.eval()
         outputs_teacher = raw_model(input_ids=input_ids,
                                     labels=labels,
-                                    attention_mask=attention_mask)
+                                    attention_mask=attention_mask,
+                                    output_hidden_states=True)
     output_teacher = outputs_teacher.hidden_states[-1]
     output_student = outputs_student.hidden_states[-1]
 
@@ -83,24 +84,26 @@ class KDTrainer(LLMTrainer):
         labels = ctx.data_batch['labels'].to(ctx.device)
         attention_mask = ctx.data_batch['attention_mask'].to(ctx.device)
 
-        outputs = ctx.model(input_ids=input_ids,
-                            labels=labels,
-                            attention_mask=attention_mask)
-
-        logits = outputs.logits
-
         if self.dist_type == 'emu':
             kd_loss = self.kd_loss_weight * get_kd_loss_emu(
                 ctx.raw_model, ctx.model)
+            outputs = ctx.model(input_ids=input_ids,
+                                labels=labels,
+                                attention_mask=attention_mask)
         elif self.dist_type == 'full':
+            outputs = ctx.model(input_ids=input_ids,
+                                labels=labels,
+                                attention_mask=attention_mask,
+                                output_hidden_states=True)
             kd_loss = self.kd_loss_weight * get_kd_loss_full(
                 ctx.raw_model,
-                logits,
+                outputs,
                 input_ids=input_ids,
                 labels=labels,
                 attention_mask=attention_mask)
         else:
             raise NotImplementedError
+        logits = outputs.logits
         lm_loss = self.lm_loss_weight * outputs.loss
         loss = kd_loss + lm_loss
 

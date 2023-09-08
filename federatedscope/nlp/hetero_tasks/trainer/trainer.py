@@ -470,7 +470,7 @@ class ATCTrainer(GeneralTorchTrainer):
                         ctx.y_pred = CtxVar(y_pred[non_padding_idx],
                                             LIFECYCLE.BATCH)
                 else:
-                    outputs = ctx.model.run(
+                    outputs = ctx.model.generate(
                         input_ids=token_ids.to(ctx.device),
                         token_type_ids=token_type_ids.to(ctx.device),
                         attention_mask=attention_mask.to(ctx.device),
